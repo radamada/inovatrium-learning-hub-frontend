@@ -124,9 +124,17 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
     });
   };
 
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
   const handleAddToCart = async () => {
     if (!user) { router.push('/login'); return; }
-    await addItem(course._id);
+    if (isAddingToCart) return;
+    setIsAddingToCart(true);
+    try {
+      await addItem(course._id);
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   return (
@@ -344,8 +352,9 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                 <Button
                   className="w-full bg-indigo-600 hover:bg-indigo-700 mb-3"
                   onClick={handleAddToCart}
+                  disabled={isAddingToCart}
                 >
-                  Adaugă în coș
+                  {isAddingToCart ? 'Se adaugă...' : 'Adaugă în coș'}
                 </Button>
               )}
               <p className="text-xs text-gray-400 text-center">
@@ -414,7 +423,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
           >
             <div className="flex items-center justify-between px-4 py-3 bg-gray-900">
               <p className="text-white font-medium text-sm truncate">{previewLesson.title}</p>
-              <button onClick={closePreview} className="text-gray-400 hover:text-white ml-4">
+              <button onClick={closePreview} className="text-gray-400 hover:text-white ml-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white rounded" aria-label="Închide previzualizare">
                 <X className="w-5 h-5" />
               </button>
             </div>

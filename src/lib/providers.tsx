@@ -7,6 +7,7 @@ import { queryClient } from './query-client';
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth.store';
 import { useWishlistStore } from '@/stores/wishlist.store';
+import { useCartStore } from '@/stores/cart.store';
 import { useThemeStore } from '@/stores/theme.store';
 
 function WishlistInitializer() {
@@ -15,6 +16,17 @@ function WishlistInitializer() {
 
   useEffect(() => {
     if (user) fetchWishlist();
+  }, [user]);
+
+  return null;
+}
+
+function CartInitializer() {
+  const user = useAuthStore((s) => s.user);
+  const fetchCart = useCartStore((s) => s.fetchCart);
+
+  useEffect(() => {
+    if (user) fetchCart();
   }, [user]);
 
   return null;
@@ -39,6 +51,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider />
       <WishlistInitializer />
+      <CartInitializer />
       {children}
       <Toaster richColors position="bottom-center" />
       <ReactQueryDevtools initialIsOpen={false} />

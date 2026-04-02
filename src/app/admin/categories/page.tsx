@@ -126,7 +126,8 @@ export default function AdminCategoriesPage() {
                     <button
                       onClick={() => handleDelete(cat._id, cat.name)}
                       disabled={deletingId === cat._id}
-                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition disabled:opacity-50"
+                      aria-label={`Șterge categoria ${cat.name}`}
+                      className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-red-400"
                     >
                       {deletingId === cat._id ? (
                         <Loader2 className="w-4 h-4 animate-spin" />

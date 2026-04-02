@@ -66,7 +66,8 @@ export default function CartSheet({ open, onClose }: CartSheetProps) {
                 </div>
                 <button
                   onClick={() => removeItem(item._id)}
-                  className="text-gray-400 hover:text-red-500 transition"
+                  className="text-gray-400 hover:text-red-500 transition focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-1 rounded"
+                  aria-label={`Elimină ${item.title} din coș`}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

@@ -79,7 +79,8 @@ export default function Header() {
           {user && (
             <button
               onClick={() => setCartOpen(true)}
-              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              aria-label="Deschide coșul de cumpărături"
             >
               <ShoppingCart className="w-5 h-5 text-gray-600" />
               {itemCount() > 0 && (

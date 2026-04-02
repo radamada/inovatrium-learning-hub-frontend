@@ -51,7 +51,9 @@ export default function NotificationBell() {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
+        className="relative p-2 rounded-full hover:bg-gray-100 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+        aria-label="Notificări"
+        aria-expanded={open}
       >
         <Bell className="w-5 h-5 text-gray-600" />
         {unreadCount > 0 && (

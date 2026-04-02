@@ -495,15 +495,16 @@ export default function InstructorCouponsPage() {
                           <button
                             onClick={() => handleEdit(coupon)}
                             title="Editează"
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition"
+                            aria-label={`Editează cuponul ${coupon.code}`}
+                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition focus-visible:ring-2 focus-visible:ring-indigo-400"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleToggle(coupon)}
                             disabled={togglingId === coupon._id}
-                            title={coupon.isActive ? 'Dezactivează' : 'Activează'}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition disabled:opacity-50"
+                            aria-label={coupon.isActive ? `Dezactivează cuponul ${coupon.code}` : `Activează cuponul ${coupon.code}`}
+                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-indigo-400"
                           >
                             {togglingId === coupon._id ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -516,7 +517,8 @@ export default function InstructorCouponsPage() {
                           <button
                             onClick={() => handleDelete(coupon._id, coupon.code)}
                             disabled={deletingId === coupon._id}
-                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition disabled:opacity-50"
+                            aria-label={`Șterge cuponul ${coupon.code}`}
+                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-red-400"
                           >
                             {deletingId === coupon._id ? (
                               <Loader2 className="w-4 h-4 animate-spin" />

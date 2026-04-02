@@ -467,7 +467,8 @@ export default function AdminCouponsPage() {
                           <button
                             onClick={() => handleDelete(coupon._id, coupon.code)}
                             disabled={deletingId === coupon._id}
-                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition disabled:opacity-50"
+                            aria-label={`Șterge cuponul ${coupon.code}`}
+                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-red-400"
                           >
                             {deletingId === coupon._id ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
