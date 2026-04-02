@@ -208,7 +208,7 @@ export default function ProfilePage() {
               <p className="font-medium text-gray-700">{user.name}</p>
               <p>{user.email}</p>
               <p className="text-indigo-600">
-                {{ student: 'Student', instructor: 'Formator', admin: 'Admin' }[user.role] ?? user.role}
+                {user.role === 'student' ? 'Student' : user.role === 'instructor' ? 'Formator' : user.role === 'admin' ? 'Admin' : user.role}
               </p>
               <p className="text-xs text-gray-400 mt-0.5">Click pe poză pentru a o schimba · max 5 MB</p>
             </div>
