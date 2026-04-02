@@ -1,0 +1,182 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Lavender-indigo palette matching Lovable design */
+  --background: hsl(228, 25%, 96%);
+  --foreground: hsl(230, 25%, 12%);
+  --card: hsl(230, 20%, 99%);
+  --card-foreground: hsl(230, 25%, 12%);
+  --popover: hsl(230, 20%, 99%);
+  --popover-foreground: hsl(230, 25%, 12%);
+  --primary: hsl(245, 58%, 51%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(225, 20%, 90%);
+  --secondary-foreground: hsl(230, 25%, 12%);
+  --muted: hsl(225, 18%, 91%);
+  --muted-foreground: hsl(225, 10%, 44%);
+  --accent: hsl(245, 50%, 95%);
+  --accent-foreground: hsl(245, 58%, 51%);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(225, 15%, 87%);
+  --input: hsl(225, 15%, 87%);
+  --ring: hsl(245, 58%, 51%);
+  --radius: 0.75rem;
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: hsl(230, 20%, 98%);
+  --sidebar-foreground: hsl(230, 25%, 12%);
+  --sidebar-primary: hsl(245, 58%, 51%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(225, 18%, 91%);
+  --sidebar-accent-foreground: hsl(230, 25%, 12%);
+  --sidebar-border: hsl(225, 15%, 87%);
+  --sidebar-ring: hsl(245, 58%, 51%);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: hsl(245, 58%, 65%);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: hsl(245, 58%, 65%);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* ── Dark mode overrides for hardcoded Tailwind color classes ── */
+.dark {
+  color-scheme: dark;
+
+  & .bg-white { background-color: oklch(0.205 0 0) !important; }
+  & .bg-gray-50 { background-color: oklch(0.17 0 0) !important; }
+  & .bg-gray-100 { background-color: oklch(0.19 0 0) !important; }
+  & .bg-gray-200 { background-color: oklch(0.22 0 0) !important; }
+
+  /* Semi-transparent whites used in hero cards etc. */
+  & .bg-white\/80 { background-color: oklch(0.18 0 0 / 80%) !important; }
+  & .bg-white\/5 { background-color: oklch(1 0 0 / 5%) !important; }
+  & .bg-white\/10 { background-color: oklch(1 0 0 / 10%) !important; }
+
+  /* Text */
+  & .text-gray-900 { color: oklch(0.95 0 0) !important; }
+  & .text-gray-800 { color: oklch(0.9 0 0) !important; }
+  & .text-gray-700 { color: oklch(0.82 0 0) !important; }
+  & .text-gray-600 { color: oklch(0.72 0 0) !important; }
+  & .text-gray-500 { color: oklch(0.62 0 0) !important; }
+  & .text-gray-400 { color: oklch(0.54 0 0) !important; }
+
+  /* Borders */
+  & .border-gray-200 { border-color: oklch(1 0 0 / 10%) !important; }
+  & .border-gray-100 { border-color: oklch(1 0 0 / 8%) !important; }
+
+  /* Hover states */
+  & .hover\:bg-gray-50:hover { background-color: oklch(0.22 0 0) !important; }
+  & .hover\:bg-gray-100:hover { background-color: oklch(0.24 0 0) !important; }
+
+  /* Inputs */
+  & input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+  & textarea,
+  & select {
+    background-color: oklch(0.19 0 0);
+    color: oklch(0.95 0 0);
+    border-color: oklch(1 0 0 / 15%);
+  }
+
+  /* Skeleton */
+  & .animate-pulse > * { background-color: oklch(0.25 0 0) !important; }
+
+  /* Indigo backgrounds keep their color, just dim them slightly */
+  & .bg-indigo-50 { background-color: oklch(0.22 0.04 264) !important; }
+
+  /* Shadow adjustments */
+  & .shadow-sm { box-shadow: 0 1px 3px 0 oklch(0 0 0 / 40%) !important; }
+  & .shadow { box-shadow: 0 2px 6px 0 oklch(0 0 0 / 50%) !important; }
+}

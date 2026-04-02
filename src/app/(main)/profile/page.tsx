@@ -1,0 +1,301 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { User, Lock, Save, Camera } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { AvatarCropModal } from '@/components/ui/avatar-crop-modal';
+import { toast } from 'sonner';
+import api from '@/lib/api';
+import { useAuthStore } from '@/stores/auth.store';
+
+interface ProfileForm {
+  name: string;
+  bio: string;
+}
+
+interface PasswordForm {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export default function ProfilePage() {
+  const { user, fetchMe } = useAuthStore();
+  const router = useRouter();
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!user) router.push('/login?from=/profile');
+  }, [user]);
+
+  const profileForm = useForm<ProfileForm>({
+    defaultValues: { name: user?.name ?? '', bio: '' },
+  });
+
+  const passwordForm = useForm<PasswordForm>({
+    defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+  });
+
+  useEffect(() => {
+    if (!user) return;
+    api.get('/users/me').then((r) => {
+      profileForm.reset({ name: r.data.name ?? '', bio: r.data.bio ?? '' });
+      setAvatarPreview(r.data.avatar ?? null);
+    });
+  }, [user?._id]);
+
+  async function onSaveProfile(data: ProfileForm) {
+    setSavingProfile(true);
+    try {
+      await api.patch('/users/me', { name: data.name, bio: data.bio || undefined });
+      await fetchMe();
+      toast.success('Profilul a fost actualizat');
+    } catch {
+      toast.error('Eroare la salvarea profilului');
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
+  async function onAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (fileInputRef.current) fileInputRef.current.value = '';
+
+    const isHeic = /\.(heic|heif)$/i.test(file.name) || file.type === 'image/heic' || file.type === 'image/heif';
+    if (isHeic) {
+      // Convertim HEIC → JPEG client-side ca să putem afișa în cropper
+      setUploadingAvatar(true);
+      try {
+        const heic2any = (await import('heic2any')).default;
+        const converted = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+        const blob = Array.isArray(converted) ? converted[0] : converted;
+        const url = URL.createObjectURL(blob);
+        setCropSrc(url);
+      } catch {
+        toast.error('Nu s-a putut procesa fișierul HEIC');
+      } finally {
+        setUploadingAvatar(false);
+      }
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    setCropSrc(url);
+  }
+
+  async function uploadAvatarBlob(blobOrFile: Blob, filename = 'avatar.jpg') {
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', blobOrFile, filename);
+      const { data } = await api.post('/users/me/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setAvatarPreview(data.avatar);
+      await fetchMe();
+      toast.success('Poza de profil a fost actualizată');
+    } catch {
+      setAvatarPreview(user?.avatar ?? null);
+      toast.error('Eroare la încărcarea pozei');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
+
+  function handleCropConfirm(blob: Blob) {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    const preview = URL.createObjectURL(blob);
+    setAvatarPreview(preview);
+    setCropSrc(null);
+    uploadAvatarBlob(blob);
+  }
+
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  }
+
+  async function onChangePassword(data: PasswordForm) {
+    if (data.newPassword !== data.confirmPassword) {
+      passwordForm.setError('confirmPassword', { message: 'Parolele nu se potrivesc' });
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      await api.patch('/users/me/password', {
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
+      });
+      toast.success('Parola a fost schimbată');
+      passwordForm.reset();
+    } catch (err: any) {
+      const msg = err?.response?.data?.message ?? 'Eroare la schimbarea parolei';
+      toast.error(msg);
+    } finally {
+      setSavingPassword(false);
+    }
+  }
+
+  if (!user) return null;
+
+  const displayAvatar = avatarPreview ?? user.avatar ?? '';
+
+  return (
+    <>
+      <AvatarCropModal
+        open={!!cropSrc}
+        imageSrc={cropSrc ?? ''}
+        onConfirm={handleCropConfirm}
+        onCancel={handleCropCancel}
+      />
+
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        <h1 className="text-2xl font-extrabold text-gray-900 mb-8">Profilul meu</h1>
+
+        {/* Profile info */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
+          <div className="flex items-center gap-2 mb-5">
+            <User className="w-4 h-4 text-indigo-600" />
+            <h2 className="font-semibold text-gray-800">Informații personale</h2>
+          </div>
+
+          {/* Avatar upload */}
+          <div className="flex items-center gap-4 mb-6">
+            <div className="relative group">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={displayAvatar} />
+                <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xl font-bold">
+                  {user.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingAvatar}
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity disabled:cursor-not-allowed"
+                aria-label="Schimbă poza de profil"
+              >
+                {uploadingAvatar ? (
+                  <div className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                ) : (
+                  <Camera className="h-5 w-5 text-white" />
+                )}
+              </button>
+
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.heic,.heif"
+                className="hidden"
+                onChange={onAvatarChange}
+              />
+            </div>
+
+            <div className="text-sm text-gray-500">
+              <p className="font-medium text-gray-700">{user.name}</p>
+              <p>{user.email}</p>
+              <p className="text-indigo-600">
+                {{ student: 'Student', instructor: 'Formator', admin: 'Admin' }[user.role] ?? user.role}
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">Click pe poză pentru a o schimba · max 5 MB</p>
+            </div>
+          </div>
+
+          <form onSubmit={profileForm.handleSubmit(onSaveProfile)} className="space-y-4">
+            <div>
+              <Label htmlFor="name">Nume</Label>
+              <Input
+                id="name"
+                {...profileForm.register('name', { required: 'Numele este obligatoriu' })}
+                className="mt-1"
+              />
+              {profileForm.formState.errors.name && (
+                <p className="text-xs text-red-500 mt-1">{profileForm.formState.errors.name.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                placeholder="Câteva cuvinte despre tine..."
+                rows={3}
+                {...profileForm.register('bio')}
+                className="mt-1"
+              />
+            </div>
+
+            <Button type="submit" disabled={savingProfile} className="gap-1.5">
+              <Save className="w-4 h-4" />
+              {savingProfile ? 'Se salvează...' : 'Salvează profilul'}
+            </Button>
+          </form>
+        </div>
+
+        {/* Change password */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6">
+          <div className="flex items-center gap-2 mb-5">
+            <Lock className="w-4 h-4 text-indigo-600" />
+            <h2 className="font-semibold text-gray-800">Schimbă parola</h2>
+          </div>
+
+          <form onSubmit={passwordForm.handleSubmit(onChangePassword)} className="space-y-4">
+            <div>
+              <Label htmlFor="currentPassword">Parola curentă</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                {...passwordForm.register('currentPassword', { required: true })}
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="newPassword">Parola nouă</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                {...passwordForm.register('newPassword', { required: true, minLength: { value: 8, message: 'Minimum 8 caractere' } })}
+                className="mt-1"
+              />
+              {passwordForm.formState.errors.newPassword && (
+                <p className="text-xs text-red-500 mt-1">{passwordForm.formState.errors.newPassword.message}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="confirmPassword">Confirmă parola nouă</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                {...passwordForm.register('confirmPassword', { required: true })}
+                className="mt-1"
+              />
+              {passwordForm.formState.errors.confirmPassword && (
+                <p className="text-xs text-red-500 mt-1">{passwordForm.formState.errors.confirmPassword.message}</p>
+              )}
+            </div>
+
+            <Button type="submit" disabled={savingPassword} variant="outline" className="gap-1.5">
+              <Lock className="w-4 h-4" />
+              {savingPassword ? 'Se schimbă...' : 'Schimbă parola'}
+            </Button>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+}
