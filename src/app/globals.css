@@ -86,37 +86,39 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: hsl(245, 58%, 65%);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: hsl(245, 58%, 65%);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Fond cu tentă indigo — nu pure black */
+  --background: hsl(228, 28%, 7%);
+  --foreground: hsl(228, 20%, 93%);
+  --card: hsl(228, 24%, 11%);
+  --card-foreground: hsl(228, 20%, 93%);
+  --popover: hsl(228, 24%, 13%);
+  --popover-foreground: hsl(228, 20%, 93%);
+  --primary: hsl(245, 72%, 68%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(228, 20%, 17%);
+  --secondary-foreground: hsl(228, 18%, 85%);
+  --muted: hsl(228, 20%, 16%);
+  --muted-foreground: hsl(228, 12%, 56%);
+  --accent: hsl(245, 30%, 20%);
+  --accent-foreground: hsl(245, 70%, 78%);
+  --destructive: hsl(0, 72%, 58%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(228, 20%, 19%);
+  --input: hsl(228, 22%, 15%);
+  --ring: hsl(245, 72%, 68%);
+  --chart-1: hsl(245, 72%, 68%);
+  --chart-2: hsl(215, 65%, 60%);
+  --chart-3: hsl(270, 55%, 65%);
+  --chart-4: hsl(180, 50%, 55%);
+  --chart-5: hsl(340, 60%, 62%);
+  --sidebar: hsl(228, 26%, 9%);
+  --sidebar-foreground: hsl(228, 18%, 88%);
+  --sidebar-primary: hsl(245, 72%, 68%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(228, 22%, 16%);
+  --sidebar-accent-foreground: hsl(228, 18%, 88%);
+  --sidebar-border: hsl(228, 20%, 16%);
+  --sidebar-ring: hsl(245, 72%, 68%);
 }
 
 @layer base {
@@ -135,48 +137,119 @@
 .dark {
   color-scheme: dark;
 
-  & .bg-white { background-color: oklch(0.205 0 0) !important; }
-  & .bg-gray-50 { background-color: oklch(0.17 0 0) !important; }
-  & .bg-gray-100 { background-color: oklch(0.19 0 0) !important; }
-  & .bg-gray-200 { background-color: oklch(0.22 0 0) !important; }
+  /* ── Backgrounds ── */
+  & .bg-white          { background-color: hsl(228, 24%, 11%) !important; }
+  & .bg-gray-50        { background-color: hsl(228, 26%, 8%)  !important; }
+  & .bg-gray-100       { background-color: hsl(228, 23%, 13%) !important; }
+  & .bg-gray-200       { background-color: hsl(228, 20%, 17%) !important; }
+  & .bg-gray-300       { background-color: hsl(228, 18%, 22%) !important; }
+  & .bg-gray-800       { background-color: hsl(228, 22%, 14%) !important; }
+  & .bg-gray-900       { background-color: hsl(228, 26%, 8%)  !important; }
 
-  /* Semi-transparent whites used in hero cards etc. */
-  & .bg-white\/80 { background-color: oklch(0.18 0 0 / 80%) !important; }
-  & .bg-white\/5 { background-color: oklch(1 0 0 / 5%) !important; }
-  & .bg-white\/10 { background-color: oklch(1 0 0 / 10%) !important; }
+  /* Semi-transparent */
+  & .bg-white\/80      { background-color: hsl(228, 24%, 11% / 85%) !important; }
+  & .bg-white\/5       { background-color: hsl(228, 20%, 100% / 5%)  !important; }
+  & .bg-white\/10      { background-color: hsl(228, 20%, 100% / 10%) !important; }
+  & .bg-black\/50      { background-color: hsl(228, 30%, 0% / 60%)   !important; }
 
-  /* Text */
-  & .text-gray-900 { color: oklch(0.95 0 0) !important; }
-  & .text-gray-800 { color: oklch(0.9 0 0) !important; }
-  & .text-gray-700 { color: oklch(0.82 0 0) !important; }
-  & .text-gray-600 { color: oklch(0.72 0 0) !important; }
-  & .text-gray-500 { color: oklch(0.62 0 0) !important; }
-  & .text-gray-400 { color: oklch(0.54 0 0) !important; }
+  /* ── Text ── */
+  & .text-gray-900     { color: hsl(228, 20%, 93%) !important; }
+  & .text-gray-800     { color: hsl(228, 18%, 86%) !important; }
+  & .text-gray-700     { color: hsl(228, 15%, 76%) !important; }
+  & .text-gray-600     { color: hsl(228, 12%, 64%) !important; }
+  & .text-gray-500     { color: hsl(228, 10%, 54%) !important; }
+  & .text-gray-400     { color: hsl(228,  8%, 46%) !important; }
+  & .text-gray-300     { color: hsl(228,  6%, 40%) !important; }
+  & .text-white        { color: hsl(228, 20%, 95%) !important; }
 
-  /* Borders */
-  & .border-gray-200 { border-color: oklch(1 0 0 / 10%) !important; }
-  & .border-gray-100 { border-color: oklch(1 0 0 / 8%) !important; }
+  /* ── Borders ── */
+  & .border-gray-100   { border-color: hsl(228, 20%, 16%) !important; }
+  & .border-gray-200   { border-color: hsl(228, 20%, 19%) !important; }
+  & .border-gray-300   { border-color: hsl(228, 18%, 24%) !important; }
 
-  /* Hover states */
-  & .hover\:bg-gray-50:hover { background-color: oklch(0.22 0 0) !important; }
-  & .hover\:bg-gray-100:hover { background-color: oklch(0.24 0 0) !important; }
+  /* ── Hover ── */
+  & .hover\:bg-gray-50:hover  { background-color: hsl(228, 22%, 15%) !important; }
+  & .hover\:bg-gray-100:hover { background-color: hsl(228, 20%, 17%) !important; }
+  & .hover\:bg-white:hover    { background-color: hsl(228, 22%, 15%) !important; }
 
-  /* Inputs */
+  /* ── Indigo ── */
+  & .bg-indigo-50      { background-color: hsl(245, 30%, 16%) !important; }
+  & .bg-indigo-100     { background-color: hsl(245, 28%, 20%) !important; }
+  & .bg-indigo-600     { background-color: hsl(245, 65%, 60%) !important; }
+  & .bg-indigo-700     { background-color: hsl(245, 60%, 52%) !important; }
+  & .text-indigo-600   { color: hsl(245, 72%, 72%) !important; }
+  & .text-indigo-700   { color: hsl(245, 72%, 72%) !important; }
+  & .text-indigo-400   { color: hsl(245, 70%, 78%) !important; }
+  & .text-indigo-300   { color: hsl(245, 68%, 82%) !important; }
+  & .border-indigo-200 { border-color: hsl(245, 30%, 26%) !important; }
+  & .border-indigo-300 { border-color: hsl(245, 28%, 32%) !important; }
+  & .hover\:bg-indigo-50:hover  { background-color: hsl(245, 28%, 20%) !important; }
+  & .hover\:text-indigo-600:hover { color: hsl(245, 72%, 78%) !important; }
+  & .hover\:bg-indigo-700:hover { background-color: hsl(245, 60%, 52%) !important; }
+
+  /* ── Red / Danger ── */
+  & .bg-red-50         { background-color: hsl(0, 30%, 14%) !important; }
+  & .bg-red-100        { background-color: hsl(0, 28%, 18%) !important; }
+  & .bg-red-500        { background-color: hsl(0, 68%, 52%) !important; }
+  & .bg-red-600        { background-color: hsl(0, 65%, 46%) !important; }
+  & .text-red-500      { color: hsl(0, 80%, 68%) !important; }
+  & .text-red-600      { color: hsl(0, 80%, 68%) !important; }
+  & .border-red-200    { border-color: hsl(0, 30%, 24%) !important; }
+  & .border-red-300    { border-color: hsl(0, 28%, 30%) !important; }
+  & .hover\:bg-red-50:hover { background-color: hsl(0, 28%, 18%) !important; }
+
+  /* ── Green / Success ── */
+  & .bg-green-50       { background-color: hsl(142, 30%, 12%) !important; }
+  & .bg-green-100      { background-color: hsl(142, 28%, 16%) !important; }
+  & .bg-green-500      { background-color: hsl(142, 55%, 42%) !important; }
+  & .bg-green-600      { background-color: hsl(142, 52%, 36%) !important; }
+  & .text-green-500    { color: hsl(142, 65%, 58%) !important; }
+  & .text-green-600    { color: hsl(142, 65%, 58%) !important; }
+  & .text-green-700    { color: hsl(142, 60%, 52%) !important; }
+  & .border-green-200  { border-color: hsl(142, 28%, 22%) !important; }
+
+  /* ── Yellow / Ratings ── */
+  & .text-yellow-400   { color: hsl(45, 90%, 62%) !important; }
+  & .text-yellow-500   { color: hsl(45, 88%, 56%) !important; }
+  & .fill-yellow-400   { fill: hsl(45, 90%, 62%) !important; }
+  & .bg-yellow-50      { background-color: hsl(45, 30%, 14%) !important; }
+  & .bg-yellow-100     { background-color: hsl(45, 28%, 18%) !important; }
+  & .text-yellow-800   { color: hsl(45, 80%, 70%) !important; }
+
+  /* ── Purple / Violet ── */
+  & .bg-purple-50      { background-color: hsl(270, 30%, 16%) !important; }
+  & .bg-purple-100     { background-color: hsl(270, 28%, 20%) !important; }
+  & .text-purple-600   { color: hsl(270, 70%, 72%) !important; }
+  & .text-purple-700   { color: hsl(270, 70%, 72%) !important; }
+  & .bg-violet-100     { background-color: hsl(258, 28%, 20%) !important; }
+
+  /* ── Blue ── */
+  & .bg-blue-50        { background-color: hsl(215, 30%, 14%) !important; }
+  & .bg-blue-100       { background-color: hsl(215, 28%, 18%) !important; }
+  & .text-blue-600     { color: hsl(215, 75%, 68%) !important; }
+  & .text-blue-700     { color: hsl(215, 75%, 68%) !important; }
+
+  /* ── Inputs ── */
   & input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
   & textarea,
   & select {
-    background-color: oklch(0.19 0 0);
-    color: oklch(0.95 0 0);
-    border-color: oklch(1 0 0 / 15%);
+    background-color: hsl(228, 22%, 15%);
+    color: hsl(228, 20%, 90%);
+    border-color: hsl(228, 20%, 22%);
   }
 
-  /* Skeleton */
-  & .animate-pulse > * { background-color: oklch(0.25 0 0) !important; }
+  /* ── Skeleton ── */
+  & .animate-pulse > * { background-color: hsl(228, 20%, 18%) !important; }
 
-  /* Indigo backgrounds keep their color, just dim them slightly */
-  & .bg-indigo-50 { background-color: oklch(0.22 0.04 264) !important; }
+  /* ── Shadows ── */
+  & .shadow-sm  { box-shadow: 0 1px 3px 0 hsl(228, 40%, 3% / 60%) !important; }
+  & .shadow     { box-shadow: 0 2px 8px 0 hsl(228, 40%, 3% / 70%) !important; }
+  & .shadow-lg  { box-shadow: 0 8px 24px 0 hsl(228, 40%, 3% / 80%) !important; }
+  & .shadow-xl  { box-shadow: 0 16px 40px 0 hsl(228, 40%, 3% / 85%) !important; }
 
-  /* Shadow adjustments */
-  & .shadow-sm { box-shadow: 0 1px 3px 0 oklch(0 0 0 / 40%) !important; }
-  & .shadow { box-shadow: 0 2px 6px 0 oklch(0 0 0 / 50%) !important; }
+  /* ── Primary button glow ── */
+  & .bg-indigo-600:not(:disabled),
+  & button[class*="bg-primary"] {
+    box-shadow: 0 0 20px hsl(245, 65%, 60% / 30%);
+  }
 }
