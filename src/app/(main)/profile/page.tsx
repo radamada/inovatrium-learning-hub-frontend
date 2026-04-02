@@ -227,16 +227,18 @@ export default function ProfilePage() {
               )}
             </div>
 
-            <div>
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                placeholder="Câteva cuvinte despre tine..."
-                rows={3}
-                {...profileForm.register('bio')}
-                className="mt-1"
-              />
-            </div>
+            {(user.role === 'instructor' || user.role === 'admin') && (
+              <div>
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  placeholder="Câteva cuvinte despre tine, experiența ta..."
+                  rows={3}
+                  {...profileForm.register('bio')}
+                  className="mt-1"
+                />
+              </div>
+            )}
 
             <Button type="submit" disabled={savingProfile} className="gap-1.5">
               <Save className="w-4 h-4" />
