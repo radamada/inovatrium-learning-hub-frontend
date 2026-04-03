@@ -56,7 +56,6 @@ function exportCsv(orders: any[], hasFilters: boolean) {
 }
 
 const STATUSES = [
-  { value: '__all__',   label: 'Toate statusurile' },
   { value: 'paid',      label: 'Plătit' },
   { value: 'refunded',  label: 'Rambursat' },
   { value: 'pending',   label: 'În așteptare' },
@@ -65,16 +64,16 @@ const STATUSES = [
 
 export default function InstructorOrdersPage() {
   const [search, setSearch]     = useState('');
-  const [status, setStatus]     = useState('__all__');
-  const [courseId, setCourseId] = useState('__all__');
+  const [status, setStatus]     = useState('');
+  const [courseId, setCourseId] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo]     = useState('');
 
   const buildParams = useCallback(() => {
     const p: Record<string, string> = { limit: '200' };
-    if (search)                 p.search   = search;
-    if (status !== '__all__')   p.status   = status;
-    if (courseId !== '__all__') p.courseId = courseId;
+    if (search)   p.search   = search;
+    if (status)   p.status   = status;
+    if (courseId) p.courseId = courseId;
     if (dateFrom)               p.dateFrom = dateFrom;
     if (dateTo)                 p.dateTo   = dateTo;
     return p;
@@ -90,10 +89,10 @@ export default function InstructorOrdersPage() {
   const courses = data?.courses ?? [];
   const total   = data?.total   ?? 0;
 
-  const hasFilters = !!(search || status !== '__all__' || courseId !== '__all__' || dateFrom || dateTo);
+  const hasFilters = !!(search || status || courseId || dateFrom || dateTo);
 
   function resetFilters() {
-    setSearch(''); setStatus('__all__'); setCourseId('__all__');
+    setSearch(''); setStatus(''); setCourseId('');
     setDateFrom(''); setDateTo('');
   }
 
@@ -145,9 +144,10 @@ export default function InstructorOrdersPage() {
           <div className="w-full sm:w-48">
             <Select value={status} onValueChange={(v) => setStatus(v as string)}>
               <SelectTrigger>
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="Toate statusurile" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="">Toate statusurile</SelectItem>
                 {STATUSES.map((s) => (
                   <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                 ))}
@@ -163,7 +163,7 @@ export default function InstructorOrdersPage() {
                   <SelectValue placeholder="Toate cursurile" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="__all__">Toate cursurile</SelectItem>
+                  <SelectItem value="">Toate cursurile</SelectItem>
                   {courses.map((c: any) => (
                     <SelectItem key={c._id} value={c._id}>{c.title}</SelectItem>
                   ))}
