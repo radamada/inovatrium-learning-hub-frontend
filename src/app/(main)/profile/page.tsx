@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { User, Lock, Save, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -19,11 +21,22 @@ interface ProfileForm {
   bio: string;
 }
 
-interface PasswordForm {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-}
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, 'Parola curentă este obligatorie'),
+  newPassword: z
+    .string()
+    .min(8, 'Minim 8 caractere')
+    .max(72, 'Maxim 72 caractere')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      'Parola trebuie să conțină cel puțin o literă mare, o literă mică și o cifră',
+    ),
+  confirmPassword: z.string(),
+}).refine((d) => d.newPassword === d.confirmPassword, {
+  message: 'Parolele nu coincid',
+  path: ['confirmPassword'],
+});
+type PasswordForm = z.infer<typeof passwordSchema>;
 
 export default function ProfilePage() {
   const { user, fetchMe } = useAuthStore();
@@ -39,11 +52,20 @@ export default function ProfilePage() {
     if (!user) router.push('/login?from=/profile');
   }, [user]);
 
+  // Revoke object URL on unmount to avoid memory leak
+  useEffect(() => {
+    return () => {
+      if (cropSrc) URL.revokeObjectURL(cropSrc);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const profileForm = useForm<ProfileForm>({
     defaultValues: { name: user?.name ?? '', bio: '' },
   });
 
   const passwordForm = useForm<PasswordForm>({
+    resolver: zodResolver(passwordSchema),
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
   });
 
@@ -128,10 +150,6 @@ export default function ProfilePage() {
   }
 
   async function onChangePassword(data: PasswordForm) {
-    if (data.newPassword !== data.confirmPassword) {
-      passwordForm.setError('confirmPassword', { message: 'Parolele nu se potrivesc' });
-      return;
-    }
     setSavingPassword(true);
     try {
       await api.patch('/users/me/password', {
@@ -260,9 +278,12 @@ export default function ProfilePage() {
               <Input
                 id="currentPassword"
                 type="password"
-                {...passwordForm.register('currentPassword', { required: true })}
+                {...passwordForm.register('currentPassword')}
                 className="mt-1"
               />
+              {passwordForm.formState.errors.currentPassword && (
+                <p className="text-xs text-red-500 mt-1">{passwordForm.formState.errors.currentPassword.message}</p>
+              )}
             </div>
 
             <div>
@@ -270,7 +291,7 @@ export default function ProfilePage() {
               <Input
                 id="newPassword"
                 type="password"
-                {...passwordForm.register('newPassword', { required: true, minLength: { value: 8, message: 'Minimum 8 caractere' } })}
+                {...passwordForm.register('newPassword')}
                 className="mt-1"
               />
               {passwordForm.formState.errors.newPassword && (
@@ -283,7 +304,7 @@ export default function ProfilePage() {
               <Input
                 id="confirmPassword"
                 type="password"
-                {...passwordForm.register('confirmPassword', { required: true })}
+                {...passwordForm.register('confirmPassword')}
                 className="mt-1"
               />
               {passwordForm.formState.errors.confirmPassword && (

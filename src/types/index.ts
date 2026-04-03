@@ -44,16 +44,32 @@ export interface Course {
   createdAt: string;
 }
 
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  // correctIndex is stripped server-side for students; present only for editors
+  correctIndex?: number;
+}
+
+export interface QuizResult {
+  score: number;
+  passed: boolean;
+  correctAnswers: number;
+  totalQuestions: number;
+}
+
 export interface Lesson {
   _id: string;
   courseId: string;
   sectionId: string;
   title: string;
   description: string;
+  type?: 'video' | 'quiz';
   cdnVideoId: string;
   duration: number;
   order: number;
   isFree: boolean;
+  questions?: QuizQuestion[];
 }
 
 export interface Section {
@@ -96,12 +112,20 @@ export interface Order {
   createdAt: string;
 }
 
+export interface QuizAttempt {
+  quizId: string;
+  score: number;
+  passed: boolean;
+  attemptedAt: string;
+}
+
 export interface Enrollment {
   _id: string;
   userId: string;
   courseId: Course;
   orderId: string | null;
   completedLessons: string[];
+  quizAttempts?: QuizAttempt[];
   lastAccessedAt: string | null;
   completedAt: string | null;
   status: 'active' | 'refunded';

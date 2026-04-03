@@ -1,19 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
-import { Plus, Edit, Trash2, Eye, EyeOff, BookOpen } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, BookOpen, Settings2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
+
+interface AdminCourse {
+  _id: string;
+  title: string;
+  slug: string;
+  published: boolean;
+  price: number;
+  enrollmentCount?: number;
+  createdAt: string;
+  instructorId?: { name: string };
+}
 
 export default function AdminCoursesPage() {
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [retractTarget, setRetractTarget] = useState<AdminCourse | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<AdminCourse | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-courses', page],
@@ -25,6 +49,7 @@ export default function AdminCoursesPage() {
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['admin-courses'] });
       toast.success(res.data.published ? 'Curs publicat!' : 'Curs retras din catalog');
+      setRetractTarget(null);
     },
     onError: () => toast.error('Eroare la actualizarea statusului'),
   });
@@ -34,11 +59,20 @@ export default function AdminCoursesPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin-courses'] });
       toast.success('Cursul a fost șters');
+      setDeleteTarget(null);
     },
     onError: () => toast.error('Eroare la ștergere'),
   });
 
-  const courses = data?.courses ?? [];
+  const handlePublishClick = (course: AdminCourse) => {
+    if (course.published) {
+      setRetractTarget(course);
+    } else {
+      togglePublish.mutate(course._id);
+    }
+  };
+
+  const courses: AdminCourse[] = data?.courses ?? [];
 
   return (
     <motion.div
@@ -51,9 +85,36 @@ export default function AdminCoursesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Cursuri</h1>
           <p className="text-gray-500 mt-1">Gestionează toate cursurile platformei</p>
         </div>
-        <Button render={<Link href="/admin/courses/new" />} className="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Curs nou
-        </Button>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={(props: React.HTMLAttributes<HTMLButtonElement>) => (
+                <button
+                  {...props}
+                  className={`p-2 rounded-lg border transition-colors ${deleteMode ? 'border-red-300 bg-red-50 text-red-600' : 'border-gray-200 text-gray-400 hover:text-gray-600 hover:border-gray-300'}`}
+                >
+                  <Settings2 className="w-4 h-4" />
+                </button>
+              )}
+            />
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>Setări pagină</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem
+                  checked={deleteMode}
+                  onCheckedChange={setDeleteMode}
+                  className="text-red-600 focus:text-red-600"
+                >
+                  Activează ștergerea cursurilor
+                </DropdownMenuCheckboxItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button render={<Link href="/admin/courses/new" />} className="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2">
+            <Plus className="w-4 h-4" /> Curs nou
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -77,7 +138,7 @@ export default function AdminCoursesPage() {
         <>
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
-            {courses.map((course: any) => (
+            {courses.map((course) => (
               <div key={course._id} className="bg-white rounded-xl border p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="min-w-0">
@@ -110,7 +171,7 @@ export default function AdminCoursesPage() {
                       size="sm"
                       variant="outline"
                       disabled={togglePublish.isPending}
-                      onClick={() => togglePublish.mutate(course._id)}
+                      onClick={() => handlePublishClick(course)}
                       className="flex items-center gap-1 h-7 text-xs"
                     >
                       {course.published ? (
@@ -119,18 +180,16 @@ export default function AdminCoursesPage() {
                         <><Eye className="w-3.5 h-3.5" /> Publică</>
                       )}
                     </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        if (confirm(`Ești sigur că vrei să ștergi "${course.title}"?`)) {
-                          deleteCourse.mutate(course._id);
-                        }
-                      }}
-                      className="flex items-center gap-1 h-7 text-xs text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
+                    {deleteMode && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setDeleteTarget(course)}
+                        className="flex items-center gap-1 h-7 text-xs text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -152,7 +211,7 @@ export default function AdminCoursesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {courses.map((course: any) => (
+                  {courses.map((course) => (
                     <tr key={course._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3">
                         <p className="font-medium text-gray-900 truncate max-w-xs">{course.title}</p>
@@ -186,7 +245,7 @@ export default function AdminCoursesPage() {
                             size="sm"
                             variant="outline"
                             disabled={togglePublish.isPending}
-                            onClick={() => togglePublish.mutate(course._id)}
+                            onClick={() => handlePublishClick(course)}
                             className="flex items-center gap-1"
                           >
                             {course.published ? (
@@ -195,18 +254,16 @@ export default function AdminCoursesPage() {
                               <><Eye className="w-3.5 h-3.5" /> Publică</>
                             )}
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              if (confirm(`Ești sigur că vrei să ștergi "${course.title}"?`)) {
-                                deleteCourse.mutate(course._id);
-                              }
-                            }}
-                            className="flex items-center gap-1 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" /> Șterge
-                          </Button>
+                          {deleteMode && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setDeleteTarget(course)}
+                              className="flex items-center gap-1 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Șterge
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -225,6 +282,30 @@ export default function AdminCoursesPage() {
           <Button variant="outline" size="sm" disabled={page === data.pages} onClick={() => setPage((p) => p + 1)}>Următor</Button>
         </div>
       )}
+
+      {/* Retrage dialog */}
+      <ConfirmDialog
+        open={!!retractTarget}
+        onOpenChange={(open) => { if (!open) setRetractTarget(null); }}
+        title="Retrage cursul din catalog?"
+        description={`„${retractTarget?.title}" va fi ascuns din marketplace. Studenții înscriși îl vor putea accesa în continuare, dar vor fi notificați că nu mai primesc actualizări.`}
+        confirmLabel="Retrage cursul"
+        confirmVariant="warning"
+        loading={togglePublish.isPending}
+        onConfirm={() => retractTarget && togglePublish.mutate(retractTarget._id)}
+      />
+
+      {/* Șterge dialog */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+        title="Șterge cursul definitiv?"
+        description={`„${deleteTarget?.title}" și tot conținutul său vor fi șterse permanent. Această acțiune este ireversibilă.`}
+        confirmLabel="Șterge definitiv"
+        confirmVariant="destructive"
+        loading={deleteCourse.isPending}
+        onConfirm={() => deleteTarget && deleteCourse.mutate(deleteTarget._id)}
+      />
     </motion.div>
   );
 }

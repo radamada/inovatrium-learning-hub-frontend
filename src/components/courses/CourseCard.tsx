@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Users, BookOpen, ArrowRight, Heart } from 'lucide-react';
@@ -26,13 +27,21 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
   const inCart = items.some((i) => i._id === course._id);
   const inWishlist = has(course._id);
 
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!user) {
       router.push('/login');
       return;
     }
-    await addItem(course._id);
+    if (isAddingToCart) return;
+    setIsAddingToCart(true);
+    try {
+      await addItem(course._id);
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
   const handleWishlist = async (e: React.MouseEvent) => {
@@ -61,7 +70,7 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
               alt={course.title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-cover object-left-top group-hover:scale-105 transition-transform duration-300"
               priority={priority}
             />
           ) : (
@@ -152,8 +161,9 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
               </button>
             ) : (
               <button
-                className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:gap-2 transition-all"
+                className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:gap-2 transition-all disabled:opacity-50"
                 onClick={handleAddToCart}
+                disabled={isAddingToCart}
               >
                 Detalii <ArrowRight className="w-3.5 h-3.5" />
               </button>

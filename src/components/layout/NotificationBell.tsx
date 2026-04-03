@@ -51,11 +51,11 @@ export default function NotificationBell() {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-full hover:bg-gray-100 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
         aria-label="Notificări"
         aria-expanded={open}
       >
-        <Bell className="w-5 h-5 text-gray-600" />
+        <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
         {unreadCount > 0 && (
           <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
             {unreadCount > 9 ? '9+' : unreadCount}
@@ -68,10 +68,10 @@ export default function NotificationBell() {
           {/* Overlay to close */}
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
 
-          <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border z-50 overflow-hidden">
+          <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border dark:border-gray-700 z-50 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
-              <span className="font-semibold text-sm text-gray-800">Notificări</span>
+            <div className="flex items-center justify-between px-4 py-3 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+              <span className="font-semibold text-sm text-gray-800 dark:text-white">Notificări</span>
               {unreadCount > 0 && (
                 <button
                   onClick={() => markAllRead.mutate()}
@@ -83,27 +83,27 @@ export default function NotificationBell() {
             </div>
 
             {/* List */}
-            <div className="max-h-[420px] overflow-y-auto divide-y">
+            <div className="max-h-[420px] overflow-y-auto divide-y dark:divide-gray-700">
               {notifications.length === 0 ? (
                 <div className="px-4 py-10 text-center">
-                  <Bell className="w-8 h-8 text-gray-200 mx-auto mb-2" />
-                  <p className="text-sm text-gray-400">Nicio notificare</p>
+                  <Bell className="w-8 h-8 text-gray-200 dark:text-gray-600 mx-auto mb-2" />
+                  <p className="text-sm text-gray-400 dark:text-gray-500">Nicio notificare</p>
                 </div>
               ) : (
                 notifications.map((n) => (
                   <div
                     key={n._id}
-                    className={`px-4 py-3 transition-colors ${n.read ? 'bg-white' : 'bg-indigo-50/50'}`}
+                    className={`px-4 py-3 transition-colors ${n.read ? 'bg-white dark:bg-gray-800' : 'bg-indigo-50/50 dark:bg-indigo-900/20'}`}
                   >
                     <div className="flex items-start gap-3">
                       <div className="mt-0.5">{typeIcon[n.type]}</div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm leading-snug ${n.read ? 'text-gray-700' : 'text-gray-900 font-medium'}`}>
+                        <p className={`text-sm leading-snug ${n.read ? 'text-gray-700 dark:text-gray-300' : 'text-gray-900 dark:text-white font-medium'}`}>
                           {n.title}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1 leading-relaxed">{n.message}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">{n.message}</p>
                         <div className="flex items-center justify-between mt-2">
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-gray-400 dark:text-gray-500">
                             {formatDistanceToNow(new Date(n.createdAt), { addSuffix: true, locale: ro })}
                           </p>
                           {!n.read && (

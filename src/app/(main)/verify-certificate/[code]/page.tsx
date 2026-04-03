@@ -29,45 +29,45 @@ export default function VerifyCertificatePage({ params }: { params: Promise<{ co
         {isError || !data?.valid ? (
           <>
             <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+              <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
                 <XCircle className="w-12 h-12 text-red-500" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Certificat invalid</h1>
-            <p className="text-gray-500 mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Certificat invalid</h1>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
               Certificatul nu a putut fi verificat. Codul poate fi incorect sau expirat.
             </p>
-            <Link href="/" className="text-indigo-600 hover:underline text-sm">
+            <Link href="/" className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm">
               Înapoi la platformă
             </Link>
           </>
         ) : (
           <>
             <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+              <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-12 h-12 text-green-500" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Certificat autentic</h1>
-            <p className="text-gray-500 mb-8">Acest certificat a fost emis de platforma EduInovatrium și este valid.</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Certificat autentic</h1>
+            <p className="text-gray-500 dark:text-gray-400 mb-8">Acest certificat a fost emis de platforma EduInovatrium și este valid.</p>
 
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border border-indigo-200 rounded-2xl p-6 text-left space-y-4 mb-8">
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-700 rounded-2xl p-6 text-left space-y-4 mb-8">
               <div className="flex items-center gap-3">
-                <GraduationCap className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+                <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide">Student</p>
-                  <p className="font-semibold text-gray-900">{data.studentName}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Student</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{data.studentName}</p>
                 </div>
               </div>
-              <div className="border-t border-indigo-100" />
+              <div className="border-t border-indigo-100 dark:border-indigo-800" />
               <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Curs absolvit</p>
-                <p className="font-semibold text-gray-900">{data.courseTitle}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Curs absolvit</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{data.courseTitle}</p>
               </div>
-              <div className="border-t border-indigo-100" />
+              <div className="border-t border-indigo-100 dark:border-indigo-800" />
               <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Data finalizării</p>
-                <p className="font-medium text-gray-700">
+                <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Data finalizării</p>
+                <p className="font-medium text-gray-700 dark:text-gray-300">
                   {new Date(data.completedAt).toLocaleDateString('ro-RO', {
                     day: 'numeric', month: 'long', year: 'numeric',
                   })}
@@ -77,7 +77,7 @@ export default function VerifyCertificatePage({ params }: { params: Promise<{ co
 
             <Link
               href={`/courses/${data.courseSlug}`}
-              className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:underline"
+              className="inline-flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
             >
               <GraduationCap className="w-4 h-4" />
               Vezi cursul pe platformă

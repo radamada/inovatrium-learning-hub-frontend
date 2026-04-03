@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Plus, Edit, Eye, EyeOff, BookOpen } from 'lucide-react';
@@ -7,6 +8,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
 
@@ -23,6 +25,7 @@ interface MyCourse {
 
 export default function InstructorCoursesPage() {
   const qc = useQueryClient();
+  const [retractTarget, setRetractTarget] = useState<MyCourse | null>(null);
 
   const { data: courses, isLoading } = useQuery<MyCourse[]>({
     queryKey: ['instructor-courses'],
@@ -34,9 +37,20 @@ export default function InstructorCoursesPage() {
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['instructor-courses'] });
       toast.success(res.data.published ? 'Curs publicat!' : 'Curs retras din catalog');
+      setRetractTarget(null);
     },
     onError: () => toast.error('Eroare la actualizarea statusului'),
   });
+
+  const handlePublishClick = (course: MyCourse) => {
+    if (course.published) {
+      // Retragere — arată dialog de confirmare
+      setRetractTarget(course);
+    } else {
+      // Publicare — direct, fără confirmare
+      togglePublish.mutate(course._id);
+    }
+  };
 
   return (
     <motion.div
@@ -106,7 +120,7 @@ export default function InstructorCoursesPage() {
                       size="sm"
                       variant="outline"
                       disabled={togglePublish.isPending}
-                      onClick={() => togglePublish.mutate(course._id)}
+                      onClick={() => handlePublishClick(course)}
                       className="flex items-center gap-1 h-7 text-xs"
                     >
                       {course.published ? (
@@ -168,7 +182,7 @@ export default function InstructorCoursesPage() {
                             size="sm"
                             variant="outline"
                             disabled={togglePublish.isPending}
-                            onClick={() => togglePublish.mutate(course._id)}
+                            onClick={() => handlePublishClick(course)}
                             className="flex items-center gap-1"
                           >
                             {course.published ? (
@@ -187,6 +201,17 @@ export default function InstructorCoursesPage() {
           </div>
         </>
       )}
+
+      <ConfirmDialog
+        open={!!retractTarget}
+        onOpenChange={(open) => { if (!open) setRetractTarget(null); }}
+        title="Retrage cursul din catalog?"
+        description={`„${retractTarget?.title}" va fi ascuns din marketplace. Studenții înscriși îl vor putea accesa în continuare, dar vor fi notificați că nu mai primesc actualizări.`}
+        confirmLabel="Retrage cursul"
+        confirmVariant="warning"
+        loading={togglePublish.isPending}
+        onConfirm={() => retractTarget && togglePublish.mutate(retractTarget._id)}
+      />
     </motion.div>
   );
 }

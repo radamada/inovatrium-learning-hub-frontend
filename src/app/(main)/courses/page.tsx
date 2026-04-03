@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { GraduationCap } from 'lucide-react';
@@ -40,6 +40,14 @@ const cardItem = {
 };
 
 export default function CoursesPage() {
+  return (
+    <Suspense fallback={null}>
+      <CoursesContent />
+    </Suspense>
+  );
+}
+
+function CoursesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useAuthStore();
@@ -201,7 +209,7 @@ export default function CoursesPage() {
               <CourseCard
                 course={course}
                 isEnrolled={enrollments?.includes(course._id) ?? false}
-                priority={idx === 0}
+                priority={idx < 3}
               />
             </motion.div>
           ))}

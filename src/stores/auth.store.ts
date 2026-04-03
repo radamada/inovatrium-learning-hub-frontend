@@ -9,6 +9,7 @@ interface AuthState {
   user: User | null;
   accessToken: string | null;
   isLoading: boolean;
+  isHydrated: boolean;
   setAuth: (user: User, token: string) => void;
   logout: () => Promise<void>;
   fetchMe: () => Promise<void>;
@@ -20,6 +21,7 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       accessToken: null,
       isLoading: false,
+      isHydrated: false,
 
       setAuth: (user, token) => {
         tokenStore.set(token);
@@ -52,7 +54,7 @@ export const useAuthStore = create<AuthState>()(
           tokenStore.clear();
           set({ user: null, accessToken: null });
         } finally {
-          set({ isLoading: false });
+          set({ isLoading: false, isHydrated: true });
         }
       },
     }),

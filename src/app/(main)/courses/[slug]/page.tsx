@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { use, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -47,6 +47,13 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
     setPreviewUrl('');
   };
 
+  useEffect(() => {
+    if (!previewLesson) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closePreview(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [previewLesson]);
+
   const { data: course, isLoading } = useQuery<Course>({
     queryKey: ['course', slug],
     queryFn: () => api.get(`/courses/${slug}`).then((r) => r.data),
@@ -62,9 +69,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
     queryKey: ['enrolled', course?._id, user?._id],
     enabled: !!user && !!course,
     queryFn: () =>
-      api.get('/enrollments').then((r) =>
-        r.data.some((e: any) => (e.courseId?._id ?? e.courseId) === course!._id && e.status === 'active'),
-      ),
+      api.get(`/enrollments/check/${course!._id}`).then((r) => r.data.enrolled),
   });
 
   const qc = useQueryClient();
@@ -254,6 +259,8 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                       key={s}
                       onClick={() => setReviewRating(s)}
                       className="focus:outline-none"
+                      aria-label={`${s} ${s === 1 ? 'stea' : 'stele'}`}
+                      aria-pressed={s <= reviewRating}
                     >
                       <Star
                         className={`w-6 h-6 ${
@@ -326,8 +333,8 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
         <div className="lg:col-span-1">
           <div className="sticky top-24 bg-white border rounded-2xl shadow-lg overflow-hidden">
             {course.thumbnail && (
-              <div className="relative h-48">
-                <Image src={course.thumbnail} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover" priority />
+              <div className="relative aspect-video">
+                <Image src={course.thumbnail} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover object-left-top" priority />
               </div>
             )}
             <div className="p-5">

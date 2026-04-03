@@ -6,9 +6,13 @@ const ADMIN_ROUTE = /^\/admin/;
 const INSTRUCTOR_ROUTE = /^\/instructor/;
 const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'];
 
+const VALID_ROLES = new Set(['student', 'instructor', 'admin']);
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const userRole = request.cookies.get('user_role')?.value;
+  const rawRole = request.cookies.get('user_role')?.value;
+  // Only trust roles that are in the known-valid set — prevents spoofing with arbitrary values
+  const userRole = rawRole && VALID_ROLES.has(rawRole) ? rawRole : undefined;
   const isAuthenticated = !!userRole;
 
   // Redirect authenticated users away from auth pages

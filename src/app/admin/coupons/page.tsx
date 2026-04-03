@@ -106,7 +106,14 @@ export default function AdminCouponsPage() {
   });
 
   const handleDelete = async (id: string, code: string) => {
-    if (!confirm(`Ștergi cuponul "${code}"?`)) return;
+    const confirmed = await new Promise<boolean>((resolve) => {
+      toast(`Ștergi cuponul "${code}"?`, {
+        action: { label: 'Șterge', onClick: () => resolve(true) },
+        cancel: { label: 'Anulează', onClick: () => resolve(false) },
+        duration: 8000,
+      });
+    });
+    if (!confirmed) return;
     setDeletingId(id);
     try {
       await api.delete(`/coupons/${id}`);

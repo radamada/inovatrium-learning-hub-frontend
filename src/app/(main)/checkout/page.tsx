@@ -29,15 +29,20 @@ function CheckoutForm({ orderId, onSuccess }: { orderId: string; onSuccess: () =
     if (!stripe || !elements) return;
 
     setIsProcessing(true);
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/dashboard?order=${orderId}`,
-      },
-    });
+    try {
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/dashboard?order=${orderId}`,
+        },
+      });
 
-    if (error) {
-      toast.error(error.message ?? 'Eroare la procesarea plății');
+      if (error) {
+        toast.error(error.message ?? 'Eroare la procesarea plății');
+        setIsProcessing(false);
+      }
+    } catch {
+      toast.error('Eroare la procesarea plății. Încearcă din nou.');
       setIsProcessing(false);
     }
   };

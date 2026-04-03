@@ -47,10 +47,13 @@ api.interceptors.response.use(
       }
 
       // Account blocked — don't attempt refresh, force logout immediately
-      if (error.response?.data?.message === 'ACCOUNT_BLOCKED') {
+      const msg = error.response?.data?.message;
+      if (msg === 'ACCOUNT_BLOCKED' || (typeof msg === 'string' && msg.includes('ACCOUNT_BLOCKED'))) {
         tokenStore.clear();
         await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true }).catch(() => {});
-        window.location.href = '/login';
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
         return Promise.reject(error);
       }
 
@@ -77,18 +80,37 @@ api.interceptors.response.use(
       } catch (err: any) {
         processQueue(err, null);
         tokenStore.clear();
-        // Don't redirect if already on an auth page (prevents loops)
-        const onAuthPage = window.location.pathname.match(/^\/(login|register|forgot-password|reset-password)/);
-        if (!onAuthPage) {
-          // Always call logout first so middleware cookie is cleared (prevents /login → /dashboard loop)
-          await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true }).catch(() => {});
-          window.location.href = '/login';
+        if (typeof window !== 'undefined') {
+          // Don't redirect if already on an auth page (prevents loops)
+          const onAuthPage = window.location.pathname.match(/^\/(login|register|forgot-password|reset-password)/);
+          if (!onAuthPage) {
+            // Always call logout first so middleware cookie is cleared (prevents /login → /dashboard loop)
+            await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true }).catch(() => {});
+            window.location.href = '/login';
+          }
         }
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
       }
     }
+    // Global 403 handler — role mismatch or forbidden
+    if (error.response?.status === 403) {
+      const msg403 = error.response?.data?.message;
+      if (typeof window !== 'undefined' && msg403) {
+        const { toast } = await import('sonner');
+        toast.error(typeof msg403 === 'string' ? msg403 : 'Nu ai permisiunea necesară');
+      }
+    }
+
+    // Global 429 handler — rate limiting
+    if (error.response?.status === 429) {
+      if (typeof window !== 'undefined') {
+        const { toast } = await import('sonner');
+        toast.error('Prea multe cereri. Te rugăm să aștepți câteva secunde.');
+      }
+    }
+
     return Promise.reject(error);
   },
 );

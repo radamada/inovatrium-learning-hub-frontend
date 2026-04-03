@@ -34,7 +34,15 @@ export default function AdminCategoriesPage() {
   });
 
   const handleDelete = async (id: string, catName: string) => {
-    if (!confirm(`Ștergi categoria "${catName}"? Cursurile asociate vor rămâne fără categorie.`)) return;
+    const confirmed = await new Promise<boolean>((resolve) => {
+      toast(`Ștergi categoria "${catName}"?`, {
+        description: 'Cursurile asociate vor rămâne fără categorie.',
+        action: { label: 'Șterge', onClick: () => resolve(true) },
+        cancel: { label: 'Anulează', onClick: () => resolve(false) },
+        duration: 8000,
+      });
+    });
+    if (!confirmed) return;
     setDeletingId(id);
     try {
       await api.delete(`/categories/${id}`);

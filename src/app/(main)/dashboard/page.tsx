@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
@@ -17,16 +17,26 @@ import { useAuthStore } from '@/stores/auth.store';
 import { motion } from 'framer-motion';
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={null}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
   const { user } = useAuthStore();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [downloadingCerts, setDownloadingCerts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!user) { router.push('/login?from=/dashboard'); return; }
     if (searchParams.get('success') === '1') {
       toast.success('🎉 Plată reușită! Cursurile sunt acum disponibile.');
+      router.replace('/dashboard', { scroll: false });
     }
-  }, [user]);
+  }, [user, searchParams, router]);
 
   const { data: enrollments, isLoading } = useQuery<Enrollment[]>({
     queryKey: ['enrollments', user?._id],
@@ -42,20 +52,7 @@ export default function DashboardPage() {
   const { data: curriculaMap } = useQuery<Record<string, number>>({
     queryKey: ['curricula-totals', courseIds.join(',')],
     enabled: courseIds.length > 0,
-    queryFn: async () => {
-      const results = await Promise.all(
-        courseIds.map((id) =>
-          api.get(`/courses/${id}/curriculum`).then((r) => ({
-            id,
-            total: r.data.reduce(
-              (sum: number, sec: any) => sum + (sec.lessons?.length ?? 0),
-              0,
-            ),
-          })),
-        ),
-      );
-      return Object.fromEntries(results.map(({ id, total }) => [id, total]));
-    },
+    queryFn: () => api.post('/courses/lesson-counts', { courseIds }).then((r) => r.data),
   });
 
   if (!user) return null;
@@ -230,7 +227,10 @@ export default function DashboardPage() {
                       </Button>
                       {enrollment.completedAt && (
                         <button
+                          disabled={downloadingCerts.has(courseId)}
                           onClick={async () => {
+                            if (downloadingCerts.has(courseId)) return;
+                            setDownloadingCerts((prev) => new Set(prev).add(courseId));
                             try {
                               const res = await api.get(`/enrollments/${courseId}/certificate`, { responseType: 'blob' });
                               const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
@@ -241,11 +241,13 @@ export default function DashboardPage() {
                               URL.revokeObjectURL(url);
                             } catch {
                               toast.error('Nu s-a putut genera certificatul');
+                            } finally {
+                              setDownloadingCerts((prev) => { const s = new Set(prev); s.delete(courseId); return s; });
                             }
                           }}
-                          className="flex items-center justify-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 hover:bg-indigo-50 rounded-md py-1.5 transition-colors"
+                          className="flex items-center justify-center gap-1.5 text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-indigo-200 hover:bg-indigo-50 rounded-md py-1.5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                          <Award className="w-3.5 h-3.5" /> Descarcă certificat
+                          <Award className="w-3.5 h-3.5" /> {downloadingCerts.has(courseId) ? 'Se generează...' : 'Descarcă certificat'}
                         </button>
                       )}
                     </div>

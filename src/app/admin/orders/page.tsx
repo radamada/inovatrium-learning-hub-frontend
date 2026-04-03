@@ -65,6 +65,7 @@ export default function AdminOrdersPage() {
   const [courseId, setCourseId]         = useState('');
   const [dateFrom, setDateFrom]         = useState('');
   const [dateTo, setDateTo]             = useState('');
+  const [confirmRefundId, setConfirmRefundId] = useState<string | null>(null);
 
   const setFilter = useCallback(
     (setter: (v: string) => void) => (v: string) => { setPage(1); setter(v); },
@@ -132,6 +133,7 @@ export default function AdminOrdersPage() {
   }
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -298,7 +300,7 @@ export default function AdminOrdersPage() {
                       <Button
                         variant="outline" size="sm"
                         className="text-xs h-7 text-red-600 border-red-300 hover:bg-red-50"
-                        onClick={() => { if (confirm('Ești sigur că vrei să rambursezi această comandă?')) refund.mutate(order._id); }}
+                        onClick={() => setConfirmRefundId(order._id)}
                       >
                         Rambursare
                       </Button>
@@ -366,7 +368,7 @@ export default function AdminOrdersPage() {
                             <Button
                               variant="outline" size="sm"
                               className="text-xs h-7 text-red-600 border-red-300 hover:bg-red-50"
-                              onClick={() => { if (confirm('Ești sigur că vrei să rambursezi această comandă?')) refund.mutate(order._id); }}
+                              onClick={() => setConfirmRefundId(order._id)}
                             >
                               Rambursare
                             </Button>
@@ -398,5 +400,23 @@ export default function AdminOrdersPage() {
         </div>
       )}
     </motion.div>
+
+    {/* Refund confirm dialog */}
+
+    {confirmRefundId && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setConfirmRefundId(null)}>
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+          <p className="font-semibold text-gray-900 dark:text-white mb-2">Confirmare rambursare</p>
+          <p className="text-sm text-gray-600 dark:text-slate-400 mb-5">Ești sigur că vrei să rambursezi această comandă? Acțiunea nu poate fi anulată.</p>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" size="sm" onClick={() => setConfirmRefundId(null)}>Anulează</Button>
+            <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white border-0" onClick={() => { refund.mutate(confirmRefundId); setConfirmRefundId(null); }}>
+              Rambursează
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
