@@ -445,7 +445,7 @@ export default function NewCoursePage() {
               <AlertTriangle className="w-5 h-5 text-amber-500" /> Curs atribuit contului tău
             </DialogTitle>
             <DialogDescription>
-              Nu ai selectat un instructor. Cursul va fi atribuit contului tău de admin, care nu este un cont de instructor.
+              Nu ai selectat un formator. Cursul va fi atribuit contului tău de admin, care nu este un cont de formator.
               Ești sigur că vrei să continui?
             </DialogDescription>
           </DialogHeader>

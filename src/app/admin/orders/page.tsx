@@ -31,7 +31,7 @@ const STATUSES = [
 function exportCsv(orders: any[], hasFilters: boolean) {
   const grandTotal = orders.reduce((sum, o) => sum + (o.total ?? 0), 0);
   const rows = [
-    ['Data', 'Student', 'Email Student', 'Cursuri', 'Instructor', 'Status', 'Total (RON)'],
+    ['Data', 'Student', 'Email Student', 'Cursuri', 'Formator', 'Status', 'Total (RON)'],
     ...orders.map((o) => [
       format(new Date(o.createdAt), 'dd.MM.yyyy HH:mm'),
       o.userId?.name ?? '—',
@@ -171,12 +171,12 @@ export default function AdminOrdersPage() {
               <SelectTrigger>
                 <SelectValue>
                   {instructorId
-                    ? (instructors.find((i: any) => i._id === instructorId)?.name ?? 'Instructor')
-                    : 'Toți instructorii'}
+                    ? (instructors.find((i: any) => i._id === instructorId)?.name ?? 'Formator')
+                    : 'Toți formatorii'}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Toți instructorii</SelectItem>
+                <SelectItem value="">Toți formatorii</SelectItem>
                 {instructors.map((i: any) => (
                   <SelectItem key={i._id} value={i._id}>{i.name}</SelectItem>
                 ))}
@@ -317,7 +317,7 @@ export default function AdminOrdersPage() {
                   <tr>
                     <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-slate-400">Utilizator</th>
                     <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-slate-400">Cursuri</th>
-                    <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-slate-400">Instructor</th>
+                    <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-slate-400">Formator</th>
                     <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-slate-400">Total</th>
                     <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-slate-400">Status</th>
                     <th className="px-4 py-3 text-left font-medium text-gray-600 dark:text-slate-400">Data</th>

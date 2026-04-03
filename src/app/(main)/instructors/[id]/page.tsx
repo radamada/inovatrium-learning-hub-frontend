@@ -59,7 +59,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
   if (isError || !data) {
     return (
       <div className="text-center py-20 text-gray-500">
-        Instructorul nu a fost găsit.
+        Formatorul nu a fost găsit.
       </div>
     );
   }

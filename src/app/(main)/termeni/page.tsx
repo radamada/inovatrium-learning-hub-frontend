@@ -27,7 +27,7 @@ export default function TermeniPage() {
             <li><strong>Platformă</strong> — website-ul și serviciile disponibile la adresa eduinovatrium.ro.</li>
             <li><strong>Utilizator</strong> — orice persoană care accesează Platforma, indiferent dacă are sau nu un cont.</li>
             <li><strong>Client</strong> — Utilizatorul care efectuează o Comandă și achiziționează unul sau mai multe Cursuri.</li>
-            <li><strong>Instructor</strong> — persoana care creează și publică conținut educațional pe Platformă, în baza unui acord cu EduInovatrium.</li>
+            <li><strong>Formator</strong> — persoana care creează și publică conținut educațional pe Platformă, în baza unui acord cu EduInovatrium.</li>
             <li><strong>Curs</strong> — un produs digital (conținut video, materiale, exerciții) disponibil spre achiziție pe Platformă.</li>
             <li><strong>Comandă</strong> — solicitarea electronică prin care Clientul achiziționează unul sau mai multe Cursuri.</li>
             <li><strong>Contract</strong> — Comanda confirmată de EduInovatrium, prin care Clientul dobândește acces la Cursurile achiziționate.</li>
@@ -40,7 +40,7 @@ export default function TermeniPage() {
           <p>
             EduInovatrium este o platformă online de educație care permite Utilizatorilor să acceseze
             cursuri video preînregistrate, materiale de studiu și resurse educaționale create de
-            Instructori verificați. Platforma oferă acces la conținut digital și nu implică livrarea
+            Formatori verificați. Platforma oferă acces la conținut digital și nu implică livrarea
             unor produse fizice.
           </p>
           <p className="mt-2">
@@ -139,7 +139,7 @@ export default function TermeniPage() {
           <p>
             Tot conținutul disponibil pe EduInovatrium — inclusiv cursuri video, texte, imagini,
             logo-uri, materiale grafice și denumiri comerciale — este protejat de drepturile de autor
-            și aparține EduInovatrium sau Instructorilor licențiatori, conform Legii nr. 8/1996
+            și aparține EduInovatrium sau Formatorilor licențiatori, conform Legii nr. 8/1996
             privind dreptul de autor și drepturile conexe.
           </p>
           <p className="mt-2">
