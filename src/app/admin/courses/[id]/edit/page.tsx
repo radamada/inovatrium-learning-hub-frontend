@@ -572,16 +572,21 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
             {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId.message}</p>}
           </div>
 
-          <div className="flex gap-3">
-            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 flex-1" disabled={isSubmitting}>
-              {isSubmitting ? 'Se salvează...' : 'Salvează și continuă →'}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setStep('curriculum')}
-            >
-              Sari la Curriculum
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-3">
+              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 flex-1" disabled={isSubmitting}>
+                {isSubmitting ? 'Se salvează...' : 'Salvează și continuă →'}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setStep('curriculum')}
+              >
+                Sari la Curriculum
+              </Button>
+            </div>
+            <Button type="button" variant="outline" onClick={() => router.push('/admin/courses')} className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40">
+              Renunță la editare
             </Button>
           </div>
         </form>
@@ -711,27 +716,35 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
             <Plus className="w-4 h-4 mr-2" /> Adaugă secțiune
           </Button>
 
-          <div className="flex gap-3 pt-4">
-            {course?.published ? (
-              <Button
-                onClick={() => saveCurriculum(false)}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-              >
-                Salvează modificările
+          <div className="flex flex-col gap-2 pt-4">
+            <div className="flex gap-3">
+              <Button type="button" variant="outline" onClick={() => setStep('info')} className="flex-1">
+                ← Informații
               </Button>
-            ) : (
-              <>
-                <Button variant="outline" onClick={() => saveCurriculum(false)} className="flex-1">
-                  Salvează draft
-                </Button>
+              {course?.published ? (
                 <Button
-                  onClick={() => saveCurriculum(true)}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  onClick={() => saveCurriculum(false)}
+                  className="flex-[2] bg-indigo-600 hover:bg-indigo-700"
                 >
-                  Publică cursul
+                  Salvează modificările
                 </Button>
-              </>
-            )}
+              ) : (
+                <>
+                  <Button variant="outline" onClick={() => saveCurriculum(false)} className="flex-1">
+                    Salvează draft
+                  </Button>
+                  <Button
+                    onClick={() => saveCurriculum(true)}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    Publică cursul
+                  </Button>
+                </>
+              )}
+            </div>
+            <Button type="button" variant="outline" onClick={() => router.push('/admin/courses')} className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40">
+              Renunță la editare
+            </Button>
           </div>
         </div>
       )}
