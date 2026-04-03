@@ -548,7 +548,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                 Sari la Curriculum
               </Button>
             </div>
-            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')} className="w-full">
+            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')} className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40">
               Renunță la editare
             </Button>
           </div>
@@ -677,7 +677,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                 </Button>
               </>
             )}
-            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')}>
+            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')} className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40">
               Renunță la editare
             </Button>
           </div>
