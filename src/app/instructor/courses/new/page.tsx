@@ -62,10 +62,12 @@ export default function InstructorNewCoursePage() {
     queryFn: () => api.get('/categories').then((r) => r.data),
   });
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, watch } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
     defaultValues: { language: 'ro' },
   });
+  const watchedLevel = watch('level');
+  const watchedCategoryId = watch('categoryId');
 
   const uploadThumbnail = async (file: File) => {
     setUploadingThumb(true);
@@ -301,9 +303,14 @@ export default function InstructorNewCoursePage() {
             </div>
             <div>
               <Label>Nivel *</Label>
-              <Select onValueChange={(v) => setValue('level', v as string)}>
+              <Select value={watchedLevel ?? ''} onValueChange={(v) => setValue('level', v as string)}>
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Selectează nivel" />
+                  <SelectValue>
+                    {watchedLevel === 'beginner' ? 'Începător'
+                      : watchedLevel === 'intermediate' ? 'Intermediar'
+                      : watchedLevel === 'advanced' ? 'Avansat'
+                      : 'Selectează nivel'}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="beginner">Începător</SelectItem>
@@ -317,9 +324,11 @@ export default function InstructorNewCoursePage() {
 
           <div>
             <Label>Categorie *</Label>
-            <Select onValueChange={(v) => setValue('categoryId', v as string)}>
+            <Select value={watchedCategoryId ?? ''} onValueChange={(v) => setValue('categoryId', v as string)}>
               <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Selectează categorie" />
+                <SelectValue>
+                  {categories?.find((c) => c._id === watchedCategoryId)?.name ?? 'Selectează categorie'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {categories?.map((c) => (

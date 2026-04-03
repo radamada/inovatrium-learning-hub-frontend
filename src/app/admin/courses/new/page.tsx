@@ -82,10 +82,12 @@ export default function NewCoursePage() {
   });
   const instructors = instructorsData?.users ?? [];
 
-  const { register, handleSubmit, formState: { errors, isSubmitting }, getValues, setValue } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors, isSubmitting }, getValues, setValue, watch } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
     defaultValues: { language: 'ro' },
   });
+  const watchedLevel = watch('level');
+  const watchedCategoryId = watch('categoryId');
 
   const uploadThumbnail = async (file: File) => {
     setUploadingThumb(true);
@@ -365,9 +367,14 @@ export default function NewCoursePage() {
             </div>
             <div>
               <Label>Nivel *</Label>
-              <Select onValueChange={(v) => setValue('level', v as string)}>
+              <Select value={watchedLevel ?? ''} onValueChange={(v) => setValue('level', v as string)}>
                 <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Selectează nivel" />
+                  <SelectValue>
+                    {watchedLevel === 'beginner' ? 'Începător'
+                      : watchedLevel === 'intermediate' ? 'Intermediar'
+                      : watchedLevel === 'advanced' ? 'Avansat'
+                      : 'Selectează nivel'}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="beginner">Începător</SelectItem>
@@ -381,9 +388,11 @@ export default function NewCoursePage() {
 
           <div>
             <Label>Categorie *</Label>
-            <Select onValueChange={(v) => setValue('categoryId', v as string)}>
+            <Select value={watchedCategoryId ?? ''} onValueChange={(v) => setValue('categoryId', v as string)}>
               <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Selectează categorie" />
+                <SelectValue>
+                  {categories?.find((c) => c._id === watchedCategoryId)?.name ?? 'Selectează categorie'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {categories?.map((c) => (
@@ -396,9 +405,18 @@ export default function NewCoursePage() {
 
           <div>
             <Label>Formator</Label>
-            <Select onValueChange={(v) => setSelectedInstructorId(!v || v === '__none__' ? '' : v as string)}>
+            <Select
+              value={selectedInstructorId || '__none__'}
+              onValueChange={(v) => setSelectedInstructorId(!v || v === '__none__' ? '' : v as string)}
+            >
               <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Atribuie unui formator (opțional)" />
+                <SelectValue>
+                  {selectedInstructorId
+                    ? (instructors.find((i) => i._id === selectedInstructorId)
+                        ? `${instructors.find((i) => i._id === selectedInstructorId)!.name} (${instructors.find((i) => i._id === selectedInstructorId)!.email})`
+                        : 'Formator')
+                    : '— Neatribuit (contul adminului) —'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">— Neatribuit (contul adminului) —</SelectItem>
