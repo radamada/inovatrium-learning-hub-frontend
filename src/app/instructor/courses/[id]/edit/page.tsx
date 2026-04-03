@@ -546,6 +546,9 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
             <Button type="button" variant="outline" onClick={() => setStep('curriculum')}>
               Sari la Curriculum
             </Button>
+            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')}>
+              ← Renunță
+            </Button>
           </div>
         </form>
       )}
@@ -652,6 +655,9 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
           </Button>
 
           <div className="flex gap-3 pt-4">
+            <Button type="button" variant="outline" onClick={() => setStep('info')}>
+              ← Informații
+            </Button>
             {course?.published ? (
               <Button
                 onClick={() => saveCurriculum(false)}
@@ -669,6 +675,9 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                 </Button>
               </>
             )}
+            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')}>
+              ← Renunță
+            </Button>
           </div>
         </div>
       )}
