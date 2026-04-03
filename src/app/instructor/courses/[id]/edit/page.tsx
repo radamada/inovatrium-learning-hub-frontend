@@ -658,13 +658,13 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
 
           <div className="flex flex-col gap-2 pt-4">
             <div className="flex gap-3">
-              <Button type="button" variant="outline" onClick={() => setStep('info')}>
+              <Button type="button" variant="outline" onClick={() => setStep('info')} className="flex-1">
                 ← Informații
               </Button>
               {course?.published ? (
                 <Button
                   onClick={() => saveCurriculum(false)}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 max-w-xs"
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
                 >
                   Salvează modificările
                 </Button>
