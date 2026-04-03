@@ -29,6 +29,7 @@ const STATUSES = [
 ];
 
 function exportCsv(orders: any[], hasFilters: boolean) {
+  const grandTotal = orders.reduce((sum, o) => sum + (o.total ?? 0), 0);
   const rows = [
     ['Data', 'Student', 'Email Student', 'Cursuri', 'Instructor', 'Status', 'Total (RON)'],
     ...orders.map((o) => [
@@ -40,6 +41,8 @@ function exportCsv(orders: any[], hasFilters: boolean) {
       statusLabel[o.status]?.label ?? o.status,
       (o.total ?? 0).toFixed(2),
     ]),
+    [],
+    ['', '', '', '', '', `TOTAL (${orders.length} comenzi)`, grandTotal.toFixed(2)],
   ];
   const csv = rows
     .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))

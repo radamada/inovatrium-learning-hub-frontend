@@ -32,6 +32,7 @@ function maskEmail(email: string): string {
 }
 
 function exportCsv(orders: any[], hasFilters: boolean) {
+  const totalRevenue = orders.reduce((sum, o) => sum + (o.myRevenue ?? 0), 0);
   const rows = [
     ['Data', 'Student', 'Email', 'Cursuri', 'Status', 'Venit (RON)'],
     ...orders.map((o) => [
@@ -42,6 +43,8 @@ function exportCsv(orders: any[], hasFilters: boolean) {
       statusLabel[o.status]?.label ?? o.status,
       (o.myRevenue ?? 0).toFixed(2),
     ]),
+    [],
+    ['', '', '', '', `TOTAL (${orders.length} comenzi)`, totalRevenue.toFixed(2)],
   ];
   const csv = rows
     .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
