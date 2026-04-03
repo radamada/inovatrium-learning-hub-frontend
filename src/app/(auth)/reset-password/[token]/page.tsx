@@ -14,7 +14,7 @@ import api from '@/lib/api';
 
 const schema = z
   .object({
-    password: z.string().min(6, 'Minim 6 caractere'),
+    password: z.string().min(8, 'Minim 8 caractere').max(72, 'Maxim 72 caractere').regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Parola trebuie să conțină cel puțin o literă mare, o literă mică și o cifră'),
     confirm: z.string(),
   })
   .refine((d) => d.password === d.confirm, {

@@ -17,11 +17,9 @@ const schema = z.object({
   firstName: z.string().min(2, 'Minim 2 caractere'),
   lastName: z.string().min(2, 'Minim 2 caractere'),
   email: z.string().email('Email invalid'),
-  password: z.string().min(6, 'Minim 6 caractere'),
+  password: z.string().min(8, 'Minim 8 caractere').max(72, 'Maxim 72 caractere').regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Parola trebuie să conțină cel puțin o literă mare, o literă mică și o cifră'),
   confirmPassword: z.string(),
-  termsAccepted: z.literal(true, {
-    errorMap: () => ({ message: 'Trebuie să accepți Termenii și Condițiile' }),
-  }),
+  termsAccepted: z.literal(true, { message: 'Trebuie să accepți Termenii și Condițiile' }),
 }).refine((d) => d.password === d.confirmPassword, {
   message: 'Parolele nu coincid',
   path: ['confirmPassword'],
