@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select';
@@ -12,14 +13,26 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
+import { Search, X } from 'lucide-react';
 
 export default function AdminUsersPage() {
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+
+  const handleSearch = useCallback((value: string) => {
+    setSearch(value);
+    setPage(1);
+  }, []);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-users', page],
-    queryFn: () => api.get(`/admin/users?page=${page}&limit=20`).then((r) => r.data),
+    queryKey: ['admin-users', page, search],
+    queryFn: () => {
+      const params: Record<string, any> = { page, limit: 20 };
+      if (search) params.search = search;
+      return api.get('/admin/users', { params }).then((r) => r.data);
+    },
   });
 
   const setRole = useMutation({
@@ -60,7 +73,44 @@ export default function AdminUsersPage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: 'easeOut' }}
     >
-      <h1 className="text-2xl font-bold mb-6">Utilizatori</h1>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Utilizatori</h1>
+        {data?.total > 0 && (
+          <span className="text-sm text-gray-400 dark:text-slate-500">
+            {data.total} {search ? 'rezultate' : 'total'}
+          </span>
+        )}
+      </div>
+
+      {/* Search */}
+      <div className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-4 mb-5">
+        <form
+          onSubmit={(e) => { e.preventDefault(); handleSearch(searchInput); }}
+          className="flex gap-2"
+        >
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-slate-500" />
+            <Input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Caută după email..."
+              className="pl-9"
+            />
+          </div>
+          <Button type="submit" size="sm" className="px-4">Caută</Button>
+          {search && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => { setSearchInput(''); handleSearch(''); }}
+              className="flex items-center gap-1.5 text-gray-400 hover:text-red-500 border-gray-200 dark:border-slate-700"
+            >
+              <X className="w-3.5 h-3.5" /> Resetează
+            </Button>
+          )}
+        </form>
+      </div>
 
       {/* Mobile cards */}
       <div className="md:hidden space-y-3">
@@ -179,7 +229,7 @@ export default function AdminUsersPage() {
       {data?.pages > 1 && (
         <div className="flex justify-center gap-2 mt-4">
           <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>Înapoi</Button>
-          <span className="flex items-center px-3 text-sm">{page} / {data.pages}</span>
+          <span className="flex items-center px-3 text-sm text-gray-600 dark:text-slate-400">{page} / {data.pages}</span>
           <Button variant="outline" size="sm" disabled={page === data.pages} onClick={() => setPage((p) => p + 1)}>Următor</Button>
         </div>
       )}

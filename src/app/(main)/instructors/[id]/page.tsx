@@ -84,6 +84,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
               src={instructor.avatar}
               alt={instructor.name}
               fill
+              sizes="(max-width: 768px) 96px, 128px"
               className="rounded-full object-cover"
             />
           ) : (

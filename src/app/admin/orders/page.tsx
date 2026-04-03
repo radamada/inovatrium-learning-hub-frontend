@@ -123,8 +123,12 @@ export default function AdminOrdersPage() {
   }
 
   async function handleExportCsv() {
-    const res = await api.get('/admin/orders', { params: buildParams(1000) });
-    exportCsv(res.data.orders, hasFilters);
+    try {
+      const res = await api.get('/admin/orders', { params: buildParams(1000) });
+      exportCsv(res.data.orders, hasFilters);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? 'Eroare la exportul CSV');
+    }
   }
 
   return (

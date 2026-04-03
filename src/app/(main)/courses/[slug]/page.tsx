@@ -26,6 +26,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [previewLesson, setPreviewLesson] = useState<Lesson | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>('');
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const openPreview = async (lesson: Lesson) => {
     if (!lesson.cdnVideoId) {
@@ -76,11 +77,12 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
     queryFn: () => api.get(`/courses/${course!._id}/also-bought`).then((r) => r.data),
   });
 
-  const { data: reviews } = useQuery<Review[]>({
+  const { data: reviewsData } = useQuery<{ reviews: Review[]; total: number }>({
     queryKey: ['reviews', course?._id],
     enabled: !!course,
     queryFn: () => api.get(`/reviews/${course!._id}`).then((r) => r.data),
   });
+  const reviews = reviewsData?.reviews;
 
   const submitReview = useMutation({
     mutationFn: () =>
@@ -123,8 +125,6 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
       return next;
     });
   };
-
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   const handleAddToCart = async () => {
     if (!user) { router.push('/login'); return; }
@@ -327,7 +327,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
           <div className="sticky top-24 bg-white border rounded-2xl shadow-lg overflow-hidden">
             {course.thumbnail && (
               <div className="relative h-48">
-                <Image src={course.thumbnail} alt={course.title} fill className="object-cover" />
+                <Image src={course.thumbnail} alt={course.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover" priority />
               </div>
             )}
             <div className="p-5">
@@ -390,7 +390,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
               <Link key={c._id} href={`/courses/${c.slug}`} className="bg-white border rounded-xl overflow-hidden hover:shadow-md transition group">
                 {c.thumbnail && (
                   <div className="relative h-36">
-                    <Image src={c.thumbnail} alt={c.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <Image src={c.thumbnail} alt={c.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw" className="object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                 )}
                 <div className="p-3">

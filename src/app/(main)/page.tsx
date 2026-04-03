@@ -249,14 +249,15 @@ export default function HomePage() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
             variants={cardStagger}
             initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.1 }}
+            animate="show"
+            key={JSON.stringify(params)}
           >
-            {courses.map((course) => (
+            {courses.map((course, idx) => (
               <motion.div key={course._id} variants={cardItem}>
                 <CourseCard
                   course={course}
                   isEnrolled={enrollments?.includes(course._id) ?? false}
+                  priority={idx === 0}
                 />
               </motion.div>
             ))}

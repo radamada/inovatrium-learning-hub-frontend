@@ -196,11 +196,12 @@ export default function CoursesPage() {
           animate="show"
           key={JSON.stringify(params)}
         >
-          {courses.map((course) => (
+          {courses.map((course, idx) => (
             <motion.div key={course._id} variants={cardItem}>
               <CourseCard
                 course={course}
                 isEnrolled={enrollments?.includes(course._id) ?? false}
+                priority={idx === 0}
               />
             </motion.div>
           ))}

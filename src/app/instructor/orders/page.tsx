@@ -37,7 +37,9 @@ function exportCsv(orders: any[], hasFilters: boolean) {
     ['Data', 'Student', 'Email', 'Cursuri', 'Status', 'Venit (RON)'],
     ...orders.map((o) => [
       new Date(o.createdAt).toLocaleDateString('ro-RO'),
-      o.userId?.name ?? 'Student',
+      o.userId?.name
+        ? o.userId.name.split(' ')[0] + ' ' + (o.userId.name.split(' ')[1]?.[0] ?? '') + '.'
+        : 'Student',
       o.userId?.email ? maskEmail(o.userId.email) : '',
       o.items.map((i: any) => i.title).join(' | '),
       statusLabel[o.status]?.label ?? o.status,

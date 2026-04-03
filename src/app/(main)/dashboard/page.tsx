@@ -163,7 +163,7 @@ export default function DashboardPage() {
               >
                 <div className="relative h-40 bg-indigo-50">
                   {course?.thumbnail ? (
-                    <Image src={course.thumbnail} alt={course.title} fill className="object-cover" />
+                    <Image src={course.thumbnail} alt={course.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <BookOpen className="w-10 h-10 text-indigo-200" />

@@ -51,6 +51,7 @@ export default function CartSheet({ open, onClose }: CartSheetProps) {
                       src={item.thumbnail}
                       alt={item.title}
                       fill
+                      sizes="64px"
                       className="object-cover"
                     />
                   ) : (
