@@ -161,7 +161,11 @@ export default function AdminOrdersPage() {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Toți instructorii" />
+                <SelectValue>
+                  {instructorId
+                    ? (instructors.find((i: any) => i._id === instructorId)?.name ?? 'Instructor')
+                    : 'Toți instructorii'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Toți instructorii</SelectItem>
@@ -176,7 +180,11 @@ export default function AdminOrdersPage() {
           <div className="flex-1">
             <Select value={courseId} onValueChange={setFilter(setCourseId) as any}>
               <SelectTrigger>
-                <SelectValue placeholder="Toate cursurile" />
+                <SelectValue>
+                  {courseId
+                    ? (courses.find((c: any) => c._id === courseId)?.title ?? 'Curs')
+                    : 'Toate cursurile'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Toate cursurile</SelectItem>
