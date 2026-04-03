@@ -549,7 +549,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
               </Button>
             </div>
             <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')} className="w-full">
-              ← Renunță la editare
+              Renunță la editare
             </Button>
           </div>
         </form>
@@ -678,7 +678,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
               </>
             )}
             <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')}>
-              ← Renunță
+              Renunță la editare
             </Button>
           </div>
         </div>
