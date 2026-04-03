@@ -539,15 +539,17 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
             {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId.message}</p>}
           </div>
 
-          <div className="flex gap-3">
-            <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 flex-1" disabled={isSubmitting}>
-              {isSubmitting ? 'Se salvează...' : 'Salvează și continuă →'}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => setStep('curriculum')}>
-              Sari la Curriculum
-            </Button>
-            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')}>
-              ← Renunță
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-3">
+              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 flex-1" disabled={isSubmitting}>
+                {isSubmitting ? 'Se salvează...' : 'Salvează și continuă →'}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => setStep('curriculum')}>
+                Sari la Curriculum
+              </Button>
+            </div>
+            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')} className="w-full">
+              ← Renunță la editare
             </Button>
           </div>
         </form>
