@@ -131,7 +131,11 @@ export default function InstructorOrdersPage() {
           <div className="flex-1">
             <Select value={courseId} onValueChange={(v) => setCourseId(v as string)}>
               <SelectTrigger>
-                <SelectValue placeholder="Toate cursurile" />
+                <SelectValue>
+                  {courseId
+                    ? (courses.find((c: any) => c._id === courseId)?.title ?? 'Curs')
+                    : 'Toate cursurile'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Toate cursurile</SelectItem>
@@ -146,7 +150,11 @@ export default function InstructorOrdersPage() {
           <div className="w-full sm:w-48">
             <Select value={status} onValueChange={(v) => setStatus(v as string)}>
               <SelectTrigger>
-                <SelectValue placeholder="Toate statusurile" />
+                <SelectValue>
+                  {status
+                    ? (STATUSES.find((s) => s.value === status)?.label ?? status)
+                    : 'Toate statusurile'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Toate statusurile</SelectItem>

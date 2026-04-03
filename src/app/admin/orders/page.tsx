@@ -199,7 +199,11 @@ export default function AdminOrdersPage() {
           <div className="w-full sm:w-44">
             <Select value={status} onValueChange={setFilter(setStatus) as any}>
               <SelectTrigger>
-                <SelectValue placeholder="Toate statusurile" />
+                <SelectValue>
+                  {status
+                    ? (STATUSES.find((s) => s.value === status)?.label ?? status)
+                    : 'Toate statusurile'}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Toate statusurile</SelectItem>
