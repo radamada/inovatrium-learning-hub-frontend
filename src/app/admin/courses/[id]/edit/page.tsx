@@ -25,8 +25,8 @@ const schema = z.object({
   title: z.string().min(3, 'Minim 3 caractere'),
   description: z.string().min(10, 'Minim 10 caractere'),
   price: z.coerce.number().min(0),
-  categoryId: z.string().optional(),
-  level: z.string().optional(),
+  categoryId: z.string({ error: 'Categoria este obligatorie' }).min(1, 'Categoria este obligatorie'),
+  level: z.string({ error: 'Nivelul este obligatoriu' }).min(1, 'Nivelul este obligatoriu'),
   language: z.string().default('ro'),
 });
 type FormData = z.infer<typeof schema>;
@@ -59,6 +59,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const [uploadingThumb, setUploadingThumb] = useState(false);
   const [deletingThumb, setDeletingThumb] = useState(false);
+  const [thumbnailError, setThumbnailError] = useState('');
   const [publishingChanges, setPublishingChanges] = useState(false);
   const [discardingChanges, setDiscardingChanges] = useState(false);
   const [curriculumInitialized, setCurriculumInitialized] = useState(false);
@@ -164,6 +165,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setThumbnailUrl(data.url);
+      setThumbnailError('');
       toast.success('Thumbnail încărcat!');
     } catch {
       toast.error('Eroare la încărcarea thumbnail-ului');
@@ -199,6 +201,11 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
   };
 
   const onSubmitInfo = async (data: FormData) => {
+    if (!thumbnailUrl) {
+      setThumbnailError('Thumbnail-ul este obligatoriu');
+      return;
+    }
+    setThumbnailError('');
     try {
       await api.patch(`/admin/courses/${id}`, { ...data, thumbnail: thumbnailUrl || undefined });
       setInfoSaved(true);
@@ -462,7 +469,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
           </div>
 
           <div>
-            <Label>Thumbnail</Label>
+            <Label>Thumbnail *</Label>
             <div className="mt-1 flex items-start gap-4">
               {thumbnailUrl ? (
                 <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200">
@@ -510,6 +517,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
               )}
               <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP. Max 5MB.<br />Recomandat: 1280×720px</p>
             </div>
+            {thumbnailError && <p className="text-red-500 text-xs mt-1">{thumbnailError}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -526,8 +534,8 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
               {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
             </div>
             <div>
-              <Label>Nivel</Label>
-              <Select value={watchedLevel ?? ''} onValueChange={(v) => setValue('level', v)}>
+              <Label>Nivel *</Label>
+              <Select value={watchedLevel ?? ''} onValueChange={(v) => setValue('level', v ?? '')}>
                 <SelectTrigger className="mt-1">
                   <span>
                     {watchedLevel === 'beginner' ? 'Începător'
@@ -542,12 +550,13 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                   <SelectItem value="advanced">Avansat</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.level && <p className="text-red-500 text-xs mt-1">{String(errors.level.message)}</p>}
             </div>
           </div>
 
           <div>
-            <Label>Categorie</Label>
-            <Select value={watchedCategoryId ?? ''} onValueChange={(v) => setValue('categoryId', v)}>
+            <Label>Categorie *</Label>
+            <Select value={watchedCategoryId ?? ''} onValueChange={(v) => setValue('categoryId', v ?? '')}>
               <SelectTrigger className="mt-1">
                 <span>
                   {categories?.find((c) => c._id === watchedCategoryId)?.name ?? 'Selectează categorie'}
@@ -559,6 +568,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
                 ))}
               </SelectContent>
             </Select>
+            {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId.message}</p>}
           </div>
 
           <div className="flex gap-3">

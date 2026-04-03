@@ -25,8 +25,8 @@ const schema = z.object({
   title: z.string().min(3, 'Minim 3 caractere'),
   description: z.string().min(10, 'Minim 10 caractere'),
   price: z.coerce.number().min(0),
-  categoryId: z.string().optional(),
-  level: z.string().optional(),
+  categoryId: z.string({ error: 'Categoria este obligatorie' }).min(1, 'Categoria este obligatorie'),
+  level: z.string({ error: 'Nivelul este obligatoriu' }).min(1, 'Nivelul este obligatoriu'),
   language: z.string().default('ro'),
 });
 type FormData = z.infer<typeof schema>;
@@ -55,6 +55,7 @@ export default function InstructorNewCoursePage() {
   const [thumbnailUrl, setThumbnailUrl] = useState<string>('');
   const [uploadingThumb, setUploadingThumb] = useState(false);
   const [deletingThumb, setDeletingThumb] = useState(false);
+  const [thumbnailError, setThumbnailError] = useState('');
 
   const { data: categories } = useQuery<Category[]>({
     queryKey: ['categories'],
@@ -75,6 +76,7 @@ export default function InstructorNewCoursePage() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setThumbnailUrl(data.url);
+      setThumbnailError('');
       toast.success('Thumbnail încărcat!');
     } catch {
       toast.error('Eroare la încărcarea thumbnail-ului');
@@ -84,6 +86,11 @@ export default function InstructorNewCoursePage() {
   };
 
   const onSubmitInfo = async (data: FormData) => {
+    if (!thumbnailUrl) {
+      setThumbnailError('Thumbnail-ul este obligatoriu');
+      return;
+    }
+    setThumbnailError('');
     try {
       const res = await api.post('/instructor/courses', { ...data, thumbnail: thumbnailUrl || undefined });
       setCourseId(res.data._id);
@@ -235,7 +242,7 @@ export default function InstructorNewCoursePage() {
           </div>
 
           <div>
-            <Label>Thumbnail</Label>
+            <Label>Thumbnail *</Label>
             <div className="mt-1 flex items-start gap-4">
               {thumbnailUrl ? (
                 <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200">
@@ -283,6 +290,7 @@ export default function InstructorNewCoursePage() {
               )}
               <p className="text-xs text-gray-400 mt-1">JPG, PNG, WebP. Max 5MB.<br />Recomandat: 1280×720px</p>
             </div>
+            {thumbnailError && <p className="text-red-500 text-xs mt-1">{thumbnailError}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -292,8 +300,8 @@ export default function InstructorNewCoursePage() {
               {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
             </div>
             <div>
-              <Label>Nivel</Label>
-              <Select onValueChange={(v) => setValue('level', v)}>
+              <Label>Nivel *</Label>
+              <Select onValueChange={(v) => setValue('level', v as string)}>
                 <SelectTrigger className="mt-1">
                   <SelectValue placeholder="Selectează nivel" />
                 </SelectTrigger>
@@ -303,12 +311,13 @@ export default function InstructorNewCoursePage() {
                   <SelectItem value="advanced">Avansat</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.level && <p className="text-red-500 text-xs mt-1">{String(errors.level.message)}</p>}
             </div>
           </div>
 
           <div>
-            <Label>Categorie</Label>
-            <Select onValueChange={(v) => setValue('categoryId', v)}>
+            <Label>Categorie *</Label>
+            <Select onValueChange={(v) => setValue('categoryId', v as string)}>
               <SelectTrigger className="mt-1">
                 <SelectValue placeholder="Selectează categorie" />
               </SelectTrigger>
@@ -318,6 +327,7 @@ export default function InstructorNewCoursePage() {
                 ))}
               </SelectContent>
             </Select>
+            {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId.message}</p>}
           </div>
 
           <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 w-full" disabled={isSubmitting}>
