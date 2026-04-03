@@ -83,9 +83,10 @@ export default function InstructorOrdersPage() {
       api.get('/instructor/orders', { params: buildParams() }).then((r) => r.data),
   });
 
-  const orders  = data?.orders  ?? [];
-  const courses = data?.courses ?? [];
-  const total   = data?.total   ?? 0;
+  const orders           = data?.orders           ?? [];
+  const courses          = data?.courses          ?? [];
+  const total            = data?.total            ?? 0;
+  const availableStatuses: string[] = data?.availableStatuses ?? [];
 
   const hasFilters = !!(status || courseId || dateFrom || dateTo);
 
@@ -158,7 +159,7 @@ export default function InstructorOrdersPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Toate statusurile</SelectItem>
-                {STATUSES.map((s) => (
+                {STATUSES.filter((s) => availableStatuses.length === 0 || availableStatuses.includes(s.value)).map((s) => (
                   <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                 ))}
               </SelectContent>

@@ -109,8 +109,9 @@ export default function AdminOrdersPage() {
     onError: (err: any) => toast.error(err?.response?.data?.message ?? 'Eroare la rambursare'),
   });
 
-  const orders = data?.orders ?? [];
-  const total  = data?.total  ?? 0;
+  const orders           = data?.orders           ?? [];
+  const total            = data?.total            ?? 0;
+  const availableStatuses: string[] = data?.availableStatuses ?? [];
   const hasFilters = !!(status || instructorId || courseId || dateFrom || dateTo);
 
   function resetFilters() {
@@ -207,7 +208,7 @@ export default function AdminOrdersPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="">Toate statusurile</SelectItem>
-                {STATUSES.map((s) => (
+                {STATUSES.filter((s) => availableStatuses.length === 0 || availableStatuses.includes(s.value)).map((s) => (
                   <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                 ))}
               </SelectContent>
