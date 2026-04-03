@@ -25,7 +25,9 @@ function LoginForm() {
   const { setAuth } = useAuthStore();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get('from') ?? '/dashboard';
+  // Sanitize redirect — only allow relative paths starting with '/' to prevent open redirect
+  const rawFrom = searchParams.get('from') ?? '';
+  const from = rawFrom.startsWith('/') && !rawFrom.startsWith('//') ? rawFrom : '/dashboard';
   const isBlocked = searchParams.get('blocked') === '1';
 
   const {

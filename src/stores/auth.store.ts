@@ -3,7 +3,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { User } from '@/types';
-import api from '@/lib/api';
+import api, { tokenStore } from '@/lib/api';
 
 interface AuthState {
   user: User | null;
@@ -22,9 +22,7 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
 
       setAuth: (user, token) => {
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('access_token', token);
-        }
+        tokenStore.set(token);
         set({ user, accessToken: token });
       },
 
@@ -32,7 +30,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           await api.post('/auth/logout');
         } catch {}
-        sessionStorage.removeItem('access_token');
+        tokenStore.clear();
         set({ user: null, accessToken: null });
         window.location.href = '/';
       },
@@ -51,8 +49,8 @@ export const useAuthStore = create<AuthState>()(
             }
           }
         } catch {
+          tokenStore.clear();
           set({ user: null, accessToken: null });
-          sessionStorage.removeItem('access_token');
         } finally {
           set({ isLoading: false });
         }

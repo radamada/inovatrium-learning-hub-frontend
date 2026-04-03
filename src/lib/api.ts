@@ -8,12 +8,22 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Attach access token from memory
+// ── In-memory token store (NOT sessionStorage/localStorage) ─────────────────
+// sessionStorage is readable by any XSS payload on the same origin.
+// An in-memory variable is only accessible to this module's code.
+// On page refresh the variable resets to null → the 401 interceptor automatically
+// fetches a new token via the httpOnly refresh cookie (transparent to the user).
+let _accessToken: string | null = null;
+
+export const tokenStore = {
+  get: () => _accessToken,
+  set: (t: string | null) => { _accessToken = t; },
+  clear: () => { _accessToken = null; },
+};
+
+// Attach access token from memory (never from sessionStorage)
 api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const token = sessionStorage.getItem('access_token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-  }
+  if (_accessToken) config.headers.Authorization = `Bearer ${_accessToken}`;
   return config;
 });
 
@@ -38,7 +48,7 @@ api.interceptors.response.use(
 
       // Account blocked — don't attempt refresh, force logout immediately
       if (error.response?.data?.message === 'ACCOUNT_BLOCKED') {
-        sessionStorage.removeItem('access_token');
+        tokenStore.clear();
         await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true }).catch(() => {});
         window.location.href = '/login';
         return Promise.reject(error);
@@ -60,13 +70,13 @@ api.interceptors.response.use(
           {},
           { withCredentials: true },
         );
-        sessionStorage.setItem('access_token', data.accessToken);
+        tokenStore.set(data.accessToken);
         processQueue(null, data.accessToken);
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
         return api(originalRequest);
       } catch (err: any) {
         processQueue(err, null);
-        sessionStorage.removeItem('access_token');
+        tokenStore.clear();
         // Don't redirect if already on an auth page (prevents loops)
         const onAuthPage = window.location.pathname.match(/^\/(login|register|forgot-password|reset-password)/);
         if (!onAuthPage) {
