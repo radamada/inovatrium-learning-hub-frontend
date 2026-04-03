@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ShoppingBag, Download, Search, X } from 'lucide-react';
+import { ShoppingBag, Download, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import {
@@ -63,7 +63,6 @@ const STATUSES = [
 ];
 
 export default function InstructorOrdersPage() {
-  const [search, setSearch]     = useState('');
   const [status, setStatus]     = useState('');
   const [courseId, setCourseId] = useState('');
   const [dateFrom, setDateFrom] = useState('');
@@ -71,16 +70,15 @@ export default function InstructorOrdersPage() {
 
   const buildParams = useCallback(() => {
     const p: Record<string, string> = { limit: '200' };
-    if (search)   p.search   = search;
     if (status)   p.status   = status;
     if (courseId) p.courseId = courseId;
-    if (dateFrom)               p.dateFrom = dateFrom;
-    if (dateTo)                 p.dateTo   = dateTo;
+    if (dateFrom) p.dateFrom = dateFrom;
+    if (dateTo)   p.dateTo   = dateTo;
     return p;
-  }, [search, status, courseId, dateFrom, dateTo]);
+  }, [status, courseId, dateFrom, dateTo]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['instructor-orders', search, status, courseId, dateFrom, dateTo],
+    queryKey: ['instructor-orders', status, courseId, dateFrom, dateTo],
     queryFn: () =>
       api.get('/instructor/orders', { params: buildParams() }).then((r) => r.data),
   });
@@ -89,10 +87,10 @@ export default function InstructorOrdersPage() {
   const courses = data?.courses ?? [];
   const total   = data?.total   ?? 0;
 
-  const hasFilters = !!(search || status || courseId || dateFrom || dateTo);
+  const hasFilters = !!(status || courseId || dateFrom || dateTo);
 
   function resetFilters() {
-    setSearch(''); setStatus(''); setCourseId('');
+    setStatus(''); setCourseId('');
     setDateFrom(''); setDateTo('');
   }
 
@@ -129,15 +127,19 @@ export default function InstructorOrdersPage() {
       {/* Filters */}
       <div className="bg-white dark:bg-slate-800 border dark:border-slate-700 rounded-xl p-4 mb-5 space-y-3">
         <div className="flex flex-col sm:flex-row gap-3">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="Caută după student..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9"
-            />
+          {/* Course */}
+          <div className="flex-1">
+            <Select value={courseId} onValueChange={(v) => setCourseId(v as string)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Toate cursurile" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Toate cursurile</SelectItem>
+                {courses.map((c: any) => (
+                  <SelectItem key={c._id} value={c._id}>{c.title}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Status */}
@@ -154,23 +156,6 @@ export default function InstructorOrdersPage() {
               </SelectContent>
             </Select>
           </div>
-
-          {/* Course — shown only when instructor has multiple courses */}
-          {courses.length > 1 && (
-            <div className="w-full sm:w-56">
-              <Select value={courseId} onValueChange={(v) => setCourseId(v as string)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Toate cursurile" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Toate cursurile</SelectItem>
-                  {courses.map((c: any) => (
-                    <SelectItem key={c._id} value={c._id}>{c.title}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
         </div>
 
         {/* Date range + reset */}
