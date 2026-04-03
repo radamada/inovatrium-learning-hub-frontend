@@ -24,7 +24,7 @@ import type { Category, Section } from '@/types';
 const schema = z.object({
   title: z.string().min(3, 'Minim 3 caractere'),
   description: z.string().min(10, 'Minim 10 caractere'),
-  price: z.coerce.number().min(0),
+  price: z.coerce.number({ error: 'Prețul este obligatoriu' }).min(30, 'Prețul minim este 30 lei').max(2000, 'Prețul maxim este 2000 lei'),
   categoryId: z.string({ error: 'Categoria este obligatorie' }).min(1, 'Categoria este obligatorie'),
   level: z.string({ error: 'Nivelul este obligatoriu' }).min(1, 'Nivelul este obligatoriu'),
   language: z.string().default('ro'),
@@ -498,7 +498,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Preț (lei) *</Label>
-              <Input type="number" step="0.01" min="0" placeholder="99.99" {...register('price')} className="mt-1" />
+              <Input type="number" step="0.01" min="30" max="2000" placeholder="ex: 99 (30–2000 lei)" {...register('price')} className="mt-1" />
               {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
             </div>
             <div>
