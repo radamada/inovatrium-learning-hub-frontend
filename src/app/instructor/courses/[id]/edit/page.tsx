@@ -656,28 +656,30 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
             <Plus className="w-4 h-4 mr-2" /> Adaugă secțiune
           </Button>
 
-          <div className="flex gap-3 pt-4">
-            <Button type="button" variant="outline" onClick={() => setStep('info')}>
-              ← Informații
-            </Button>
-            {course?.published ? (
-              <Button
-                onClick={() => saveCurriculum(false)}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-              >
-                Salvează modificările
+          <div className="flex flex-col gap-2 pt-4">
+            <div className="flex gap-3">
+              <Button type="button" variant="outline" onClick={() => setStep('info')}>
+                ← Informații
               </Button>
-            ) : (
-              <>
-                <Button variant="outline" onClick={() => saveCurriculum(false)} className="flex-1">
-                  Salvează draft
+              {course?.published ? (
+                <Button
+                  onClick={() => saveCurriculum(false)}
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                >
+                  Salvează modificările
                 </Button>
-                <Button onClick={() => saveCurriculum(true)} className="flex-1 bg-indigo-600 hover:bg-indigo-700">
-                  Publică cursul
-                </Button>
-              </>
-            )}
-            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')} className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40">
+              ) : (
+                <>
+                  <Button variant="outline" onClick={() => saveCurriculum(false)} className="flex-1">
+                    Salvează draft
+                  </Button>
+                  <Button onClick={() => saveCurriculum(true)} className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+                    Publică cursul
+                  </Button>
+                </>
+              )}
+            </div>
+            <Button type="button" variant="outline" onClick={() => router.push('/instructor/courses')} className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/40">
               Renunță la editare
             </Button>
           </div>
