@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 const steps = [
   {
     icon: Search,
-    color: 'bg-indigo-100 text-indigo-600',
+    color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400',
     step: '01',
     title: 'Descoperă cursul potrivit',
     description:
@@ -15,7 +15,7 @@ const steps = [
   },
   {
     icon: ShoppingCart,
-    color: 'bg-violet-100 text-violet-600',
+    color: 'bg-violet-100 text-violet-600 dark:bg-violet-900/40 dark:text-violet-400',
     step: '02',
     title: 'Cumpără simplu și sigur',
     description:
@@ -23,7 +23,7 @@ const steps = [
   },
   {
     icon: PlayCircle,
-    color: 'bg-emerald-100 text-emerald-600',
+    color: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-400',
     step: '03',
     title: 'Învață în ritmul tău',
     description:
@@ -31,7 +31,7 @@ const steps = [
   },
   {
     icon: TrendingUp,
-    color: 'bg-amber-100 text-amber-600',
+    color: 'bg-amber-100 text-amber-600 dark:bg-amber-900/40 dark:text-amber-400',
     step: '04',
     title: 'Urmărește-ți progresul',
     description:
@@ -53,14 +53,14 @@ const heroStagger = {
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' as const } },
 };
 
 export default function CumFunctioneazaPage() {
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-slate-900">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-indigo-50 via-white to-violet-50 py-20 px-4 text-center">
+      <section className="bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-20 px-4 text-center">
         <motion.div
           className="max-w-3xl mx-auto"
           variants={heroStagger}
@@ -69,17 +69,17 @@ export default function CumFunctioneazaPage() {
         >
           <motion.span
             variants={fadeUp}
-            className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide"
+            className="inline-block bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide"
           >
             Ghid rapid
           </motion.span>
           <motion.h1
             variants={fadeUp}
-            className="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-5"
+            className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-5"
           >
-            Cum funcționează <span className="text-indigo-600">EduInovatrium</span>?
+            Cum funcționează <span className="text-indigo-600 dark:text-indigo-400">EduInovatrium</span>?
           </motion.h1>
-          <motion.p variants={fadeUp} className="text-lg text-gray-500 max-w-xl mx-auto">
+          <motion.p variants={fadeUp} className="text-lg text-gray-500 dark:text-slate-400 max-w-xl mx-auto">
             De la descoperirea unui curs până la finalizarea lui — totul e simplu, rapid și la îndemâna ta.
           </motion.p>
         </motion.div>
@@ -96,7 +96,7 @@ export default function CumFunctioneazaPage() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: i * 0.1, ease: 'easeOut' }}
               whileHover={{ y: -4, boxShadow: '0 12px 32px rgba(0,0,0,0.08)' }}
-              className="flex gap-5 p-6 rounded-2xl border border-gray-100 bg-white cursor-default"
+              className="flex gap-5 p-6 rounded-2xl border border-gray-100 dark:border-slate-700 bg-white dark:bg-slate-800 cursor-default"
             >
               <motion.div
                 className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${s.color}`}
@@ -108,9 +108,9 @@ export default function CumFunctioneazaPage() {
                 <s.icon className="w-6 h-6" />
               </motion.div>
               <div>
-                <p className="text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">Pasul {s.step}</p>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{s.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{s.description}</p>
+                <p className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-1">Pasul {s.step}</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{s.title}</h3>
+                <p className="text-gray-500 dark:text-slate-400 text-sm leading-relaxed">{s.description}</p>
               </div>
             </motion.div>
           ))}
@@ -118,7 +118,7 @@ export default function CumFunctioneazaPage() {
       </section>
 
       {/* Features strip */}
-      <section className="bg-gray-50 border-y py-12 px-4">
+      <section className="bg-gray-50 dark:bg-slate-800/60 border-y border-gray-200 dark:border-slate-700 py-12 px-4">
         <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((f, i) => (
             <motion.div
@@ -129,8 +129,8 @@ export default function CumFunctioneazaPage() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.4 }}
             >
-              <f.icon className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-gray-600">{f.text}</p>
+              <f.icon className="w-5 h-5 text-indigo-500 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-gray-600 dark:text-slate-300">{f.text}</p>
             </motion.div>
           ))}
         </div>
@@ -145,14 +145,14 @@ export default function CumFunctioneazaPage() {
           viewport={{ once: true }}
           transition={{ duration: 0.55 }}
         >
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-4">Gata să începi?</h2>
-          <p className="text-gray-500 mb-8">
+          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Gata să începi?</h2>
+          <p className="text-gray-500 dark:text-slate-400 mb-8">
             Alătură-te miilor de studenți care învață zilnic pe EduInovatrium și dă-ți cariera un nou impuls.
           </p>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
             <Link
               href="/"
-              className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-10 py-4 rounded-xl transition-colors text-base"
+              className="inline-block bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold px-10 py-4 rounded-xl transition-colors text-base"
             >
               Explorează cursurile →
             </Link>
