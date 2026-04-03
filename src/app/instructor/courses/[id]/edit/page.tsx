@@ -664,7 +664,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
               {course?.published ? (
                 <Button
                   onClick={() => saveCurriculum(false)}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  className="flex-[2] bg-indigo-600 hover:bg-indigo-700"
                 >
                   Salvează modificările
                 </Button>
