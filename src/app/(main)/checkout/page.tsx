@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { useCartStore } from '@/stores/cart.store';
 import { useAuthStore } from '@/stores/auth.store';
+import { useWishlistStore } from '@/stores/wishlist.store';
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '',
@@ -77,6 +78,7 @@ interface AppliedCoupon {
 export default function CheckoutPage() {
   const { user } = useAuthStore();
   const { items, totalPrice, fetchCart } = useCartStore();
+  const fetchWishlist = useWishlistStore((s) => s.fetch);
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -191,6 +193,8 @@ export default function CheckoutPage() {
       });
       await fetchCart();
       queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+      await fetchWishlist();
       toast.success('Plată simulată reușită! Cursurile sunt acum disponibile.');
       router.push('/dashboard?success=1');
     } catch (err: any) {
@@ -202,6 +206,8 @@ export default function CheckoutPage() {
   const handleSuccess = async () => {
     await fetchCart();
     queryClient.invalidateQueries({ queryKey: ['enrollments'] });
+    queryClient.invalidateQueries({ queryKey: ['wishlist'] });
+    await fetchWishlist();
     router.push('/dashboard?success=1');
   };
 

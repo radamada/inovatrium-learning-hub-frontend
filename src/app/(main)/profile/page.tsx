@@ -61,6 +61,7 @@ export default function ProfilePage() {
   }, []);
 
   const profileForm = useForm<ProfileForm>({
+    mode: 'onBlur',
     defaultValues: { name: user?.name ?? '', bio: '' },
   });
 
@@ -80,11 +81,12 @@ export default function ProfilePage() {
   async function onSaveProfile(data: ProfileForm) {
     setSavingProfile(true);
     try {
-      await api.patch('/users/me', { name: data.name, bio: data.bio || undefined });
+      await api.patch('/users/me', { name: data.name.trim(), bio: data.bio || undefined });
       await fetchMe();
       toast.success('Profilul a fost actualizat');
-    } catch {
-      toast.error('Eroare la salvarea profilului');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message;
+      toast.error(Array.isArray(msg) ? msg[0] : msg ?? 'Eroare la salvarea profilului');
     } finally {
       setSavingProfile(false);
     }
@@ -237,11 +239,23 @@ export default function ProfilePage() {
               <Label htmlFor="name">Nume</Label>
               <Input
                 id="name"
-                {...profileForm.register('name', { required: 'Numele este obligatoriu' })}
+                maxLength={50}
+                {...profileForm.register('name', {
+                  required: 'Numele este obligatoriu',
+                  validate: (raw) => {
+                    const v = raw.trim();
+                    if (v.length < 2) return 'Numele trebuie să aibă minim 2 caractere';
+                    if (v.length > 50) return 'Numele poate avea maxim 50 de caractere';
+                    if (/\s{2,}/.test(v)) return 'Numele nu poate conține spații consecutive';
+                    if (!/^[A-Za-zÀ-ÖØ-öø-ÿăîâșțĂÎÂȘȚ]+([- ][A-Za-zÀ-ÖØ-öø-ÿăîâșțĂÎÂȘȚ]+)*$/.test(v))
+                      return 'Numele poate conține doar litere, spații și cratimă (ex: Ion Popescu)';
+                    return true;
+                  },
+                })}
                 className="mt-1"
               />
               {profileForm.formState.errors.name && (
-                <p className="text-xs text-red-500 mt-1">{profileForm.formState.errors.name.message}</p>
+                <p className="text-sm text-red-500 mt-1.5 font-medium">{profileForm.formState.errors.name.message}</p>
               )}
             </div>
 

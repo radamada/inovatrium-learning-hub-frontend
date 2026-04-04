@@ -25,18 +25,20 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
-  const { user } = useAuthStore();
+  const { user, isHydrated } = useAuthStore();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [downloadingCerts, setDownloadingCerts] = useState<Set<string>>(new Set());
 
   useEffect(() => {
+    if (!isHydrated) return; // Wait for Zustand to rehydrate from localStorage
     if (!user) { router.push('/login?from=/dashboard'); return; }
     if (searchParams.get('success') === '1') {
       toast.success('🎉 Plată reușită! Cursurile sunt acum disponibile.');
       router.replace('/dashboard', { scroll: false });
     }
-  }, [user, searchParams, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isHydrated, searchParams]);
 
   const { data: enrollments, isLoading } = useQuery<Enrollment[]>({
     queryKey: ['enrollments', user?._id],
@@ -78,30 +80,39 @@ function DashboardContent() {
       {/* Stats */}
       {enrollments && (
         <motion.div
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-3 gap-3 mb-8"
           initial="hidden"
           animate="show"
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
         >
           {[
-            { label: 'Cursuri active', value: enrollments.filter((e) => e.status !== 'refunded').length, icon: BookOpen },
+            {
+              label: 'Achiziționate',
+              value: enrollments.filter((e) => e.status !== 'refunded').length,
+              icon: BookOpen,
+            },
+            {
+              label: 'Active',
+              value: enrollments.filter((e) => e.status !== 'refunded' && !e.completedAt).length,
+              icon: CheckCircle,
+            },
             {
               label: 'Completate',
               value: enrollments.filter((e) => e.status !== 'refunded' && !!e.completedAt).length,
-              icon: CheckCircle,
+              icon: Award,
             },
           ].map((stat) => (
             <motion.div
               key={stat.label}
               variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
-              className="bg-white rounded-xl border p-4 flex items-center gap-3"
+              className="bg-white rounded-xl border p-3 flex flex-col items-center text-center gap-1 sm:flex-row sm:items-center sm:text-left sm:gap-3 sm:p-4"
             >
-              <div className="p-2 bg-indigo-50 rounded-lg">
-                <stat.icon className="w-5 h-5 text-indigo-600" />
+              <div className="p-2 bg-indigo-50 rounded-lg flex-shrink-0">
+                <stat.icon className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stat.value}</p>
-                <p className="text-xs text-gray-500">{stat.label}</p>
+                <p className="text-xl sm:text-2xl font-bold leading-none">{stat.value}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{stat.label}</p>
               </div>
             </motion.div>
           ))}

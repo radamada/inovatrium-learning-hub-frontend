@@ -4,7 +4,7 @@ import { use, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Users, BookOpen, Clock, ChevronDown, ChevronRight, Lock, Play, X } from 'lucide-react';
+import { Star, BookOpen, Clock, ChevronDown, ChevronRight, Lock, Play, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -158,9 +158,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
               <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
               {course.rating.toFixed(1)} ({course.reviewCount} recenzii)
             </span>
-            <span className="flex items-center gap-1">
-              <Users className="w-4 h-4" /> {Math.max(0, course.enrollmentCount)} studenți
-            </span>
+
             <span className="flex items-center gap-1">
               <BookOpen className="w-4 h-4" /> {totalLessons} lecții
             </span>

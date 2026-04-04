@@ -18,7 +18,7 @@ import { useCartStore } from '@/stores/cart.store';
 import { useThemeStore } from '@/stores/theme.store';
 import CartSheet from '@/components/cart/CartSheet';
 import NotificationBell from '@/components/layout/NotificationBell';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Header() {
   const { user, logout } = useAuthStore();
@@ -28,8 +28,25 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   const closeMobile = () => setMobileOpen(false);
+
+  // Închide meniul mobil la click în afara lui
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node)) {
+        setMobileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('touchstart', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('touchstart', handleOutsideClick);
+    };
+  }, [mobileOpen]);
 
   return (
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200/60 dark:border-gray-700/60">
@@ -160,7 +177,7 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <Link href="/login"
                 className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 transition-colors">
                 Conectează-te
@@ -176,7 +193,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 flex flex-col gap-1">
+        <div ref={mobileMenuRef} className="md:hidden border-t border-gray-100 bg-white dark:bg-gray-900 px-4 py-3 flex flex-col gap-1">
           <Link
             href="/courses"
             onClick={closeMobile}
@@ -254,6 +271,17 @@ export default function Header() {
                 Înscrie-te
               </Link>
             </div>
+          )}
+          {user && (
+            <button
+              onClick={toggleTheme}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
+            >
+              {dark
+                ? <><Sun className="w-4 h-4 text-yellow-500" /> Mod luminos</>
+                : <><Moon className="w-4 h-4" /> Mod întunecat</>
+              }
+            </button>
           )}
           {user && (
             <button

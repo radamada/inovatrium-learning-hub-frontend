@@ -15,11 +15,10 @@ import api from '@/lib/api';
 export default function WishlistPage() {
   const { user } = useAuthStore();
   const router = useRouter();
-  const fetchWishlist = useWishlistStore((s) => s.fetch);
+  const wishlistIds = useWishlistStore((s) => s.courseIds);
 
   useEffect(() => {
     if (!user) { router.push('/login?from=/wishlist'); return; }
-    fetchWishlist();
   }, [user]);
 
   const { data, isLoading } = useQuery({
@@ -30,8 +29,10 @@ export default function WishlistPage() {
 
   if (!user) return null;
 
+  // Filter prin store-ul optimistic — cardul dispare imediat la remove,
+  // fără să așteptăm re-fetch-ul din React Query
   const courses = data
-    ? data.map((item: any) => item.courseId).filter(Boolean)
+    ? data.map((item: any) => item.courseId).filter((c: any) => c && wishlistIds.has(c._id))
     : [];
 
   return (

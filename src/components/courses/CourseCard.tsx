@@ -3,12 +3,13 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Users, BookOpen, ArrowRight, Heart } from 'lucide-react';
+import { Star, BookOpen, ArrowRight, Heart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Course } from '@/types';
 import { useAuthStore } from '@/stores/auth.store';
 import { useCartStore } from '@/stores/cart.store';
 import { useWishlistStore } from '@/stores/wishlist.store';
+import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
@@ -22,6 +23,7 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
   const { user } = useAuthStore();
   const { addItem, items } = useCartStore();
   const { has, add, remove } = useWishlistStore();
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   const inCart = items.some((i) => i._id === course._id);
@@ -50,11 +52,21 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
     try {
       if (inWishlist) {
         await remove(course._id);
+        // Optimistic update al cache-ului React Query
+        queryClient.setQueryData(['wishlist'], (old: any[]) =>
+          old ? old.filter((item: any) => item.courseId?._id !== course._id) : old,
+        );
       } else {
         await add(course._id);
+        // Optimistic update al cache-ului React Query cu obiectul complet al cursului
+        queryClient.setQueryData(['wishlist'], (old: any[]) =>
+          old ? [...old, { courseId: course }] : [{ courseId: course }],
+        );
         toast.success('Adăugat la salvate');
       }
     } catch {
+      // La eroare, invalidăm cache-ul pentru a obține date fresh de la server
+      queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       toast.error('A apărut o eroare');
     }
   };
@@ -127,10 +139,6 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
               <span className="font-semibold text-gray-600">{course.rating.toFixed(1)}</span>
               {course.reviewCount > 0 && <span className="text-gray-400">({course.reviewCount})</span>}
             </span>
-            <span className="flex items-center gap-1">
-              <Users className="w-3.5 h-3.5" />
-              {Math.max(0, course.enrollmentCount)}
-            </span>
             {course.level && (
               <Badge variant="outline" className="text-xs border-gray-200">
                 {{ beginner: 'Începător', intermediate: 'Intermediar', advanced: 'Avansat' }[course.level] ?? course.level}
@@ -165,7 +173,7 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
                 onClick={handleAddToCart}
                 disabled={isAddingToCart}
               >
-                Detalii <ArrowRight className="w-3.5 h-3.5" />
+                Adaugă în coș <ArrowRight className="w-3.5 h-3.5" />
               </button>
             )}
           </div>

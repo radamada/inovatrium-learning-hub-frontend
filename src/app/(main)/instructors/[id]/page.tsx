@@ -4,7 +4,7 @@ import { use } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Users, BookOpen, Calendar } from 'lucide-react';
+import { Star, BookOpen, Calendar } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import CourseCard from '@/components/courses/CourseCard';
@@ -65,7 +65,6 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
   }
 
   const { instructor, courses } = data;
-  const totalStudents = courses.reduce((s, c) => s + c.enrollmentCount, 0);
   const avgRating = courses.length
     ? (courses.reduce((s, c) => s + c.rating, 0) / courses.length).toFixed(1)
     : null;
@@ -101,9 +100,6 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
           <div className="flex flex-wrap gap-4 text-sm text-gray-500">
             <span className="flex items-center gap-1">
               <BookOpen className="w-4 h-4" /> {courses.length} {courses.length === 1 ? 'curs' : 'cursuri'}
-            </span>
-            <span className="flex items-center gap-1">
-              <Users className="w-4 h-4" /> {totalStudents} studenți
             </span>
             {avgRating && (
               <span className="flex items-center gap-1">

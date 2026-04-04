@@ -196,9 +196,9 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
   const isQuiz = selectedLesson?.type === 'quiz';
 
   return (
-    <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)]">
+    <div className="flex flex-col lg:flex-row lg:h-[calc(100vh-64px)]">
       {/* Sidebar – curriculum */}
-      <aside className="w-full lg:w-80 xl:w-96 border-r bg-white overflow-y-auto flex-shrink-0">
+      <aside className="w-full lg:w-80 xl:w-96 border-r bg-white lg:overflow-y-auto flex-shrink-0">
         <div className="p-4 border-b sticky top-0 bg-white z-10">
           <h2 className="font-bold text-base truncate">{course?.title}</h2>
           <div className="flex items-center gap-2 mt-2">
@@ -263,7 +263,7 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
       </aside>
 
       {/* Main – player + lesson info */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 lg:overflow-y-auto">
         {course && !course.published && (
           <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center gap-3 text-amber-800">
             <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0" />

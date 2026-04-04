@@ -151,7 +151,7 @@ export default function AdminDashboardPage() {
 
       {/* Stat cards */}
       <motion.div
-        className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-5"
         initial="hidden"
         animate="show"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
@@ -160,10 +160,10 @@ export default function AdminDashboardPage() {
           <motion.div
             key={card.label}
             variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } }}
-            className="bg-white rounded-xl border p-5 flex items-center gap-4"
+            className="bg-white rounded-xl border p-3 flex items-center gap-3"
           >
-            <div className={`p-3 rounded-lg flex-shrink-0 ${card.bg}`}>
-              <card.icon className={`w-6 h-6 ${card.color}`} />
+            <div className={`p-2 rounded-lg flex-shrink-0 ${card.bg}`}>
+              <card.icon className={`w-5 h-5 ${card.color}`} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1">
@@ -187,7 +187,7 @@ export default function AdminDashboardPage() {
 
       {/* Platform revenue chart */}
       <motion.div
-        className="bg-white rounded-xl border p-6 mb-8"
+        className="bg-white rounded-xl border p-4 mb-5"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.35, ease: 'easeOut' }}
@@ -198,11 +198,11 @@ export default function AdminDashboardPage() {
             <HelpCircle className="w-4 h-4 text-gray-300 hover:text-gray-500 cursor-help transition-colors" />
           </Tooltip>
         </div>
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={chartData}>
+        <ResponsiveContainer width="100%" height={160}>
+          <BarChart data={chartData} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="luna" tick={{ fontSize: 12 }} />
-            <YAxis tick={{ fontSize: 12 }} />
+            <XAxis dataKey="luna" tick={{ fontSize: 9 }} interval={0} />
+            <YAxis tick={{ fontSize: 10 }} />
             <RechartsTooltip formatter={(v: any) => `${typeof v === 'number' ? v.toFixed(2) : v} lei`} />
             <Bar dataKey="venituri" fill="#6366f1" radius={[4, 4, 0, 0]} />
           </BarChart>
@@ -211,25 +211,23 @@ export default function AdminDashboardPage() {
 
       {/* Instructor stats section */}
       <motion.div
-        className="bg-white rounded-xl border p-6"
+        className="bg-white rounded-xl border p-4"
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
       >
-        <div className="flex items-center justify-between gap-4 mb-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="font-bold text-gray-900">Statistici per formator</h2>
-              <Tooltip content="Selectează un formator din lista de mai jos pentru a vedea performanța lui individuală: cursuri, studenți și venituri generate.">
-                <HelpCircle className="w-4 h-4 text-gray-300 hover:text-gray-500 cursor-help transition-colors" />
-              </Tooltip>
-            </div>
-            <p className="text-sm text-gray-400 mt-0.5">Selectează un formator pentru a vedea performanța lui</p>
+        <div className="mb-5">
+          <div className="flex items-center gap-2 mb-0.5">
+            <h2 className="font-bold text-gray-900">Statistici per formator</h2>
+            <Tooltip content="Selectează un formator din lista de mai jos pentru a vedea performanța lui individuală: cursuri, studenți și venituri generate.">
+              <HelpCircle className="w-4 h-4 text-gray-300 hover:text-gray-500 cursor-help transition-colors" />
+            </Tooltip>
           </div>
+          <p className="text-sm text-gray-400 mb-3">Selectează un formator pentru a vedea performanța lui</p>
           <select
             value={selectedInstructorId}
             onChange={(e) => setSelectedInstructorId(e.target.value)}
-            className="border rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 min-w-[220px]"
+            className="w-full border rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
             <option value="">— Selectează formator —</option>
             {(instructors ?? []).map((i) => (
@@ -285,10 +283,10 @@ export default function AdminDashboardPage() {
               </Tooltip>
             </div>
             <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={instrChartData}>
+              <BarChart data={instrChartData} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="luna" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
+                <XAxis dataKey="luna" tick={{ fontSize: 9 }} interval={0} />
+                <YAxis tick={{ fontSize: 10 }} />
                 <RechartsTooltip formatter={(v: any) => `${typeof v === 'number' ? v.toFixed(2) : v} lei`} />
                 <Bar dataKey="venituri" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
               </BarChart>

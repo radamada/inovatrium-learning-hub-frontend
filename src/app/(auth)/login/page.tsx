@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,13 +22,20 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 function LoginForm() {
-  const { setAuth } = useAuthStore();
+  const { setAuth, user, isHydrated } = useAuthStore();
   const router = useRouter();
   const searchParams = useSearchParams();
   // Sanitize redirect — only allow relative paths starting with '/' to prevent open redirect
   const rawFrom = searchParams.get('from') ?? '';
   const from = rawFrom.startsWith('/') && !rawFrom.startsWith('//') ? rawFrom : '/dashboard';
   const isBlocked = searchParams.get('blocked') === '1';
+
+  // Dacă user-ul este deja autentificat client-side, redirecționează la dashboard
+  // Așteptăm hydratarea Zustand înainte să redirectăm (previne loop-ul)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (isHydrated && user) router.replace('/dashboard');
+  }, [user, isHydrated]);
 
   const {
     register,

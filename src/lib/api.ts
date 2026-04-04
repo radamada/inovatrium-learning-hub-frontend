@@ -52,6 +52,7 @@ api.interceptors.response.use(
         tokenStore.clear();
         await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true }).catch(() => {});
         if (typeof window !== 'undefined') {
+          try { localStorage.removeItem('auth-store'); } catch {}
           window.location.href = '/login';
         }
         return Promise.reject(error);
@@ -86,6 +87,8 @@ api.interceptors.response.use(
           if (!onAuthPage) {
             // Always call logout first so middleware cookie is cleared (prevents /login → /dashboard loop)
             await axios.post(`${API_URL}/api/auth/logout`, {}, { withCredentials: true }).catch(() => {});
+            // Clear persisted auth so login page doesn't immediately redirect back to dashboard
+            try { localStorage.removeItem('auth-store'); } catch {}
             window.location.href = '/login';
           }
         }

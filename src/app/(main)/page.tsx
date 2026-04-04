@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { GraduationCap, Sparkles, Play, ArrowRight } from 'lucide-react';
+import { GraduationCap, Sparkles, Play, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import api from '@/lib/api';
@@ -107,7 +107,7 @@ export default function HomePage() {
         <motion.div
           className="max-w-3xl mx-auto"
           variants={stagger}
-          initial="hidden"
+          initial={false}
           animate="show"
         >
           {/* Badge */}
@@ -136,8 +136,8 @@ export default function HomePage() {
             transition={{ duration: 0.6 }}
             className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto mb-10"
           >
-            Accesează cursuri premium în programare, design, business și multe altele.
-            Construiește-ți viitorul cu instrumente moderne.
+            Învață în ritmul tău, de la formatori cu experiență reală.
+            Cursuri bine structurate care îți deschid noi oportunități.
           </motion.p>
 
           {/* CTAs */}
@@ -166,25 +166,30 @@ export default function HomePage() {
           </motion.div>
 
           {/* Stats */}
-          <motion.div
-            variants={stagger}
-            className="flex items-center justify-center gap-4 flex-wrap"
-          >
+          <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 flex-wrap">
             {[
-              { value: stats?.courses ?? '—', label: 'Cursuri' },
-              { value: stats?.students ?? '—', label: 'Studenți' },
-              { value: stats?.instructors ?? '—', label: 'Formatori' },
-            ].map((stat) => (
-              <motion.div
-                key={stat.label}
-                variants={fadeUp}
-                transition={{ duration: 0.5 }}
-                whileHover={{ y: -4, boxShadow: '0 8px 24px rgba(99,102,241,0.15)' }}
-                className="bg-white border border-gray-200 rounded-2xl px-8 py-4 shadow-sm min-w-[110px] cursor-default"
-              >
-                <p className="text-2xl font-extrabold text-indigo-600">{stat.value}</p>
-                <p className="text-sm text-gray-500 mt-0.5">{stat.label}</p>
-              </motion.div>
+              { value: stats?.courses, label: 'cursuri disponibile' },
+              { value: stats?.instructors, label: 'formatori verificați' },
+            ].map((stat, i) => (
+              <span key={stat.label} className="flex items-center gap-3">
+                {i > 0 && <span className="text-gray-300 text-lg select-none">·</span>}
+                <span className="flex items-baseline gap-1.5">
+                  <span className="text-xl font-extrabold text-indigo-600 tabular-nums leading-none">
+                    {stat.value != null ? `${stat.value}+` : '—'}
+                  </span>
+                  <span className="text-base text-gray-500 font-medium">{stat.label}</span>
+                </span>
+              </span>
+            ))}
+          </motion.div>
+
+          {/* Value props */}
+          <motion.div variants={fadeUp} className="flex items-center justify-center gap-5 flex-wrap mt-3">
+            {['100% online', 'Acces pe viață', 'Certificate incluse'].map((prop) => (
+              <span key={prop} className="flex items-center gap-1.5 text-sm text-gray-400">
+                <Check className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" strokeWidth={2.5} />
+                {prop}
+              </span>
             ))}
           </motion.div>
         </motion.div>
@@ -308,7 +313,7 @@ export default function HomePage() {
             </motion.div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">Pregătit să începi?</h2>
             <p className="text-indigo-100 text-lg mb-8 max-w-md mx-auto">
-              Înscrie-te gratuit și accesează primele lecții din orice curs. Fără obligații.
+              Înscrie-te gratuit și începe să înveți chiar acum.
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
               <Link

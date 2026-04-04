@@ -15,11 +15,6 @@ export function middleware(request: NextRequest) {
   const userRole = rawRole && VALID_ROLES.has(rawRole) ? rawRole : undefined;
   const isAuthenticated = !!userRole;
 
-  // Redirect authenticated users away from auth pages
-  if (isAuthenticated && AUTH_PAGES.some((p) => pathname.startsWith(p))) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
   // Protect user-only routes
   const needsAuth =
     AUTH_ROUTES.some((r) => pathname.startsWith(r)) || LEARN_ROUTE.test(pathname);

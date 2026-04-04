@@ -13,13 +13,16 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Search, X } from 'lucide-react';
+import { Search, X, Percent } from 'lucide-react';
 
 export default function AdminUsersPage() {
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [showRevenueShare, setShowRevenueShare] = useState(false);
+  const [revenueInputs, setRevenueInputs] = useState<Record<string, string>>({});
+  const [confirmBlockId, setConfirmBlockId] = useState<string | null>(null);
 
   const handleSearch = useCallback((value: string) => {
     setSearch(value);
@@ -53,6 +56,51 @@ export default function AdminUsersPage() {
     },
   });
 
+  const setRevenueShare = useMutation({
+    mutationFn: ({ id, percent }: { id: string; percent: number }) =>
+      api.patch(`/admin/users/${id}/revenue-share`, { percent }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-users'] });
+      toast.success('Comision actualizat');
+    },
+    onError: () => {
+      toast.error('Eroare la actualizarea comisionului');
+    },
+  });
+
+  const handleToggleRevenueShare = () => {
+    const next = !showRevenueShare;
+    setShowRevenueShare(next);
+    if (next && data?.users) {
+      const initial: Record<string, string> = {};
+      for (const u of data.users) {
+        if (u.role === 'instructor') {
+          initial[u._id] = String(u.revenueSharePercent ?? 0);
+        }
+      }
+      setRevenueInputs(initial);
+    }
+  };
+
+  const handleRevenueSave = (userId: string) => {
+    const raw = revenueInputs[userId] ?? '0';
+    const parsed = parseInt(raw, 10);
+    const percent = isNaN(parsed) ? 0 : Math.min(100, Math.max(0, parsed));
+    const user = users.find((u: any) => u._id === userId);
+    const current = user?.revenueSharePercent ?? 0;
+    if (percent === current) return;
+    setRevenueShare.mutate({ id: userId, percent });
+  };
+
+  const handleBlockClick = (userId: string) => {
+    setConfirmBlockId(userId);
+  };
+
+  const handleBlockConfirm = (userId: string) => {
+    setActive.mutate({ id: userId, isActive: false });
+    setConfirmBlockId(null);
+  };
+
   const users = data?.users ?? [];
 
   const roleBadgeColor: Record<string, string> = {
@@ -67,6 +115,50 @@ export default function AdminUsersPage() {
     student: 'Student',
   };
 
+  /** Renders the block/activate button area, with inline confirm for blocking */
+  const renderActiveToggle = (user: any, size: 'sm' | 'xs') => {
+    const btnClass = size === 'xs' ? 'h-8 text-xs flex-shrink-0' : 'h-7 text-xs';
+
+    if (user.isActive && confirmBlockId === user._id) {
+      return (
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs text-gray-500 whitespace-nowrap">Ești sigur?</span>
+          <Button
+            size="sm"
+            variant="destructive"
+            className="h-7 text-xs px-2"
+            onClick={() => handleBlockConfirm(user._id)}
+          >
+            Da
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 text-xs px-2"
+            onClick={() => setConfirmBlockId(null)}
+          >
+            Nu
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        className={btnClass}
+        onClick={() =>
+          user.isActive
+            ? handleBlockClick(user._id)
+            : setActive.mutate({ id: user._id, isActive: true })
+        }
+      >
+        {user.isActive ? 'Blochează' : 'Activează'}
+      </Button>
+    );
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -75,11 +167,22 @@ export default function AdminUsersPage() {
     >
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Utilizatori</h1>
-        {data?.total > 0 && (
-          <span className="text-sm text-gray-400 dark:text-slate-500">
-            {data.total} {search ? 'rezultate' : 'total'}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {data?.total > 0 && (
+            <span className="text-sm text-gray-400 dark:text-slate-500">
+              {data.total} {search ? 'rezultate' : 'total'}
+            </span>
+          )}
+          <Button
+            variant={showRevenueShare ? 'default' : 'outline'}
+            size="icon"
+            onClick={handleToggleRevenueShare}
+            title="Comisioane formatori"
+            className="h-8 w-8"
+          >
+            <Percent className="w-4 h-4" />
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -144,15 +247,26 @@ export default function AdminUsersPage() {
                     <SelectItem value="admin">Admin</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-8 text-xs flex-shrink-0"
-                  onClick={() => setActive.mutate({ id: user._id, isActive: !user.isActive })}
-                >
-                  {user.isActive ? 'Blochează' : 'Activează'}
-                </Button>
+                {renderActiveToggle(user, 'xs')}
               </div>
+              {showRevenueShare && user.role === 'instructor' && (
+                <div className="mt-3 pt-3 border-t flex items-center gap-2">
+                  <label className="text-xs text-gray-500 flex-shrink-0">Comision platformă:</label>
+                  <div className="relative flex-1">
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={revenueInputs[user._id] ?? String(user.revenueSharePercent ?? 0)}
+                      onChange={(e) => setRevenueInputs((prev) => ({ ...prev, [user._id]: e.target.value }))}
+                      onBlur={() => handleRevenueSave(user._id)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleRevenueSave(user._id); }}
+                      className="h-8 text-xs pr-7"
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
+                  </div>
+                </div>
+              )}
             </div>
           ))
         }
@@ -173,6 +287,9 @@ export default function AdminUsersPage() {
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Rol</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Înregistrat</th>
                   <th className="px-4 py-3 text-left font-medium text-gray-600">Status</th>
+                  {showRevenueShare && (
+                    <th className="px-4 py-3 text-left font-medium text-gray-600">Comision %</th>
+                  )}
                   <th className="px-4 py-3 text-right font-medium text-gray-600">Acțiuni</th>
                 </tr>
               </thead>
@@ -196,6 +313,27 @@ export default function AdminUsersPage() {
                         {user.isActive ? 'Activ' : 'Inactiv'}
                       </Badge>
                     </td>
+                    {showRevenueShare && (
+                      <td className="px-4 py-3">
+                        {user.role === 'instructor' ? (
+                          <div className="relative w-24">
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={revenueInputs[user._id] ?? String(user.revenueSharePercent ?? 0)}
+                              onChange={(e) => setRevenueInputs((prev) => ({ ...prev, [user._id]: e.target.value }))}
+                              onBlur={() => handleRevenueSave(user._id)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') handleRevenueSave(user._id); }}
+                              className="h-7 text-xs pr-7"
+                            />
+                            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs">%</span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-300 text-xs">—</span>
+                        )}
+                      </td>
+                    )}
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
                         <Select value={user.role} onValueChange={(role) => setRole.mutate({ id: user._id, role })}>
@@ -208,14 +346,7 @@ export default function AdminUsersPage() {
                             <SelectItem value="admin">Admin</SelectItem>
                           </SelectContent>
                         </Select>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 text-xs"
-                          onClick={() => setActive.mutate({ id: user._id, isActive: !user.isActive })}
-                        >
-                          {user.isActive ? 'Blochează' : 'Activează'}
-                        </Button>
+                        {renderActiveToggle(user, 'sm')}
                       </div>
                     </td>
                   </tr>
