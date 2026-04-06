@@ -13,13 +13,14 @@ import CourseCard from '@/components/courses/CourseCard';
 import api from '@/lib/api';
 
 export default function WishlistPage() {
-  const { user } = useAuthStore();
+  const { user, isHydrated } = useAuthStore();
   const router = useRouter();
   const wishlistIds = useWishlistStore((s) => s.courseIds);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!user) { router.push('/login?from=/wishlist'); return; }
-  }, [user]);
+  }, [user, isHydrated]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['wishlist'],

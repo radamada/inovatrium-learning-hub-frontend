@@ -8,9 +8,16 @@ const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'
 
 const VALID_ROLES = new Set(['student', 'instructor', 'admin']);
 
+/**
+ * Cookie name mirrors backend cookie-names.const.ts logic.
+ * Production uses the __Host- prefix (set by backend when NODE_ENV=production).
+ */
+const USER_ROLE_COOKIE =
+  process.env.NODE_ENV === 'production' ? '__Host-user_role' : 'user_role';
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const rawRole = request.cookies.get('user_role')?.value;
+  const rawRole = request.cookies.get(USER_ROLE_COOKIE)?.value;
   // Only trust roles that are in the known-valid set — prevents spoofing with arbitrary values
   const userRole = rawRole && VALID_ROLES.has(rawRole) ? rawRole : undefined;
   const isAuthenticated = !!userRole;

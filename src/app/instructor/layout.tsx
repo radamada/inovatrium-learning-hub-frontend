@@ -61,23 +61,20 @@ function SidebarContent({ user, pathname, onNavClick }: { user: any; pathname: s
 }
 
 export default function InstructorLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthStore();
+  const { user, isHydrated } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
-  const [hydrated, setHydrated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => { setHydrated(true); }, []);
-
   useEffect(() => {
-    if (!hydrated) return;
+    if (!isHydrated) return;
     if (!user) router.push('/login');
     if (user && user.role !== 'instructor') router.push('/');
-  }, [user, hydrated]);
+  }, [user, isHydrated]);
 
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
-  if (!hydrated) return null;
+  if (!isHydrated) return null;
   if (!user || user.role !== 'instructor') return null;
 
   return (

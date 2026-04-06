@@ -21,7 +21,7 @@ import NotificationBell from '@/components/layout/NotificationBell';
 import { useState, useEffect, useRef } from 'react';
 
 export default function Header() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, isHydrated } = useAuthStore();
   const { itemCount } = useCartStore();
   const { dark, toggle: toggleTheme } = useThemeStore();
   const [cartOpen, setCartOpen] = useState(false);
@@ -118,7 +118,9 @@ export default function Header() {
           </button>
 
           {/* User dropdown or Login */}
-          {user ? (
+          {!isHydrated ? (
+            <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+          ) : user ? (
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 rounded-full focus:outline-none">
                 <Avatar className="h-8 w-8">

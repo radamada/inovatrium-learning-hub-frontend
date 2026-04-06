@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 
 export default function LearnPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const { user } = useAuthStore();
+  const { user, isHydrated } = useAuthStore();
   const router = useRouter();
   const qc = useQueryClient();
 
@@ -60,8 +60,9 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
 
   // If not logged in → login
   useEffect(() => {
+    if (!isHydrated) return;
     if (!user) { router.push(`/login?from=/courses/${slug}/learn`); return; }
-  }, [user]);
+  }, [user, isHydrated]);
 
   // If refunded or not enrolled → back to course page
   useEffect(() => {

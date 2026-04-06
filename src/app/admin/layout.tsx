@@ -63,24 +63,21 @@ function SidebarContent({ pathname, onNavClick }: { pathname: string; onNavClick
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuthStore();
+  const { user, isHydrated } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
-  const [hydrated, setHydrated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => { setHydrated(true); }, []);
-
   useEffect(() => {
-    if (!hydrated) return;
+    if (!isHydrated) return;
     if (user && user.role !== 'admin') router.push('/');
     if (!user) router.push('/login');
-  }, [user, hydrated]);
+  }, [user, isHydrated]);
 
   // Close sidebar on route change
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
-  if (!hydrated) return null;
+  if (!isHydrated) return null;
   if (!user || user.role !== 'admin') return null;
 
   return (

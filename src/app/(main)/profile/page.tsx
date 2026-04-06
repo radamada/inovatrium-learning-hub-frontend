@@ -39,7 +39,7 @@ const passwordSchema = z.object({
 type PasswordForm = z.infer<typeof passwordSchema>;
 
 export default function ProfilePage() {
-  const { user, fetchMe } = useAuthStore();
+  const { user, fetchMe, isHydrated } = useAuthStore();
   const router = useRouter();
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
@@ -49,8 +49,9 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!user) router.push('/login?from=/profile');
-  }, [user]);
+  }, [user, isHydrated]);
 
   // Revoke object URL on unmount to avoid memory leak
   useEffect(() => {

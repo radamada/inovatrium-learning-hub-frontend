@@ -76,7 +76,7 @@ interface AppliedCoupon {
 }
 
 export default function CheckoutPage() {
-  const { user } = useAuthStore();
+  const { user, isHydrated } = useAuthStore();
   const { items, totalPrice, fetchCart } = useCartStore();
   const fetchWishlist = useWishlistStore((s) => s.fetch);
   const router = useRouter();
@@ -95,9 +95,10 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 
   useEffect(() => {
+    if (!isHydrated) return;
     if (!user) { router.push('/login?from=/checkout'); return; }
     fetchCart().then(() => setIsLoadingCart(false));
-  }, [user]);
+  }, [user, isHydrated]);
 
   useEffect(() => {
     if (isLoadingCart) return;

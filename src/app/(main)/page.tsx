@@ -30,14 +30,13 @@ function CourseCardSkeleton() {
   );
 }
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0 },
+// Hero children start immediately at the "show" state — no opacity-0 flash on hydration.
+const heroStagger = {
+  show: { transition: { staggerChildren: 0.12 } },
 };
 
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12 } },
+const heroItem = {
+  show: { opacity: 1, y: 0 },
 };
 
 const cardStagger = {
@@ -106,14 +105,13 @@ export default function HomePage() {
       <section className="py-20 md:py-28 text-center px-4">
         <motion.div
           className="max-w-3xl mx-auto"
-          variants={stagger}
-          initial={false}
+          variants={heroStagger}
+          initial="show"
           animate="show"
         >
           {/* Badge */}
           <motion.div
-            variants={fadeUp}
-            transition={{ duration: 0.5 }}
+            variants={heroItem}
             className="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-500 px-4 py-2 rounded-full text-sm font-medium mb-8 shadow-sm"
           >
             <Sparkles className="w-4 h-4 text-indigo-600" />
@@ -122,8 +120,7 @@ export default function HomePage() {
 
           {/* Heading */}
           <motion.h1
-            variants={fadeUp}
-            transition={{ duration: 0.6 }}
+            variants={heroItem}
             className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6"
           >
             Învață de la{' '}
@@ -132,8 +129,7 @@ export default function HomePage() {
           </motion.h1>
 
           <motion.p
-            variants={fadeUp}
-            transition={{ duration: 0.6 }}
+            variants={heroItem}
             className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto mb-10"
           >
             Învață în ritmul tău, de la formatori cu experiență reală.
@@ -142,8 +138,7 @@ export default function HomePage() {
 
           {/* CTAs */}
           <motion.div
-            variants={fadeUp}
-            transition={{ duration: 0.5 }}
+            variants={heroItem}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
             <motion.button
@@ -166,7 +161,7 @@ export default function HomePage() {
           </motion.div>
 
           {/* Stats */}
-          <motion.div variants={fadeUp} className="flex items-center justify-center gap-3 flex-wrap">
+          <motion.div variants={heroItem} className="flex items-center justify-center gap-3 flex-wrap">
             {[
               { value: stats?.courses, label: 'cursuri disponibile' },
               { value: stats?.instructors, label: 'formatori verificați' },
@@ -184,7 +179,7 @@ export default function HomePage() {
           </motion.div>
 
           {/* Value props */}
-          <motion.div variants={fadeUp} className="flex items-center justify-center gap-5 flex-wrap mt-3">
+          <motion.div variants={heroItem} className="flex items-center justify-center gap-5 flex-wrap mt-3">
             {['100% online', 'Acces pe viață', 'Certificate incluse'].map((prop) => (
               <span key={prop} className="flex items-center gap-1.5 text-sm text-gray-400">
                 <Check className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" strokeWidth={2.5} />
