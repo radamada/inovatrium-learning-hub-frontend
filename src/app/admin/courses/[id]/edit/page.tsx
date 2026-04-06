@@ -1,6 +1,13 @@
 'use client';
 
 import { use, useState, useEffect, useRef } from 'react';
+
+const uuid = (): string =>
+  typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? uuid()
+    : (`${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`).replace(/[018]/g, (c: string) =>
+        (Number(c) ^ (Math.random() * 16 >> (Number(c) / 4))).toString(16),
+      );
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -62,7 +69,7 @@ interface SectionItem {
 }
 
 const newVideoLesson = (): LessonItem => ({
-  tempId: crypto.randomUUID(),
+  tempId: uuid(),
   title: 'Lecție nouă',
   type: 'video',
   cdnVideoId: '',
@@ -74,7 +81,7 @@ const newVideoLesson = (): LessonItem => ({
 });
 
 const newQuizLesson = (): LessonItem => ({
-  tempId: crypto.randomUUID(),
+  tempId: uuid(),
   title: 'Quiz nou',
   type: 'quiz',
   cdnVideoId: '',
@@ -176,7 +183,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
 
   const mapLessonFromApi = (l: any): LessonItem => ({
     dbId: l._id ?? l.lessonId ?? undefined,
-    tempId: l._id ?? l.lessonId ?? crypto.randomUUID(),
+    tempId: l._id ?? l.lessonId ?? uuid(),
     title: l.title,
     type: l.type ?? 'video',
     cdnVideoId: l.cdnVideoId ?? '',
@@ -204,7 +211,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
       if (pendingValid) {
         newSections = pendingCurr.map((s: any) => ({
           dbId: s.sectionId ?? undefined,
-          tempId: s.sectionId ?? crypto.randomUUID(),
+          tempId: s.sectionId ?? uuid(),
           title: s.title,
           expanded: true,
           lessons: s.lessons.map(mapLessonFromApi),
@@ -362,7 +369,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
   const addSection = () => {
     setSections((prev) => [
       ...prev,
-      { tempId: crypto.randomUUID(), title: 'Secțiune nouă', lessons: [], expanded: true },
+      { tempId: uuid(), title: 'Secțiune nouă', lessons: [], expanded: true },
     ]);
   };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,14 +10,14 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import api from '@/lib/api';
 import { useAuthStore } from '@/stores/auth.store';
 import { motion } from 'framer-motion';
 
 const schema = z.object({
   email: z.string().email('Email invalid'),
-  password: z.string().min(6, 'Minim 6 caractere'),
+  password: z.string().min(8, 'Minim 8 caractere'),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -37,11 +37,16 @@ function LoginForm() {
     if (isHydrated && user) router.replace('/dashboard');
   }, [user, isHydrated]);
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
+
+  const passwordValue = watch('password', '');
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -107,13 +112,26 @@ function LoginForm() {
               Ai uitat parola?
             </Link>
           </div>
-          <Input
-            id="password"
-            type="password"
-            placeholder="••••••"
-            {...register('password')}
-            className="mt-1"
-          />
+          <div className="relative mt-1">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••"
+              {...register('password')}
+              className="pr-10"
+            />
+            {passwordValue && (
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                tabIndex={-1}
+                aria-label={showPassword ? 'Ascunde parola' : 'Afișează parola'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            )}
+          </div>
           {errors.password && (
             <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
           )}

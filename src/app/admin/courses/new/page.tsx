@@ -1,6 +1,13 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+
+const uuid = (): string =>
+  typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+    ? uuid()
+    : (`${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`).replace(/[018]/g, (c: string) =>
+        (Number(c) ^ (Math.random() * 16 >> (Number(c) / 4))).toString(16),
+      );
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -72,7 +79,7 @@ interface SectionItem {
 interface Instructor { _id: string; name: string; email: string; }
 
 const newVideoLesson = (): LessonItem => ({
-  tempId: crypto.randomUUID(),
+  tempId: uuid(),
   title: 'Lecție nouă',
   type: 'video',
   cdnVideoId: '',
@@ -84,7 +91,7 @@ const newVideoLesson = (): LessonItem => ({
 });
 
 const newQuizLesson = (): LessonItem => ({
-  tempId: crypto.randomUUID(),
+  tempId: uuid(),
   title: 'Quiz nou',
   type: 'quiz',
   cdnVideoId: '',
@@ -255,7 +262,7 @@ export default function AdminNewCoursePage() {
   const addSection = () => {
     mutateSections((prev) => [
       ...prev,
-      { tempId: crypto.randomUUID(), title: 'Secțiune nouă', lessons: [], expanded: true },
+      { tempId: uuid(), title: 'Secțiune nouă', lessons: [], expanded: true },
     ]);
   };
 

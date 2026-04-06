@@ -231,7 +231,7 @@ export default function AdminDashboardPage() {
           >
             <option value="">— Selectează formator —</option>
             {(instructors ?? []).map((i) => (
-              <option key={i._id} value={i._id}>{i.name}</option>
+              <option key={i._id} value={i._id}>{i.name} ({i.email})</option>
             ))}
           </select>
         </div>
