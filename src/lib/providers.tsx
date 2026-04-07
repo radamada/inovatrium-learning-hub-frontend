@@ -65,14 +65,17 @@ function CartInitializer() {
 
 function ThemeProvider() {
   const dark = useThemeStore((s) => s.dark);
+  const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
-    if (dark) {
+    // Dark mode is only available for logged-in users.
+    // Logged-out visitors always see the light theme.
+    if (dark && user) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [dark]);
+  }, [dark, user]);
 
   return null;
 }
