@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-5">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-5">
         <h1 className="text-2xl font-bold text-white">Resetare parolă</h1>
         <p className="text-blue-200 text-sm mt-1">
           Introdu emailul tău și îți trimitem instrucțiuni

@@ -13,7 +13,7 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-2 w-fit">
               <GraduationCap className="text-blue-400 w-6 h-6" />
               <span className="font-bold text-white text-lg">
-                Ino<span className="text-blue-400">versity</span>
+                Ino<span className="text-indigo-400">versity</span>
               </span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">

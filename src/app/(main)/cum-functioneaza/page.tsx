@@ -60,7 +60,7 @@ export default function CumFunctioneazaPage() {
   return (
     <div className="bg-white dark:bg-slate-900">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-blue-50 via-white to-violet-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-20 px-4 text-center">
+      <section className="bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-20 px-4 text-center">
         <motion.div
           className="max-w-3xl mx-auto"
           variants={heroStagger}
