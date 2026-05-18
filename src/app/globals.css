@@ -54,18 +54,56 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* ── Ink Blue — cerneală de stilou (Royal Blue Ink) ── */
-  --color-blue-50:  hsl(222, 65%, 96%);
-  --color-blue-100: hsl(222, 60%, 91%);
-  --color-blue-200: hsl(222, 55%, 82%);
-  --color-blue-300: hsl(222, 58%, 68%);
-  --color-blue-400: hsl(222, 65%, 55%);
-  --color-blue-500: hsl(222, 72%, 45%);
-  --color-blue-600: hsl(222, 78%, 38%);
-  --color-blue-700: hsl(222, 80%, 30%);
-  --color-blue-800: hsl(222, 78%, 23%);
-  --color-blue-900: hsl(222, 75%, 17%);
-  --color-blue-950: hsl(222, 72%, 10%);
+  /* ── Royal Blue Ink (primar Inoversity, #3853A3) ── */
+  --color-blue-50:  hsl(225, 65%, 96%);
+  --color-blue-100: hsl(225, 60%, 91%);
+  --color-blue-200: hsl(225, 55%, 82%);
+  --color-blue-300: hsl(225, 50%, 68%);
+  --color-blue-400: hsl(225, 50%, 55%);
+  --color-blue-500: hsl(225, 50%, 47%);
+  --color-blue-600: hsl(225, 49%, 43%);
+  --color-blue-700: hsl(225, 52%, 35%);
+  --color-blue-800: hsl(225, 55%, 27%);
+  --color-blue-900: hsl(225, 58%, 18%);
+  --color-blue-950: hsl(225, 60%, 11%);
+
+  /* ── Indigo (ton secundar brand, #5B4FC8) ── */
+  --color-indigo-50:  hsl(247, 80%, 97%);
+  --color-indigo-100: hsl(247, 75%, 93%);
+  --color-indigo-200: hsl(247, 70%, 85%);
+  --color-indigo-300: hsl(247, 65%, 75%);
+  --color-indigo-400: hsl(247, 58%, 65%);
+  --color-indigo-500: hsl(247, 53%, 55%);
+  --color-indigo-600: hsl(247, 53%, 48%);
+  --color-indigo-700: hsl(247, 55%, 40%);
+  --color-indigo-800: hsl(247, 58%, 32%);
+  --color-indigo-900: hsl(247, 60%, 22%);
+  --color-indigo-950: hsl(247, 62%, 14%);
+
+  /* ── Vibrant Lime (accent CTA/succes, #69BC45) — emerald + green pe aceeași rampă ── */
+  --color-emerald-50:  hsl(106, 70%, 96%);
+  --color-emerald-100: hsl(106, 65%, 90%);
+  --color-emerald-200: hsl(106, 55%, 80%);
+  --color-emerald-300: hsl(106, 50%, 65%);
+  --color-emerald-400: hsl(106, 50%, 55%);
+  --color-emerald-500: hsl(106, 50%, 50%);
+  --color-emerald-600: hsl(106, 52%, 42%);
+  --color-emerald-700: hsl(106, 55%, 35%);
+  --color-emerald-800: hsl(106, 58%, 27%);
+  --color-emerald-900: hsl(106, 60%, 18%);
+  --color-emerald-950: hsl(106, 62%, 10%);
+
+  --color-green-50:  hsl(106, 70%, 96%);
+  --color-green-100: hsl(106, 65%, 90%);
+  --color-green-200: hsl(106, 55%, 80%);
+  --color-green-300: hsl(106, 50%, 65%);
+  --color-green-400: hsl(106, 50%, 55%);
+  --color-green-500: hsl(106, 50%, 50%);
+  --color-green-600: hsl(106, 52%, 42%);
+  --color-green-700: hsl(106, 55%, 35%);
+  --color-green-800: hsl(106, 58%, 27%);
+  --color-green-900: hsl(106, 60%, 18%);
+  --color-green-950: hsl(106, 62%, 10%);
 }
 
 :root {
@@ -75,7 +113,7 @@
   --card-foreground:      hsl(222, 47%, 11%);
   --popover:              hsl(0, 0%, 100%);
   --popover-foreground:   hsl(222, 47%, 11%);
-  --primary:              hsl(222, 78%, 38%);
+  --primary:              hsl(225, 49%, 43%);   /* #3853A3 */
   --primary-foreground:   hsl(0, 0%, 100%);
   --secondary:            hsl(210, 40%, 96%);
   --secondary-foreground: hsl(222, 47%, 11%);
@@ -87,7 +125,7 @@
   --destructive-foreground: hsl(0, 0%, 100%);
   --border:               hsl(214, 32%, 91%);
   --input:                hsl(214, 32%, 91%);
-  --ring:                 hsl(222, 78%, 38%);
+  --ring:                 hsl(225, 49%, 43%);   /* #3853A3 */
   --radius:               0.75rem;
   --chart-1:              hsl(222, 78%, 38%);
   --chart-2:              hsl(160, 84%, 39%);
@@ -112,7 +150,7 @@
   --card-foreground:      hsl(210, 40%, 96%);
   --popover:              hsl(222, 47%, 9%);
   --popover-foreground:   hsl(210, 40%, 96%);
-  --primary:              hsl(217, 91%, 60%);
+  --primary:              hsl(225, 70%, 60%);
   --primary-foreground:   hsl(0, 0%, 100%);
   --secondary:            hsl(217, 33%, 17%);
   --secondary-foreground: hsl(210, 40%, 96%);
@@ -124,7 +162,7 @@
   --destructive-foreground: hsl(0, 0%, 100%);
   --border:               hsl(217, 33%, 20%);
   --input:                hsl(217, 33%, 20%);
-  --ring:                 hsl(217, 91%, 60%);
+  --ring:                 hsl(225, 70%, 60%);
   --chart-1:              hsl(217, 91%, 65%);
   --chart-2:              hsl(160, 70%, 50%);
   --chart-3:              hsl(215, 25%, 40%);
@@ -137,7 +175,17 @@
   --sidebar-accent:       hsl(217, 33%, 15%);
   --sidebar-accent-foreground: hsl(210, 40%, 96%);
   --sidebar-border:       hsl(217, 33%, 20%);
-  --sidebar-ring:         hsl(217, 91%, 60%);
+  --sidebar-ring:         hsl(225, 70%, 60%);
+
+  /* Brand shades — luminozitate ridicată pentru contrast pe fundal dark */
+  --color-blue-400:    hsl(225, 70%, 65%);
+  --color-blue-600:    hsl(225, 49%, 50%);
+  --color-indigo-400:  hsl(247, 65%, 70%);
+  --color-indigo-500:  hsl(247, 60%, 65%);
+  --color-emerald-500: hsl(106, 55%, 55%);
+  --color-emerald-600: hsl(106, 55%, 50%);
+  --color-green-500:   hsl(106, 55%, 55%);
+  --color-green-600:   hsl(106, 55%, 50%);
 }
 
 @layer base {
