@@ -127,14 +127,14 @@
   --input:                hsl(214, 32%, 91%);
   --ring:                 hsl(225, 49%, 43%);   /* #3853A3 */
   --radius:               0.75rem;
-  --chart-1:              hsl(222, 78%, 38%);
+  --chart-1:              hsl(225, 49%, 43%);
   --chart-2:              hsl(160, 84%, 39%);
   --chart-3:              hsl(215, 28%, 17%);
   --chart-4:              hsl(43, 96%, 56%);
   --chart-5:              hsl(262, 83%, 58%);
   --sidebar:              hsl(215, 28%, 17%);
   --sidebar-foreground:   hsl(210, 40%, 96%);
-  --sidebar-primary:      hsl(222, 78%, 38%);
+  --sidebar-primary:      hsl(225, 49%, 43%);
   --sidebar-primary-foreground: hsl(0, 0%, 100%);
   --sidebar-accent:       hsl(217, 33%, 25%);
   --sidebar-accent-foreground: hsl(210, 40%, 96%);
@@ -163,14 +163,14 @@
   --border:               hsl(217, 33%, 20%);
   --input:                hsl(217, 33%, 20%);
   --ring:                 hsl(225, 70%, 60%);
-  --chart-1:              hsl(217, 91%, 65%);
+  --chart-1:              hsl(225, 70%, 65%);
   --chart-2:              hsl(160, 70%, 50%);
   --chart-3:              hsl(215, 25%, 40%);
   --chart-4:              hsl(43, 80%, 60%);
   --chart-5:              hsl(262, 70%, 65%);
   --sidebar:              hsl(222, 47%, 9%);
   --sidebar-foreground:   hsl(210, 40%, 96%);
-  --sidebar-primary:      hsl(217, 91%, 60%);
+  --sidebar-primary:      hsl(225, 70%, 60%);
   --sidebar-primary-foreground: hsl(0, 0%, 100%);
   --sidebar-accent:       hsl(217, 33%, 15%);
   --sidebar-accent-foreground: hsl(210, 40%, 96%);
@@ -249,21 +249,21 @@
 .dark .hover\:bg-white:hover    { background-color: hsl(222, 47%, 12%) !important; }
 
 /* ── Blue accent (brand) ── */
-.dark .bg-blue-50      { background-color: hsl(222, 50%, 14%) !important; }
-.dark .bg-blue-100     { background-color: hsl(222, 45%, 18%) !important; }
-.dark .text-blue-600   { color: hsl(217, 91%, 65%) !important; }
-.dark .text-blue-700   { color: hsl(217, 85%, 60%) !important; }
-.dark .text-blue-800   { color: hsl(217, 80%, 55%) !important; }
-.dark .text-blue-200   { color: hsl(217, 50%, 75%) !important; }
-.dark .border-blue-200 { border-color: hsl(222, 40%, 25%) !important; }
-.dark .border-blue-400 { border-color: hsl(222, 60%, 45%) !important; }
+.dark .bg-blue-50      { background-color: hsl(225, 50%, 14%) !important; }
+.dark .bg-blue-100     { background-color: hsl(225, 45%, 18%) !important; }
+.dark .text-blue-600   { color: hsl(225, 70%, 65%) !important; }
+.dark .text-blue-700   { color: hsl(225, 65%, 60%) !important; }
+.dark .text-blue-800   { color: hsl(225, 60%, 55%) !important; }
+.dark .text-blue-200   { color: hsl(225, 50%, 75%) !important; }
+.dark .border-blue-200 { border-color: hsl(225, 40%, 25%) !important; }
+.dark .border-blue-400 { border-color: hsl(225, 60%, 45%) !important; }
 
 /* ── Emerald accent (CTA / prices) ── */
-.dark .bg-emerald-50   { background-color: hsl(160, 40%, 12%) !important; }
-.dark .bg-emerald-100  { background-color: hsl(160, 35%, 16%) !important; }
-.dark .text-emerald-600 { color: hsl(160, 70%, 50%) !important; }
-.dark .text-emerald-700 { color: hsl(160, 70%, 50%) !important; }
-.dark .border-emerald-200 { border-color: hsl(160, 35%, 25%) !important; }
+.dark .bg-emerald-50   { background-color: hsl(106, 40%, 12%) !important; }
+.dark .bg-emerald-100  { background-color: hsl(106, 35%, 16%) !important; }
+.dark .text-emerald-600 { color: hsl(106, 55%, 50%) !important; }
+.dark .text-emerald-700 { color: hsl(106, 55%, 50%) !important; }
+.dark .border-emerald-200 { border-color: hsl(106, 35%, 25%) !important; }
 
 /* ── Red / destructive ── */
 .dark .bg-red-50       { background-color: hsl(0, 40%, 14%) !important; }
@@ -274,13 +274,13 @@
 .dark .border-red-200  { border-color: hsl(0, 35%, 25%) !important; }
 
 /* ── Green / success ── */
-.dark .bg-green-50     { background-color: hsl(140, 40%, 12%) !important; }
-.dark .bg-green-100    { background-color: hsl(140, 35%, 16%) !important; }
-.dark .bg-green-500    { background-color: hsl(140, 60%, 42%) !important; }
-.dark .text-green-500  { color: hsl(140, 60%, 55%) !important; }
-.dark .text-green-600  { color: hsl(140, 60%, 50%) !important; }
-.dark .text-green-700  { color: hsl(140, 55%, 48%) !important; }
-.dark .border-green-200 { border-color: hsl(140, 30%, 25%) !important; }
+.dark .bg-green-50     { background-color: hsl(106, 40%, 12%) !important; }
+.dark .bg-green-100    { background-color: hsl(106, 35%, 16%) !important; }
+.dark .bg-green-500    { background-color: hsl(106, 55%, 50%) !important; }
+.dark .text-green-500  { color: hsl(106, 55%, 55%) !important; }
+.dark .text-green-600  { color: hsl(106, 55%, 50%) !important; }
+.dark .text-green-700  { color: hsl(106, 55%, 48%) !important; }
+.dark .border-green-200 { border-color: hsl(106, 30%, 25%) !important; }
 
 /* ── Yellow / warning ── */
 .dark .bg-yellow-50    { background-color: hsl(43, 40%, 12%) !important; }
