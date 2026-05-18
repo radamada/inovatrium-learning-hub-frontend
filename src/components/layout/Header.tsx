@@ -55,7 +55,7 @@ export default function Header() {
         <Link href="/" className="flex items-center space-x-2">
           <GraduationCap className="text-indigo-600 w-7 h-7" />
           <span className="text-xl font-bold text-gray-900">
-            Edu<span className="text-indigo-600">Inovatrium</span>
+            Ino<span className="text-indigo-600">versity</span>
           </span>
         </Link>
 

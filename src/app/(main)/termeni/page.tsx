@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Termeni și Condiții — EduInovatrium',
-  description: 'Termenii și condițiile de utilizare a platformei EduInovatrium.',
+  title: 'Termeni și Condiții — Inoversity',
+  description: 'Termenii și condițiile de utilizare a platformei Inoversity.',
 };
 
 export default function TermeniPage() {
@@ -15,36 +15,36 @@ export default function TermeniPage() {
 
         <p>
           Vizitarea, utilizarea și achiziționarea cursurilor de pe platforma{' '}
-          <strong>EduInovatrium</strong> (<strong>eduinovatrium.ro</strong>) presupune acceptarea în
+          <strong>Inoversity</strong> (<strong>inoversity.ro</strong>) presupune acceptarea în
           totalitate a prezentelor Termeni și Condiții. Dacă nu ești de acord cu acești termeni, te
-          rugăm să nu utilizezi platforma. EduInovatrium își rezervă dreptul de a modifica acești
+          rugăm să nu utilizezi platforma. Inoversity își rezervă dreptul de a modifica acești
           termeni în orice moment, modificările intrând în vigoare la data publicării pe această pagină.
         </p>
 
         <section>
           <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Definiții</h2>
           <ul className="list-disc pl-5 space-y-2">
-            <li><strong>Platformă</strong> — website-ul și serviciile disponibile la adresa eduinovatrium.ro.</li>
+            <li><strong>Platformă</strong> — website-ul și serviciile disponibile la adresa inoversity.ro.</li>
             <li><strong>Utilizator</strong> — orice persoană care accesează Platforma, indiferent dacă are sau nu un cont.</li>
             <li><strong>Client</strong> — Utilizatorul care efectuează o Comandă și achiziționează unul sau mai multe Cursuri.</li>
-            <li><strong>Formator</strong> — persoana care creează și publică conținut educațional pe Platformă, în baza unui acord cu EduInovatrium.</li>
+            <li><strong>Formator</strong> — persoana care creează și publică conținut educațional pe Platformă, în baza unui acord cu Inoversity.</li>
             <li><strong>Curs</strong> — un produs digital (conținut video, materiale, exerciții) disponibil spre achiziție pe Platformă.</li>
             <li><strong>Comandă</strong> — solicitarea electronică prin care Clientul achiziționează unul sau mai multe Cursuri.</li>
-            <li><strong>Contract</strong> — Comanda confirmată de EduInovatrium, prin care Clientul dobândește acces la Cursurile achiziționate.</li>
-            <li><strong>Operator</strong> — EduInovatrium, societatea care administrează Platforma.</li>
+            <li><strong>Contract</strong> — Comanda confirmată de Inoversity, prin care Clientul dobândește acces la Cursurile achiziționate.</li>
+            <li><strong>Operator</strong> — Inoversity, societatea care administrează Platforma.</li>
           </ul>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Descrierea serviciului</h2>
           <p>
-            EduInovatrium este o platformă online de educație care permite Utilizatorilor să acceseze
+            Inoversity este o platformă online de educație care permite Utilizatorilor să acceseze
             cursuri video preînregistrate, materiale de studiu și resurse educaționale create de
             Formatori verificați. Platforma oferă acces la conținut digital și nu implică livrarea
             unor produse fizice.
           </p>
           <p className="mt-2">
-            EduInovatrium nu garantează că Platforma va fi disponibilă fără întreruperi și își rezervă
+            Inoversity nu garantează că Platforma va fi disponibilă fără întreruperi și își rezervă
             dreptul de a suspenda temporar accesul pentru operații de mentenanță, cu sau fără
             notificarea prealabilă a Utilizatorilor.
           </p>
@@ -62,10 +62,10 @@ export default function TermeniPage() {
             <li>Furnizarea de informații corecte, complete și actualizate la înregistrare</li>
             <li>Menținerea confidențialității parolei și a datelor de autentificare</li>
             <li>Toate activitățile desfășurate prin intermediul contului său</li>
-            <li>Notificarea imediată a EduInovatrium în cazul suspiciunii de acces neautorizat</li>
+            <li>Notificarea imediată a Inoversity în cazul suspiciunii de acces neautorizat</li>
           </ul>
           <p className="mt-2">
-            EduInovatrium își rezervă dreptul de a suspenda sau șterge fără preaviz conturile care
+            Inoversity își rezervă dreptul de a suspenda sau șterge fără preaviz conturile care
             încalcă prezentele Termeni și Condiții sau care sunt implicate în activități frauduloase.
           </p>
         </section>
@@ -74,12 +74,12 @@ export default function TermeniPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Prețuri și plăți</h2>
           <p>
             Prețurile cursurilor sunt afișate în lei (RON) și includ TVA, acolo unde este aplicabil.
-            EduInovatrium își rezervă dreptul de a modifica prețurile în orice moment; prețul aplicat
+            Inoversity își rezervă dreptul de a modifica prețurile în orice moment; prețul aplicat
             Comenzii este cel afișat la momentul plasării acesteia.
           </p>
           <p className="mt-2">
             Plata se efectuează exclusiv online, prin intermediul procesorului de plăți{' '}
-            <strong>Stripe</strong>. EduInovatrium nu stochează datele de card ale Clienților.
+            <strong>Stripe</strong>. Inoversity nu stochează datele de card ale Clienților.
             Tranzacțiile sunt procesate în condiții de securitate conform standardului PCI-DSS.
           </p>
           <p className="mt-2">
@@ -100,11 +100,11 @@ export default function TermeniPage() {
             <li>Distribuirea, copierea sau republicarea conținutului Cursurilor</li>
             <li>Descărcarea videoclipsurilor sau a materialelor suport</li>
             <li>Partajarea datelor de autentificare cu alte persoane</li>
-            <li>Utilizarea conținutului în scop comercial fără acordul scris al EduInovatrium</li>
+            <li>Utilizarea conținutului în scop comercial fără acordul scris al Inoversity</li>
             <li>Reproducerea sau crearea de materiale derivate din conținutul Cursurilor</li>
           </ul>
           <p className="mt-2">
-            EduInovatrium poate revoca accesul la un Curs dacă detectează utilizarea abuzivă a
+            Inoversity poate revoca accesul la un Curs dacă detectează utilizarea abuzivă a
             contului sau încălcarea drepturilor de proprietate intelectuală.
           </p>
         </section>
@@ -123,8 +123,8 @@ export default function TermeniPage() {
           </p>
           <p className="mt-2">
             Cererile de rambursare se transmit la{' '}
-            <a href="mailto:contact@eduinovatrium.ro" className="text-indigo-600 hover:underline">
-              contact@eduinovatrium.ro
+            <a href="mailto:contact@inoversity.ro" className="text-indigo-600 hover:underline">
+              contact@inoversity.ro
             </a>{' '}
             sau prin{' '}
             <Link href="/contact" className="text-indigo-600 hover:underline">
@@ -137,9 +137,9 @@ export default function TermeniPage() {
         <section>
           <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Proprietate intelectuală</h2>
           <p>
-            Tot conținutul disponibil pe EduInovatrium — inclusiv cursuri video, texte, imagini,
+            Tot conținutul disponibil pe Inoversity — inclusiv cursuri video, texte, imagini,
             logo-uri, materiale grafice și denumiri comerciale — este protejat de drepturile de autor
-            și aparține EduInovatrium sau Formatorilor licențiatori, conform Legii nr. 8/1996
+            și aparține Inoversity sau Formatorilor licențiatori, conform Legii nr. 8/1996
             privind dreptul de autor și drepturile conexe.
           </p>
           <p className="mt-2">
@@ -152,7 +152,7 @@ export default function TermeniPage() {
         <section>
           <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Conduita utilizatorilor</h2>
           <p>
-            Utilizatorii Platformei se obligă să nu utilizeze serviciile EduInovatrium pentru activități
+            Utilizatorii Platformei se obligă să nu utilizeze serviciile Inoversity pentru activități
             ilegale, defăimătoare, obscene, amenințătoare sau care aduc atingere drepturilor altor
             persoane. Sunt interzise în mod expres:
           </p>
@@ -164,7 +164,7 @@ export default function TermeniPage() {
           </ul>
           <p className="mt-2">
             Recenziile și comentariile lăsate pe Platformă trebuie să fie oneste și bazate pe
-            experiența directă cu Cursul evaluat. EduInovatrium își rezervă dreptul de a șterge orice
+            experiența directă cu Cursul evaluat. Inoversity își rezervă dreptul de a șterge orice
             conținut care încalcă regulile de conduită.
           </p>
         </section>
@@ -172,8 +172,8 @@ export default function TermeniPage() {
         <section>
           <h2 className="text-xl font-semibold text-gray-900 mb-3">9. Exonerarea de răspundere</h2>
           <p>
-            EduInovatrium nu garantează că Platforma va funcționa fără erori, omisiuni sau
-            întreruperi. Utilizatorul folosește Platforma pe propria răspundere. EduInovatrium nu va
+            Inoversity nu garantează că Platforma va funcționa fără erori, omisiuni sau
+            întreruperi. Utilizatorul folosește Platforma pe propria răspundere. Inoversity nu va
             fi responsabilă pentru daune directe, indirecte, incidentale sau consecvente rezultate din:
           </p>
           <ul className="list-disc pl-5 mt-2 space-y-1">
@@ -183,7 +183,7 @@ export default function TermeniPage() {
             <li>Utilizarea informațiilor din Cursuri în scopuri profesionale sau comerciale</li>
           </ul>
           <p className="mt-2">
-            Responsabilitatea maximă a EduInovatrium față de un Client nu va depăși suma totală plătită
+            Responsabilitatea maximă a Inoversity față de un Client nu va depăși suma totală plătită
             de acesta pe Platformă în ultimele 12 luni.
           </p>
         </section>
@@ -224,8 +224,8 @@ export default function TermeniPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">12. Contact</h2>
           <p>
             Pentru orice întrebări legate de acești termeni, ne poți contacta la{' '}
-            <a href="mailto:legal@eduinovatrium.ro" className="text-indigo-600 hover:underline">
-              legal@eduinovatrium.ro
+            <a href="mailto:legal@inoversity.ro" className="text-indigo-600 hover:underline">
+              legal@inoversity.ro
             </a>{' '}
             sau prin{' '}
             <Link href="/contact" className="text-indigo-600 hover:underline">

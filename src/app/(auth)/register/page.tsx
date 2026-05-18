@@ -61,7 +61,7 @@ export default function RegisterPage() {
     >
       <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-6 py-5">
         <h1 className="text-2xl font-bold text-white">Înregistrare</h1>
-        <p className="text-indigo-200 text-sm mt-1">Creează-ți contul EduInovatrium gratuit</p>
+        <p className="text-indigo-200 text-sm mt-1">Creează-ți contul Inoversity gratuit</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">

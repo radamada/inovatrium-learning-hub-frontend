@@ -13,7 +13,7 @@ export default function Footer() {
             <Link href="/" className="flex items-center gap-2 w-fit">
               <GraduationCap className="text-indigo-400 w-6 h-6" />
               <span className="font-bold text-white text-lg">
-                Edu<span className="text-indigo-400">Inovatrium</span>
+                Ino<span className="text-indigo-400">versity</span>
               </span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
@@ -59,7 +59,7 @@ export default function Footer() {
       <div className="border-t border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <p className="text-xs text-gray-500 text-center">
-            © {new Date().getFullYear()} EduInovatrium. Toate drepturile rezervate.
+            © {new Date().getFullYear()} Inoversity. Toate drepturile rezervate.
           </p>
         </div>
       </div>

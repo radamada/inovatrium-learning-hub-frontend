@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Politică Cookies — EduInovatrium',
-  description: 'Politica privind utilizarea cookie-urilor pe platforma EduInovatrium.',
+  title: 'Politică Cookies — Inoversity',
+  description: 'Politica privind utilizarea cookie-urilor pe platforma Inoversity.',
 };
 
 export default function PoliticaCookiesPage() {
@@ -14,8 +14,8 @@ export default function PoliticaCookiesPage() {
         <section>
           <p>
             Folosim cookie-uri pentru a vă îmbunătăți experiența pe website-ul nostru{' '}
-            <strong>eduinovatrium.ro</strong>. Această politică face parte din Politica de Confidențialitate
-            a EduInovatrium și acoperă utilizarea cookie-urilor între dispozitivul dvs. și site-ul nostru.
+            <strong>inoversity.ro</strong>. Această politică face parte din Politica de Confidențialitate
+            a Inoversity și acoperă utilizarea cookie-urilor între dispozitivul dvs. și site-ul nostru.
           </p>
           <p className="mt-2">
             Dacă nu doriți să acceptați cookie-uri, puteți instrui browserul dvs. să le refuze,
@@ -93,8 +93,8 @@ export default function PoliticaCookiesPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Contact</h2>
           <p>
             Pentru orice întrebări legate de utilizarea cookie-urilor, ne puteți contacta la:{' '}
-            <a href="mailto:privacy@eduinovatrium.ro" className="text-indigo-600 hover:underline">
-              privacy@eduinovatrium.ro
+            <a href="mailto:privacy@inoversity.ro" className="text-indigo-600 hover:underline">
+              privacy@inoversity.ro
             </a>
           </p>
         </section>

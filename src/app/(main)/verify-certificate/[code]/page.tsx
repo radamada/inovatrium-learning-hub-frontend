@@ -49,7 +49,7 @@ export default function VerifyCertificatePage({ params }: { params: Promise<{ co
               </div>
             </div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Certificat autentic</h1>
-            <p className="text-gray-500 dark:text-gray-400 mb-8">Acest certificat a fost emis de platforma EduInovatrium și este valid.</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-8">Acest certificat a fost emis de platforma Inoversity și este valid.</p>
 
             <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-700 rounded-2xl p-6 text-left space-y-4 mb-8">
               <div className="flex items-center gap-3">
