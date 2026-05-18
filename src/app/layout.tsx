@@ -7,8 +7,8 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | EduInovatrium',
-    default: 'EduInovatrium – Cursuri Online',
+    template: '%s | Inoversity',
+    default: 'Inoversity – Cursuri Online',
   },
   description:
     'Platformă de cursuri online. Învață de la experți și accesează conținut premium.',

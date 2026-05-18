@@ -73,7 +73,7 @@ function LoginForm() {
     >
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-5">
         <h1 className="text-2xl font-bold text-white">Autentificare</h1>
-        <p className="text-blue-200 text-sm mt-1">Intră în contul tău EduInovatrium</p>
+        <p className="text-blue-200 text-sm mt-1">Intră în contul tău Inoversity</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">

@@ -13,7 +13,7 @@ export async function generateMetadata(
     const course = await res.json();
 
     return {
-      title: `${course.title} | EduInovatrium`,
+      title: `${course.title} | Inoversity`,
       description: course.description?.slice(0, 160),
       openGraph: {
         title: course.title,

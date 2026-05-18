@@ -58,8 +58,8 @@ export default function ContactPage() {
             </div>
             <div>
               <p className="font-medium text-gray-900">Email</p>
-              <a href="mailto:contact@eduinovatrium.ro" className="text-sm text-blue-600 hover:underline">
-                contact@eduinovatrium.ro
+              <a href="mailto:contact@inoversity.ro" className="text-sm text-blue-600 hover:underline">
+                contact@inoversity.ro
               </a>
             </div>
           </div>
