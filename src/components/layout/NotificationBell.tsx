@@ -20,7 +20,7 @@ interface Notification {
 const typeIcon: Record<string, React.ReactNode> = {
   purchase: <ShoppingBag className="w-4 h-4 text-green-500 flex-shrink-0" />,
   refund: <RefreshCw className="w-4 h-4 text-orange-500 flex-shrink-0" />,
-  course_updated: <BookOpen className="w-4 h-4 text-indigo-500 flex-shrink-0" />,
+  course_updated: <BookOpen className="w-4 h-4 text-blue-500 flex-shrink-0" />,
 };
 
 export default function NotificationBell() {
@@ -30,7 +30,6 @@ export default function NotificationBell() {
   const { data } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => api.get('/notifications?limit=15').then((r) => r.data),
-    refetchInterval: 30000,
     refetchOnWindowFocus: true,
   });
 
@@ -51,7 +50,7 @@ export default function NotificationBell() {
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+        className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
         aria-label="Notificări"
         aria-expanded={open}
       >
@@ -75,7 +74,7 @@ export default function NotificationBell() {
               {unreadCount > 0 && (
                 <button
                   onClick={() => markAllRead.mutate()}
-                  className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 transition-colors"
+                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   <Check className="w-3.5 h-3.5" /> Marchează toate ca citite
                 </button>
@@ -93,7 +92,7 @@ export default function NotificationBell() {
                 notifications.map((n) => (
                   <div
                     key={n._id}
-                    className={`px-4 py-3 transition-colors ${n.read ? 'bg-white dark:bg-gray-800' : 'bg-indigo-50/50 dark:bg-indigo-900/20'}`}
+                    className={`px-4 py-3 transition-colors ${n.read ? 'bg-white dark:bg-gray-800' : 'bg-blue-50/50 dark:bg-blue-900/20'}`}
                   >
                     <div className="flex items-start gap-3">
                       <div className="mt-0.5">{typeIcon[n.type]}</div>
@@ -109,7 +108,7 @@ export default function NotificationBell() {
                           {!n.read && (
                             <button
                               onClick={() => markRead.mutate(n._id)}
-                              className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 transition-colors"
+                              className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
                             >
                               <Check className="w-3 h-3" /> Marchează ca citit
                             </button>
@@ -117,7 +116,7 @@ export default function NotificationBell() {
                         </div>
                       </div>
                       {!n.read && (
-                        <span className="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0 mt-1.5" />
+                        <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0 mt-1.5" />
                       )}
                     </div>
                   </div>

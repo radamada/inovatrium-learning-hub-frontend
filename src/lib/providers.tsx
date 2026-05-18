@@ -5,10 +5,11 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/sonner';
 import { makeQueryClient } from './query-client';
-import { useAuthStore } from '@/stores/auth.store';
+import { useAuthStore, setRoleCookie, clearRoleCookie } from '@/stores/auth.store';
 import { useWishlistStore } from '@/stores/wishlist.store';
 import { useCartStore } from '@/stores/cart.store';
 import { useThemeStore } from '@/stores/theme.store';
+import { tokenStore, refreshAccessToken } from '@/lib/api';
 
 /**
  * Reads the persisted auth state from localStorage SYNCHRONOUSLY inside
@@ -24,6 +25,7 @@ import { useThemeStore } from '@/stores/theme.store';
  *   The first two renders happen before any paint, so the user always sees the correct state.
  */
 function AuthHydrator() {
+  // ── Step 1: sync read from localStorage before first paint ──────────────
   useLayoutEffect(() => {
     try {
       const raw = localStorage.getItem('auth-store');
@@ -32,10 +34,36 @@ function AuthHydrator() {
       // Set synchronously — React re-renders before the browser paints,
       // so isHydrated=false is never visible to the user.
       useAuthStore.setState({ user, isHydrated: true });
+      // Re-set the user_role cookie on the frontend origin so the Next.js
+      // middleware can see it on the next page navigation. The cookie may have
+      // expired (TTL = 7 days) or been cleared by another tab, while the user
+      // object is still in localStorage.
+      if (user?.role) {
+        setRoleCookie(user.role);
+      } else {
+        clearRoleCookie();
+      }
     } catch {
       // localStorage unavailable (e.g. private browsing, storage full)
       useAuthStore.setState({ isHydrated: true });
     }
+  }, []);
+
+  // ── Step 2: proactive token refresh on page load ─────────────────────────
+  // tokenStore (access token) is in-memory and resets to null on every hard
+  // refresh. Goes through refreshAccessToken() so it shares the same mutex as
+  // the 401 interceptor — prevents a race where two parallel /auth/refresh
+  // calls rotate the refresh token against each other and force a logout.
+  useEffect(() => {
+    const { user } = useAuthStore.getState();
+    if (!user) return;
+
+    refreshAccessToken().catch(() => {
+      tokenStore.clear();
+      clearRoleCookie();
+      try { localStorage.removeItem('auth-store'); } catch {}
+      useAuthStore.setState({ user: null, isHydrated: true });
+    });
   }, []);
 
   return null;
@@ -80,10 +108,41 @@ function ThemeProvider() {
   return null;
 }
 
+/**
+ * Catches ChunkLoadErrors that escape the React error boundary.
+ * These are unhandledRejection events thrown by the webpack/turbopack HMR
+ * client when chunk hashes change mid-session (common in dev after rebuilds).
+ * Auto-reloads once — avoids infinite reload loops with a sessionStorage flag.
+ */
+function ChunkErrorRecovery() {
+  useEffect(() => {
+    const handle = (event: PromiseRejectionEvent) => {
+      const err = event.reason;
+      const isChunk =
+        err?.name === 'ChunkLoadError' ||
+        typeof err?.message === 'string' && (
+          err.message.includes('Loading chunk') ||
+          err.message.includes('Failed to load chunk')
+        );
+      if (!isChunk) return;
+      const key = '__chunk_reload__';
+      if (sessionStorage.getItem(key)) return; // already tried once
+      sessionStorage.setItem(key, '1');
+      window.location.reload();
+    };
+    window.addEventListener('unhandledrejection', handle);
+    // Clear the flag on successful load so future real errors can still recover
+    sessionStorage.removeItem('__chunk_reload__');
+    return () => window.removeEventListener('unhandledrejection', handle);
+  }, []);
+  return null;
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(makeQueryClient);
   return (
     <QueryClientProvider client={queryClient}>
+      <ChunkErrorRecovery />
       <AuthHydrator />
       <ThemeProvider />
       <WishlistInitializer />

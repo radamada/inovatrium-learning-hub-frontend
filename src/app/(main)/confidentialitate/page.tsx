@@ -28,8 +28,8 @@ export default function ConfidentialitatePage() {
             personal. Ne poți contacta la:
           </p>
           <ul className="list-disc pl-5 mt-2 space-y-1">
-            <li>Email: <a href="mailto:privacy@eduinovatrium.ro" className="text-indigo-600 hover:underline">privacy@eduinovatrium.ro</a></li>
-            <li>Formular de contact: <Link href="/contact" className="text-indigo-600 hover:underline">eduinovatrium.ro/contact</Link></li>
+            <li>Email: <a href="mailto:privacy@eduinovatrium.ro" className="text-blue-600 hover:underline">privacy@eduinovatrium.ro</a></li>
+            <li>Formular de contact: <Link href="/contact" className="text-blue-600 hover:underline">eduinovatrium.ro/contact</Link></li>
           </ul>
         </section>
 
@@ -102,7 +102,7 @@ export default function ConfidentialitatePage() {
           <ul className="list-disc pl-5 mt-2 space-y-2">
             <li>
               <strong>Stripe</strong> — procesarea plăților online (politica de confidențialitate:{' '}
-              <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">stripe.com/privacy</a>)
+              <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">stripe.com/privacy</a>)
             </li>
             <li>
               <strong>Bunny.net</strong> — hosting și livrare conținut video prin CDN
@@ -156,7 +156,7 @@ export default function ConfidentialitatePage() {
           <p className="mt-2">
             Nu folosim cookie-uri de tracking pentru publicitate terță. Poți gestiona preferințele de
             cookie-uri din{' '}
-            <Link href="/politica-cookies" className="text-indigo-600 hover:underline">
+            <Link href="/politica-cookies" className="text-blue-600 hover:underline">
               Politica Cookies
             </Link>.
           </p>
@@ -176,7 +176,7 @@ export default function ConfidentialitatePage() {
           </ul>
           <p className="mt-2">
             Pentru exercitarea oricărui drept, contactează-ne la{' '}
-            <a href="mailto:privacy@eduinovatrium.ro" className="text-indigo-600 hover:underline">
+            <a href="mailto:privacy@eduinovatrium.ro" className="text-blue-600 hover:underline">
               privacy@eduinovatrium.ro
             </a>. Răspundem în maxim <strong>30 de zile</strong> calendaristice.
           </p>
@@ -194,7 +194,7 @@ export default function ConfidentialitatePage() {
           </ul>
           <p className="mt-2">
             Poți solicita ștergerea contului oricând prin{' '}
-            <Link href="/contact" className="text-indigo-600 hover:underline">formularul de contact</Link>.
+            <Link href="/contact" className="text-blue-600 hover:underline">formularul de contact</Link>.
             Datele fiscale vor fi păstrate în continuare conform obligațiilor legale.
           </p>
         </section>
@@ -229,7 +229,7 @@ export default function ConfidentialitatePage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">12. Contact și reclamații</h2>
           <p>
             Pentru orice întrebări sau solicitări privind datele tale personale:{' '}
-            <a href="mailto:privacy@eduinovatrium.ro" className="text-indigo-600 hover:underline">
+            <a href="mailto:privacy@eduinovatrium.ro" className="text-blue-600 hover:underline">
               privacy@eduinovatrium.ro
             </a>
           </p>
@@ -240,7 +240,7 @@ export default function ConfidentialitatePage() {
           <p className="mt-2">
             <strong>Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP)</strong><br />
             B-dul G-ral. Gheorghe Magheru nr. 28-30, sector 1, București<br />
-            <a href="https://www.dataprotection.ro" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+            <a href="https://www.dataprotection.ro" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
               www.dataprotection.ro
             </a>
           </p>

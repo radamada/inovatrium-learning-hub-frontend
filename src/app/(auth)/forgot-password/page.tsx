@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
         <p className="text-gray-500 mb-6">
           Dacă emailul există în baza de date, vei primi instrucțiuni de resetare a parolei.
         </p>
-        <Link href="/login" className="text-indigo-600 hover:underline text-sm">
+        <Link href="/login" className="text-blue-600 hover:underline text-sm">
           Înapoi la autentificare
         </Link>
       </div>
@@ -46,9 +46,9 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-      <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-6 py-5">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-5">
         <h1 className="text-2xl font-bold text-white">Resetare parolă</h1>
-        <p className="text-indigo-200 text-sm mt-1">
+        <p className="text-blue-200 text-sm mt-1">
           Introdu emailul tău și îți trimitem instrucțiuni
         </p>
       </div>
@@ -58,11 +58,11 @@ export default function ForgotPasswordPage() {
           <Input id="email" type="email" placeholder="ion@example.com" {...register('email')} className="mt-1" />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
         </div>
-        <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={isSubmitting}>
+        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
           {isSubmitting ? 'Se trimite...' : 'Trimite instrucțiuni'}
         </Button>
         <p className="text-center text-sm">
-          <Link href="/login" className="text-indigo-600 hover:underline">
+          <Link href="/login" className="text-blue-600 hover:underline">
             ← Înapoi la autentificare
           </Link>
         </p>

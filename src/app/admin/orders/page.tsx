@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
-import { Download, X } from 'lucide-react';
+import { Download, X, ShoppingBag } from 'lucide-react';
 
 const statusLabel: Record<string, { label: string; class: string }> = {
   pending:   { label: 'În așteptare', class: 'bg-yellow-100 text-yellow-700' },
@@ -94,7 +94,7 @@ export default function AdminOrdersPage() {
 
   const { data: instructors = [] } = useQuery<any[]>({
     queryKey: ['admin-instructors-list'],
-    queryFn: () => api.get('/admin/instructors').then((r) => r.data),
+    queryFn: () => api.get('/admin/instructors').then((r) => r.data.instructors),
   });
 
   const { data: courses = [] } = useQuery<any[]>({
@@ -256,9 +256,12 @@ export default function AdminOrdersPage() {
           {/* Mobile cards */}
           <div className="md:hidden space-y-3">
             {orders.length === 0 ? (
-              <p className="text-center text-gray-400 dark:text-slate-500 py-12">
-                {hasFilters ? 'Nicio comandă nu corespunde filtrelor.' : 'Nu există comenzi încă.'}
-              </p>
+              <div className="bg-white dark:bg-slate-900 rounded-xl border dark:border-slate-700 p-8 text-center">
+                <ShoppingBag className="w-10 h-10 mx-auto mb-3 text-gray-300 dark:text-slate-600" />
+                <p className="text-sm text-gray-500 dark:text-slate-400">
+                  {hasFilters ? 'Nicio comandă nu corespunde filtrelor.' : 'Nu există comenzi încă.'}
+                </p>
+              </div>
             ) : orders.map((order: any) => {
               const s = statusLabel[order.status] ?? { label: order.status, class: '' };
               const isRefunded = order.status === 'refunded';
@@ -285,7 +288,7 @@ export default function AdminOrdersPage() {
                         <li key={i} className="text-gray-700 dark:text-slate-300 truncate">{item.title}</li>
                       ))}
                     </ul>
-                    <span className={`font-semibold flex-shrink-0 ${isRefunded ? 'text-red-400' : 'text-indigo-700 dark:text-indigo-400'}`}>
+                    <span className={`font-semibold flex-shrink-0 ${isRefunded ? 'text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
                       {order.total.toFixed(2)} lei
                     </span>
                   </div>
@@ -354,7 +357,7 @@ export default function AdminOrdersPage() {
                         <td className="px-4 py-3 text-gray-600 dark:text-slate-400 text-xs">
                           {instructorNames || '—'}
                         </td>
-                        <td className={`px-4 py-3 font-semibold ${isRefunded ? 'text-red-400' : 'text-indigo-700 dark:text-indigo-400'}`}>
+                        <td className={`px-4 py-3 font-semibold ${isRefunded ? 'text-red-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
                           {order.total.toFixed(2)} lei
                         </td>
                         <td className="px-4 py-3">
@@ -379,8 +382,11 @@ export default function AdminOrdersPage() {
                   })}
                   {orders.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-4 py-12 text-center text-gray-400 dark:text-slate-500">
-                        {hasFilters ? 'Nicio comandă nu corespunde filtrelor.' : 'Nu există comenzi încă.'}
+                      <td colSpan={7} className="px-4 py-12 text-center">
+                        <ShoppingBag className="w-10 h-10 mx-auto mb-3 text-gray-300 dark:text-slate-600" />
+                        <p className="text-sm text-gray-500 dark:text-slate-400">
+                          {hasFilters ? 'Nicio comandă nu corespunde filtrelor.' : 'Nu există comenzi încă.'}
+                        </p>
                       </td>
                     </tr>
                   )}

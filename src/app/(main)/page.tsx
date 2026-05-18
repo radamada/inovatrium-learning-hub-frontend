@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { GraduationCap, Sparkles, Play, ArrowRight, Check } from 'lucide-react';
+import { GraduationCap, Sparkles, HelpCircle, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import api from '@/lib/api';
@@ -16,7 +16,7 @@ import { useCartStore } from '@/stores/cart.store';
 
 function CourseCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gray-200/60">
+    <div className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden border border-gray-200/60 dark:border-slate-700">
       <Skeleton className="h-44 w-full" />
       <div className="p-5 space-y-3">
         <Skeleton className="h-5 w-3/4" />
@@ -112,27 +112,26 @@ export default function HomePage() {
           {/* Badge */}
           <motion.div
             variants={heroItem}
-            className="inline-flex items-center gap-2 bg-white border border-gray-200 text-gray-500 px-4 py-2 rounded-full text-sm font-medium mb-8 shadow-sm"
+            className="inline-flex items-center gap-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400 px-4 py-2 rounded-full text-sm font-medium mb-8 shadow-sm"
           >
-            <Sparkles className="w-4 h-4 text-indigo-600" />
-            Platforma #1 de cursuri online din România
+            <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            Locul unde expertiza întâlnește curiozitatea
           </motion.div>
 
           {/* Heading */}
           <motion.h1
             variants={heroItem}
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight mb-6"
+            className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-slate-100 leading-tight mb-6"
           >
             Învață de la{' '}
-            <span className="text-indigo-600">cei mai buni</span>{' '}
-            formatori
+            <span className="text-blue-600 dark:text-blue-400">formatori de top verificați</span>
           </motion.h1>
 
           <motion.p
             variants={heroItem}
-            className="text-gray-500 text-lg md:text-xl max-w-2xl mx-auto mb-10"
+            className="text-gray-500 dark:text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10"
           >
-            Învață în ritmul tău, de la formatori cu experiență reală.
+            Învață în ritmul tău, de la formatori cu experiență verificată.
             Cursuri bine structurate care îți deschid noi oportunități.
           </motion.p>
 
@@ -144,7 +143,7 @@ export default function HomePage() {
             <motion.button
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-3.5 text-base rounded-xl shadow-md transition-colors"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-8 py-3.5 text-base rounded-xl shadow-md transition-colors"
               onClick={() => document.getElementById('courses-section')?.scrollIntoView({ behavior: 'smooth' })}
             >
               Explorează cursurile
@@ -152,9 +151,9 @@ export default function HomePage() {
             <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
               <Link
                 href="/cum-functioneaza"
-                className="flex items-center gap-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium px-8 py-3.5 text-base rounded-xl transition-colors"
+                className="flex items-center gap-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 font-medium px-8 py-3.5 text-base rounded-xl transition-colors"
               >
-                <Play className="w-4 h-4 fill-current" />
+                <HelpCircle className="w-4 h-4" />
                 Cum funcționează
               </Link>
             </motion.div>
@@ -167,12 +166,12 @@ export default function HomePage() {
               { value: stats?.instructors, label: 'formatori verificați' },
             ].map((stat, i) => (
               <span key={stat.label} className="flex items-center gap-3">
-                {i > 0 && <span className="text-gray-300 text-lg select-none">·</span>}
+                {i > 0 && <span className="text-gray-300 dark:text-slate-600 text-lg select-none">·</span>}
                 <span className="flex items-baseline gap-1.5">
-                  <span className="text-xl font-extrabold text-indigo-600 tabular-nums leading-none">
+                  <span className="text-xl font-extrabold text-blue-600 dark:text-blue-400 tabular-nums leading-none">
                     {stat.value != null ? `${stat.value}+` : '—'}
                   </span>
-                  <span className="text-base text-gray-500 font-medium">{stat.label}</span>
+                  <span className="text-base text-gray-500 dark:text-slate-400 font-medium">{stat.label}</span>
                 </span>
               </span>
             ))}
@@ -180,9 +179,9 @@ export default function HomePage() {
 
           {/* Value props */}
           <motion.div variants={heroItem} className="flex items-center justify-center gap-5 flex-wrap mt-3">
-            {['100% online', 'Acces pe viață', 'Certificate incluse'].map((prop) => (
-              <span key={prop} className="flex items-center gap-1.5 text-sm text-gray-400">
-                <Check className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" strokeWidth={2.5} />
+            {['100% online', 'Acces nelimitat', 'Certificate incluse'].map((prop) => (
+              <span key={prop} className="flex items-center gap-1.5 text-sm text-gray-400 dark:text-slate-500">
+                <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" strokeWidth={2.5} />
                 {prop}
               </span>
             ))}
@@ -191,108 +190,110 @@ export default function HomePage() {
       </section>
 
       {/* ── Courses Section ── */}
-      <section id="courses-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Section header */}
-        <motion.div
-          className="text-center mb-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <p className="text-xs font-bold tracking-widest uppercase text-indigo-600 mb-3">TOP CURSURI</p>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-            Cursuri <span className="text-indigo-600">populare</span>
-          </h2>
-          <p className="text-gray-500 mt-3 max-w-lg mx-auto">
-            Cele mai căutate cursuri de pe platformă, alese de comunitatea noastră.
-          </p>
-        </motion.div>
-
-        <CourseFilters
-          search={search}
-          category={category}
-          level={level}
-          sortBy={sortBy}
-          onSearchChange={setSearch}
-          onCategoryChange={setCategory}
-          onLevelChange={setLevel}
-          onSortChange={setSortBy}
-        />
-
-        {data && (
-          <p className="text-sm text-gray-500 mb-4">
-            {data.total} {data.total === 1 ? 'curs găsit' : 'cursuri găsite'}
-          </p>
-        )}
-
-        {/* Grid */}
-        {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => <CourseCardSkeleton key={i} />)}
-          </div>
-        ) : courses.length === 0 ? (
+      <div className="bg-slate-50 dark:bg-slate-800/50">
+        <section id="courses-section" className="max-w-7xl 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          {/* Section header */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-20 text-gray-400"
+            className="text-center mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            <GraduationCap className="w-16 h-16 mx-auto mb-4 opacity-20" />
-            <p className="text-lg">Niciun curs găsit pentru filtrele selectate.</p>
-            <Button variant="outline" className="mt-4"
-              onClick={() => { setSearch(''); setCategory('all'); setLevel('all'); }}>
-              Resetează filtrele
-            </Button>
+            <p className="text-xs font-bold tracking-widest uppercase text-blue-600 dark:text-blue-400 mb-3">TOP CURSURI</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-slate-100">
+              Cursuri <span className="text-blue-600 dark:text-blue-400">populare</span>
+            </h2>
+            <p className="text-gray-500 dark:text-slate-400 mt-3 max-w-lg mx-auto">
+              Cele mai îndrăgite cursuri de pe platformă, alese de comunitatea noastră.
+            </p>
           </motion.div>
-        ) : (
-          <motion.div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-            variants={cardStagger}
-            initial="hidden"
-            animate="show"
-            key={JSON.stringify(params)}
-          >
-            {courses.map((course, idx) => (
-              <motion.div key={course._id} variants={cardItem}>
-                <CourseCard
-                  course={course}
-                  isEnrolled={enrollments?.includes(course._id) ?? false}
-                  priority={idx === 0}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-10">
-            <Button variant="outline" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>Înapoi</Button>
-            <span className="flex items-center px-4 text-sm text-gray-500">Pagina {page} din {totalPages}</span>
-            <Button variant="outline" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>Următor</Button>
-          </div>
-        )}
+          <CourseFilters
+            search={search}
+            category={category}
+            level={level}
+            sortBy={sortBy}
+            onSearchChange={setSearch}
+            onCategoryChange={setCategory}
+            onLevelChange={setLevel}
+            onSortChange={setSortBy}
+          />
 
-        {courses.length > 0 && (
-          <div className="text-center mt-10">
-            <Link
-              href="/courses"
-              className="inline-flex items-center gap-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-medium px-6 py-2.5 rounded-xl transition-colors text-sm"
+          {data && (
+            <p className="text-sm text-gray-500 dark:text-slate-400 mb-4">
+              {data.total} {data.total === 1 ? 'curs găsit' : 'cursuri găsite'}
+            </p>
+          )}
+
+          {/* Grid */}
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => <CourseCardSkeleton key={i} />)}
+            </div>
+          ) : courses.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-20 text-gray-400 dark:text-slate-500"
             >
-              Vezi toate cursurile <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-        )}
-      </section>
+              <GraduationCap className="w-16 h-16 mx-auto mb-4 opacity-20" />
+              <p className="text-lg">Niciun curs găsit pentru filtrele selectate.</p>
+              <Button variant="outline" className="mt-4"
+                onClick={() => { setSearch(''); setCategory('all'); setLevel('all'); }}>
+                Resetează filtrele
+              </Button>
+            </motion.div>
+          ) : (
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-6"
+              variants={cardStagger}
+              initial="hidden"
+              animate="show"
+              key={JSON.stringify(params)}
+            >
+              {courses.map((course, idx) => (
+                <motion.div key={course._id} variants={cardItem}>
+                  <CourseCard
+                    course={course}
+                    isEnrolled={enrollments?.includes(course._id) ?? false}
+                    priority={idx === 0}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2 mt-10">
+              <Button variant="outline" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>Înapoi</Button>
+              <span className="flex items-center px-4 text-sm text-gray-500 dark:text-slate-400">Pagina {page} din {totalPages}</span>
+              <Button variant="outline" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>Următor</Button>
+            </div>
+          )}
+
+          {courses.length > 0 && (
+            <div className="text-center mt-10">
+              <Link
+                href="/courses"
+                className="inline-flex items-center gap-2 border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 font-medium px-6 py-2.5 rounded-xl transition-colors text-sm"
+              >
+                Vezi toate cursurile <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          )}
+        </section>
+      </div>
 
       {/* ── CTA Banner ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <section className="max-w-7xl 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="bg-indigo-600 rounded-3xl px-8 py-14 text-center relative overflow-hidden"
+          className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl px-8 py-14 text-center relative overflow-hidden"
         >
           <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full" />
           <div className="absolute -bottom-10 -right-10 w-56 h-56 bg-white/5 rounded-full" />
@@ -307,15 +308,15 @@ export default function HomePage() {
               🚀
             </motion.div>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">Pregătit să începi?</h2>
-            <p className="text-indigo-100 text-lg mb-8 max-w-md mx-auto">
+            <p className="text-emerald-100 text-lg mb-8 max-w-md mx-auto">
               Înscrie-te gratuit și începe să înveți chiar acum.
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
               <Link
                 href="/register"
-                className="inline-flex items-center gap-2 bg-white text-indigo-600 hover:bg-indigo-50 font-semibold px-8 py-3.5 text-base rounded-xl transition-colors"
+                className="inline-flex items-center gap-2 bg-white text-emerald-700 hover:bg-emerald-50 font-semibold px-8 py-3.5 text-base rounded-xl transition-colors"
               >
-                Creează cont gratuit <ArrowRight className="w-4 h-4" />
+                Creează un cont gratuit <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>
           </div>

@@ -63,7 +63,7 @@ export default function InstructorCoursesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Cursurile mele</h1>
           <p className="text-gray-500 mt-1">Gestionează cursurile tale</p>
         </div>
-        <Button render={<Link href="/instructor/courses/new" />} className="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2">
+        <Button render={<Link href="/instructor/courses/new" />} className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-2">
           <Plus className="w-4 h-4" /> Curs nou
         </Button>
       </div>
@@ -81,7 +81,7 @@ export default function InstructorCoursesPage() {
         <div className="text-center py-20 bg-white border rounded-2xl">
           <BookOpen className="w-12 h-12 text-gray-200 mx-auto mb-4" />
           <p className="text-gray-400 mb-4">Nu ai niciun curs încă.</p>
-          <Button render={<Link href="/instructor/courses/new" />} className="bg-indigo-600 hover:bg-indigo-700">
+          <Button render={<Link href="/instructor/courses/new" />} className="bg-emerald-600 hover:bg-emerald-700">
             Creează primul curs
           </Button>
         </div>
@@ -104,7 +104,7 @@ export default function InstructorCoursesPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 text-sm">
-                    <span className="font-semibold text-indigo-700">{course.price.toFixed(2)} lei</span>
+                    <span className="font-semibold text-emerald-700">{course.price.toFixed(2)} lei</span>
                     <span className="text-gray-500">{Math.max(0, course.enrollmentCount)} înrolați</span>
                   </div>
                   <div className="flex items-center gap-1">
@@ -162,7 +162,7 @@ export default function InstructorCoursesPage() {
                           {course.published ? 'Publicat' : 'Draft'}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-right font-semibold text-indigo-700">
+                      <td className="px-4 py-3 text-right font-semibold text-emerald-700">
                         {course.price.toFixed(2)} lei
                       </td>
                       <td className="px-4 py-3 text-right text-gray-600">

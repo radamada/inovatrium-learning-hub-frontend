@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 import api from '@/lib/api';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Search, X, Percent } from 'lucide-react';
+import { Search, X, Percent, Users as UsersIcon } from 'lucide-react';
 
 export default function AdminUsersPage() {
   const qc = useQueryClient();
@@ -105,7 +105,7 @@ export default function AdminUsersPage() {
 
   const roleBadgeColor: Record<string, string> = {
     admin: 'bg-red-100 text-red-700',
-    instructor: 'bg-indigo-100 text-indigo-700',
+    instructor: 'bg-blue-100 text-blue-700',
     student: 'bg-green-100 text-green-700',
   };
 
@@ -219,6 +219,15 @@ export default function AdminUsersPage() {
       <div className="md:hidden space-y-3">
         {isLoading
           ? [1,2,3].map((i) => <Skeleton key={i} className="h-24 w-full rounded-xl" />)
+          : users.length === 0
+          ? (
+            <div className="bg-white rounded-xl border p-8 text-center">
+              <UsersIcon className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+              <p className="text-sm text-gray-500">
+                {search ? `Niciun utilizator pentru „${search}".` : 'Niciun utilizator înregistrat încă.'}
+              </p>
+            </div>
+          )
           : users.map((user: any) => (
             <div key={user._id} className="bg-white rounded-xl border p-4">
               <div className="flex items-start justify-between gap-2 mb-3">
@@ -294,6 +303,16 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody className="divide-y">
+                {users.length === 0 && (
+                  <tr>
+                    <td colSpan={showRevenueShare ? 6 : 5} className="px-4 py-12 text-center">
+                      <UsersIcon className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+                      <p className="text-sm text-gray-500">
+                        {search ? `Niciun utilizator pentru „${search}".` : 'Niciun utilizator înregistrat încă.'}
+                      </p>
+                    </td>
+                  </tr>
+                )}
                 {users.map((user: any) => (
                   <tr key={user._id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">

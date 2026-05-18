@@ -91,6 +91,7 @@ export default function AdminCoursesPage() {
               render={(props: React.HTMLAttributes<HTMLButtonElement>) => (
                 <button
                   {...props}
+                  aria-label="Setări pagină"
                   className={`p-2 rounded-lg border transition-colors ${deleteMode ? 'border-red-300 bg-red-50 text-red-600' : 'border-gray-200 text-gray-400 hover:text-gray-600 hover:border-gray-300'}`}
                 >
                   <Settings2 className="w-4 h-4" />
@@ -111,7 +112,7 @@ export default function AdminCoursesPage() {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button render={<Link href="/admin/courses/new" />} className="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2">
+          <Button render={<Link href="/admin/courses/new" />} className="bg-emerald-600 hover:bg-emerald-700 flex items-center gap-2">
             <Plus className="w-4 h-4" /> Curs nou
           </Button>
         </div>
@@ -130,7 +131,7 @@ export default function AdminCoursesPage() {
         <div className="text-center py-20 bg-white border rounded-2xl">
           <BookOpen className="w-12 h-12 text-gray-200 mx-auto mb-4" />
           <p className="text-gray-400 mb-4">Nu există cursuri. Creează primul curs!</p>
-          <Button render={<Link href="/admin/courses/new" />} className="bg-indigo-600 hover:bg-indigo-700">
+          <Button render={<Link href="/admin/courses/new" />} className="bg-emerald-600 hover:bg-emerald-700">
             Creează primul curs
           </Button>
         </div>
@@ -153,7 +154,7 @@ export default function AdminCoursesPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 text-sm">
-                    <span className="font-semibold text-indigo-700">{course.price.toFixed(2)} lei</span>
+                    <span className="font-semibold text-emerald-700">{course.price.toFixed(2)} lei</span>
                     {course.enrollmentCount != null && (
                       <span className="text-gray-500">{Math.max(0, course.enrollmentCount)} înrolați</span>
                     )}
@@ -225,7 +226,7 @@ export default function AdminCoursesPage() {
                           {course.published ? 'Publicat' : 'Draft'}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-right font-semibold text-indigo-700">
+                      <td className="px-4 py-3 text-right font-semibold text-emerald-700">
                         {course.price.toFixed(2)} lei
                       </td>
                       <td className="px-4 py-3 text-right text-gray-600">

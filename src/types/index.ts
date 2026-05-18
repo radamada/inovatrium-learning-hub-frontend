@@ -47,8 +47,8 @@ export interface Course {
 export interface QuizQuestion {
   question: string;
   options: string[];
-  // correctIndex is stripped server-side for students; present only for editors
-  correctIndex?: number;
+  // correctIndexes is stripped server-side for students; present only for editors
+  correctIndexes?: number[];
 }
 
 export interface QuizResult {

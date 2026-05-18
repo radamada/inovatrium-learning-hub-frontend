@@ -36,6 +36,36 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+/**
+ * Single-flight refresh. Both the 401 interceptor and AuthHydrator's proactive
+ * boot-time refresh go through this — the mutex guarantees a single in-flight
+ * POST /auth/refresh. Without this, two parallel refresh calls race and the
+ * loser's rotated refresh token gets invalidated, forcing a spurious logout.
+ */
+export async function refreshAccessToken(): Promise<string> {
+  if (isRefreshing) {
+    return new Promise<string>((resolve, reject) => {
+      failedQueue.push({ resolve, reject });
+    });
+  }
+  isRefreshing = true;
+  try {
+    const { data } = await axios.post(
+      `${API_URL}/api/auth/refresh`,
+      {},
+      { withCredentials: true },
+    );
+    tokenStore.set(data.accessToken);
+    processQueue(null, data.accessToken);
+    return data.accessToken;
+  } catch (err) {
+    processQueue(err, null);
+    throw err;
+  } finally {
+    isRefreshing = false;
+  }
+}
+
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
@@ -58,28 +88,12 @@ api.interceptors.response.use(
         return Promise.reject(error);
       }
 
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        }).then((token) => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
-        });
-      }
       originalRequest._retry = true;
-      isRefreshing = true;
       try {
-        const { data } = await axios.post(
-          `${API_URL}/api/auth/refresh`,
-          {},
-          { withCredentials: true },
-        );
-        tokenStore.set(data.accessToken);
-        processQueue(null, data.accessToken);
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+        const accessToken = await refreshAccessToken();
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (err: any) {
-        processQueue(err, null);
         tokenStore.clear();
         if (typeof window !== 'undefined') {
           // Don't redirect if already on an auth page (prevents loops)
@@ -93,8 +107,6 @@ api.interceptors.response.use(
           }
         }
         return Promise.reject(err);
-      } finally {
-        isRefreshing = false;
       }
     }
     // Global 403 handler — role mismatch or forbidden

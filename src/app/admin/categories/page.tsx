@@ -85,7 +85,7 @@ export default function AdminCategoriesPage() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
               disabled={createMutation.isPending || !name.trim()}
             >
               {createMutation.isPending ? (
@@ -125,7 +125,7 @@ export default function AdminCategoriesPage() {
                 {categories.map((cat) => (
                   <li key={cat._id} className="flex items-center justify-between px-5 py-3 hover:bg-gray-50">
                     <div className="flex items-center gap-3">
-                      <Tag className="w-4 h-4 text-indigo-400 flex-shrink-0" />
+                      <Tag className="w-4 h-4 text-blue-400 flex-shrink-0" />
                       <div>
                         <p className="font-medium text-gray-900 text-sm">{cat.name}</p>
                         <p className="text-xs text-gray-400">{cat.slug}</p>

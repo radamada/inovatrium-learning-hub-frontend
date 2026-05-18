@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { loadStripe } from '@stripe/stripe-js';
@@ -54,7 +54,7 @@ function CheckoutForm({ orderId, onSuccess }: { orderId: string; onSuccess: () =
       <Button
         type="submit"
         disabled={!stripe || isProcessing}
-        className="w-full bg-indigo-600 hover:bg-indigo-700 py-6 text-base font-semibold"
+        className="w-full bg-emerald-600 hover:bg-emerald-700 py-6 text-base font-semibold"
       >
         <Lock className="w-4 h-4 mr-2" />
         {isProcessing ? 'Se procesează...' : 'Plătește acum'}
@@ -88,6 +88,9 @@ export default function CheckoutPage() {
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [isFakePaying, setIsFakePaying] = useState(false);
   const [orderReady, setOrderReady] = useState(false);
+  // Refs for true in-flight guards — state updates are async, refs are sync.
+  const creatingOrderRef = useRef(false);
+  const fakePayingRef = useRef(false);
 
   // Coupon state
   const [couponInput, setCouponInput] = useState('');
@@ -171,6 +174,8 @@ export default function CheckoutPage() {
   };
 
   const handleCreateOrder = async () => {
+    if (creatingOrderRef.current) return;
+    creatingOrderRef.current = true;
     setIsCreatingOrder(true);
     try {
       const { data } = await api.post('/orders', {
@@ -182,11 +187,14 @@ export default function CheckoutPage() {
     } catch (err: any) {
       toast.error(err?.response?.data?.message ?? 'Eroare la crearea comenzii');
     } finally {
+      creatingOrderRef.current = false;
       setIsCreatingOrder(false);
     }
   };
 
   const handleFakePay = async () => {
+    if (fakePayingRef.current) return;
+    fakePayingRef.current = true;
     setIsFakePaying(true);
     try {
       await api.post('/orders/fake-pay', {
@@ -196,10 +204,12 @@ export default function CheckoutPage() {
       queryClient.invalidateQueries({ queryKey: ['enrollments'] });
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       await fetchWishlist();
-      toast.success('Plată simulată reușită! Cursurile sunt acum disponibile.');
+      // No toast here — the dashboard shows the success toast after redirect.
+      // Showing one in both places stacks two toasts on top of each other.
       router.push('/dashboard?success=1');
     } catch (err: any) {
       toast.error(err?.response?.data?.message ?? 'Eroare la plata simulată');
+      fakePayingRef.current = false;
       setIsFakePaying(false);
     }
   };
@@ -214,7 +224,7 @@ export default function CheckoutPage() {
 
   if (isLoadingCart) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-8">
+      <div className="max-w-4xl 3xl:max-w-[1100px] mx-auto px-4 py-12 grid md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-40 w-full" />
@@ -229,9 +239,9 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-4xl 3xl:max-w-[1100px] mx-auto px-4 py-12">
       <h1 className="text-2xl font-bold mb-8 flex items-center gap-2">
-        <ShoppingCart className="text-indigo-600" /> Finalizare comandă
+        <ShoppingCart className="text-blue-600" /> Finalizare comandă
       </h1>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -268,7 +278,7 @@ export default function CheckoutPage() {
               </div>
 
               <Button
-                className="w-full bg-indigo-600 hover:bg-indigo-700 py-6 text-base font-semibold"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 py-6 text-base font-semibold"
                 onClick={handleCreateOrder}
                 disabled={isCreatingOrder}
               >
@@ -300,7 +310,7 @@ export default function CheckoutPage() {
                   <p className="font-medium text-sm">{item.title}</p>
                   <p className="text-xs text-gray-500">{item.instructorId?.name}</p>
                 </div>
-                <span className="font-semibold text-indigo-700 text-sm">
+                <span className="font-semibold text-emerald-700 text-sm">
                   {item.price.toFixed(2)} lei
                 </span>
               </div>
@@ -373,7 +383,7 @@ export default function CheckoutPage() {
             )}
             <div className="flex justify-between items-center text-lg font-bold pt-1">
               <span>Total:</span>
-              <span className="text-indigo-700">{finalTotal.toFixed(2)} lei</span>
+              <span className="text-emerald-700">{finalTotal.toFixed(2)} lei</span>
             </div>
           </div>
         </div>

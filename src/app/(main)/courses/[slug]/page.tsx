@@ -105,7 +105,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
 
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-5xl 3xl:max-w-[1400px] mx-auto px-4 py-8 space-y-6">
         <Skeleton className="h-10 w-3/4" />
         <Skeleton className="h-64 w-full rounded-xl" />
         <Skeleton className="h-40 w-full" />
@@ -143,7 +143,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-5xl 3xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
@@ -174,12 +174,12 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
 
           {/* What you'll learn */}
           {course.whatYouLearn.length > 0 && (
-            <div className="bg-indigo-50 rounded-xl p-5 mb-6">
+            <div className="bg-blue-50 rounded-xl p-5 mb-6">
               <h2 className="font-bold text-lg mb-3">Ce vei învăța</h2>
               <ul className="grid sm:grid-cols-2 gap-2">
                 {course.whatYouLearn.map((item, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
-                    <ChevronRight className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                    <ChevronRight className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                     {item}
                   </li>
                 ))}
@@ -213,15 +213,15 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                         {section.lessons.map((lesson) => (
                           <div
                             key={lesson._id}
-                            className={`flex items-center gap-3 p-3 pl-6 text-sm ${lesson.isFree ? 'cursor-pointer hover:bg-indigo-50 transition-colors' : ''}`}
+                            className={`flex items-center gap-3 p-3 pl-6 text-sm ${lesson.isFree ? 'cursor-pointer hover:bg-blue-50 transition-colors' : ''}`}
                             onClick={lesson.isFree ? () => openPreview(lesson) : undefined}
                           >
                             {lesson.isFree ? (
-                              <Play className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                              <Play className="w-4 h-4 text-blue-600 flex-shrink-0" />
                             ) : (
                               <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />
                             )}
-                            <span className={lesson.isFree ? 'text-indigo-600' : 'text-gray-700'}>
+                            <span className={lesson.isFree ? 'text-blue-600' : 'text-gray-700'}>
                               {lesson.title}
                             </span>
                             {lesson.isFree && (
@@ -249,7 +249,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
 
             {/* Write review — enrolled users only */}
             {isEnrolled && (
-              <div className="bg-indigo-50 rounded-xl p-4 mb-6">
+              <div className="bg-blue-50 rounded-xl p-4 mb-6">
                 <p className="font-semibold text-sm mb-3">Lasă o recenzie</p>
                 <div className="flex gap-1 mb-3">
                   {[1, 2, 3, 4, 5].map((s) => (
@@ -279,7 +279,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                 />
                 <Button
                   size="sm"
-                  className="bg-indigo-600 hover:bg-indigo-700"
+                  className="bg-emerald-600 hover:bg-emerald-700"
                   disabled={!reviewComment.trim() || submitReview.isPending}
                   onClick={() => submitReview.mutate()}
                 >
@@ -293,7 +293,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
               {reviews?.map((review) => (
                 <div key={review._id} className="border rounded-xl p-4">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-700">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-sm font-bold text-blue-700">
                       {review.userId.name[0]?.toUpperCase()}
                     </div>
                     <div>
@@ -336,7 +336,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
               </div>
             )}
             <div className="p-5">
-              <div className="text-3xl font-extrabold text-indigo-700 mb-4">
+              <div className="text-3xl font-extrabold text-emerald-700 mb-4">
                 {course.price.toFixed(2)} lei
               </div>
               {isEnrolled ? (
@@ -348,14 +348,14 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                 </Button>
               ) : inCart ? (
                 <Button
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 mb-3"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 mb-3"
                   render={<Link href="/checkout" />}
                 >
                   Finalizează comanda
                 </Button>
               ) : (
                 <Button
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 mb-3"
+                  className="w-full bg-emerald-600 hover:bg-emerald-700 mb-3"
                   onClick={handleAddToCart}
                   disabled={isAddingToCart}
                 >
@@ -371,7 +371,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                   {course.instructorId?._id ? (
                     <Link
                       href={`/instructors/${course.instructorId._id}`}
-                      className="text-indigo-600 hover:underline"
+                      className="text-blue-600 hover:underline"
                     >
                       {course.instructorId.name}
                     </Link>
@@ -390,7 +390,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
       {alsoBought && alsoBought.length > 0 && (
         <div className="mt-10">
           <h2 className="text-xl font-bold mb-4">Studenții care au cumpărat asta au mai cumpărat</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-5 gap-4">
             {alsoBought.map((c) => (
               <Link key={c._id} href={`/courses/${c.slug}`} className="bg-white border rounded-xl overflow-hidden hover:shadow-md transition group">
                 {c.thumbnail && (
@@ -407,7 +407,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ slug: s
                         <Star className="w-3 h-3 fill-amber-400" /> {c.rating.toFixed(1)}
                       </span>
                     )}
-                    <span className="text-sm font-bold text-indigo-700 ml-auto">{c.price.toFixed(2)} lei</span>
+                    <span className="text-sm font-bold text-emerald-700 ml-auto">{c.price.toFixed(2)} lei</span>
                   </div>
                 </div>
               </Link>

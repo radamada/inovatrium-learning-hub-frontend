@@ -63,8 +63,8 @@ export default function InstructorDashboard() {
       value: stats?.totalCourses ?? 0,
       sub: `${stats?.publishedCourses ?? 0} publicate`,
       icon: BookOpen,
-      color: 'text-indigo-600',
-      bg: 'bg-indigo-50',
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
       tooltip: 'Numărul total de cursuri create de tine, indiferent dacă sunt publicate sau draft.',
     },
     {
@@ -111,7 +111,7 @@ export default function InstructorDashboard() {
       </motion.div>
 
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-5 gap-6"
         initial="hidden"
         animate="show"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
@@ -189,7 +189,7 @@ export default function InstructorDashboard() {
                 contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12 }}
                 cursor={{ fill: '#f5f3ff' }}
               />
-              <Bar dataKey="revenue" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={48} />
+              <Bar dataKey="revenue" fill="#427AA1" radius={[4, 4, 0, 0]} maxBarSize={48} />
             </BarChart>
           </ResponsiveContainer>
         )}

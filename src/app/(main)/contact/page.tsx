@@ -41,7 +41,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <div className="max-w-5xl 3xl:max-w-[1400px] mx-auto px-4 sm:px-6 py-12">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-900">Contact</h1>
         <p className="text-gray-500 mt-2">
@@ -53,20 +53,20 @@ export default function ContactPage() {
         {/* Info panel */}
         <div className="space-y-6">
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-indigo-50 rounded-lg shrink-0">
-              <Mail className="w-5 h-5 text-indigo-600" />
+            <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+              <Mail className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <p className="font-medium text-gray-900">Email</p>
-              <a href="mailto:contact@eduinovatrium.ro" className="text-sm text-indigo-600 hover:underline">
+              <a href="mailto:contact@eduinovatrium.ro" className="text-sm text-blue-600 hover:underline">
                 contact@eduinovatrium.ro
               </a>
             </div>
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-indigo-50 rounded-lg shrink-0">
-              <Phone className="w-5 h-5 text-indigo-600" />
+            <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+              <Phone className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <p className="font-medium text-gray-900">Telefon</p>
@@ -76,8 +76,8 @@ export default function ContactPage() {
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-indigo-50 rounded-lg shrink-0">
-              <MapPin className="w-5 h-5 text-indigo-600" />
+            <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+              <MapPin className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <p className="font-medium text-gray-900">Adresă</p>
@@ -86,8 +86,8 @@ export default function ContactPage() {
           </div>
 
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-indigo-50 rounded-lg shrink-0">
-              <MessageSquare className="w-5 h-5 text-indigo-600" />
+            <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+              <MessageSquare className="w-5 h-5 text-blue-600" />
             </div>
             <div>
               <p className="font-medium text-gray-900">Timp de răspuns</p>
@@ -164,7 +164,7 @@ export default function ContactPage() {
 
               <Button
                 type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700"
+                className="w-full bg-emerald-600 hover:bg-emerald-700"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Se trimite...' : 'Trimite mesajul'}

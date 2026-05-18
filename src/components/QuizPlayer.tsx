@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle, XCircle, RotateCcw, ChevronRight } from 'lucide-react';
+import { CheckCircle, XCircle, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import api from '@/lib/api';
@@ -15,19 +15,25 @@ interface QuizPlayerProps {
 
 export default function QuizPlayer({ lesson, courseId, onPassed }: QuizPlayerProps) {
   const questions = lesson.questions ?? [];
-  const [selected, setSelected] = useState<(number | null)[]>(
-    Array(questions.length).fill(null),
+  const [selected, setSelected] = useState<Set<number>[]>(
+    questions.map(() => new Set()),
   );
   const [result, setResult] = useState<QuizResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const allAnswered = selected.every((s) => s !== null);
+  const allAnswered = selected.every((s) => s.size > 0);
 
-  const handleSelect = (qIdx: number, optIdx: number) => {
+  const handleToggle = (qIdx: number, optIdx: number) => {
     if (result) return; // locked after submit
     setSelected((prev) => {
       const next = [...prev];
-      next[qIdx] = optIdx;
+      const set = new Set(next[qIdx]);
+      if (set.has(optIdx)) {
+        set.delete(optIdx);
+      } else {
+        set.add(optIdx);
+      }
+      next[qIdx] = set;
       return next;
     });
   };
@@ -36,9 +42,10 @@ export default function QuizPlayer({ lesson, courseId, onPassed }: QuizPlayerPro
     if (!allAnswered) return;
     setSubmitting(true);
     try {
+      const answers = selected.map((s) => [...s].sort());
       const { data } = await api.post<QuizResult>(
         `/enrollments/${courseId}/quiz/${lesson._id}/submit`,
-        { answers: selected },
+        { answers },
       );
       setResult(data);
       if (data.passed) {
@@ -53,7 +60,7 @@ export default function QuizPlayer({ lesson, courseId, onPassed }: QuizPlayerPro
   };
 
   const handleRetry = () => {
-    setSelected(Array(questions.length).fill(null));
+    setSelected(questions.map(() => new Set()));
     setResult(null);
   };
 
@@ -113,33 +120,34 @@ export default function QuizPlayer({ lesson, courseId, onPassed }: QuizPlayerPro
       <div className="space-y-6">
         {questions.map((q, qIdx) => (
           <div key={qIdx} className="bg-white rounded-xl border p-5 shadow-sm">
-            <p className="font-semibold text-gray-800 mb-3">
-              <span className="text-indigo-600 mr-2">{qIdx + 1}.</span>
+            <p className="font-semibold text-gray-800 mb-1">
+              <span className="text-blue-600 mr-2">{qIdx + 1}.</span>
               {q.question}
             </p>
+            <p className="text-xs text-gray-400 mb-3">Selectează toate răspunsurile corecte</p>
             <div className="space-y-2">
               {q.options.map((opt, oIdx) => {
-                const isSelected = selected[qIdx] === oIdx;
+                const isSelected = selected[qIdx]?.has(oIdx);
                 return (
                   <button
                     key={oIdx}
-                    onClick={() => handleSelect(qIdx, oIdx)}
+                    onClick={() => handleToggle(qIdx, oIdx)}
                     disabled={!!result}
                     className={`w-full text-left flex items-center gap-3 rounded-lg border px-4 py-3 text-sm transition
-                      ${result ? 'cursor-default' : 'cursor-pointer hover:bg-indigo-50'}
-                      ${isSelected && !result ? 'border-indigo-500 bg-indigo-50 font-medium' : ''}
+                      ${result ? 'cursor-default' : 'cursor-pointer hover:bg-blue-50'}
+                      ${isSelected && !result ? 'border-blue-500 bg-blue-50 font-medium' : ''}
                       ${isSelected && result ? (result.passed ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50') : ''}
                       ${!isSelected ? 'border-gray-200 bg-white' : ''}
                     `}
                   >
                     <span
-                      className={`flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center text-xs
-                        ${isSelected && !result ? 'border-indigo-500 bg-indigo-500 text-white' : ''}
+                      className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center text-xs
+                        ${isSelected && !result ? 'border-blue-500 bg-blue-500 text-white' : ''}
                         ${isSelected && result ? (result.passed ? 'border-green-500 bg-green-500 text-white' : 'border-red-400 bg-red-400 text-white') : ''}
                         ${!isSelected ? 'border-gray-300' : ''}
                       `}
                     >
-                      {isSelected ? String.fromCharCode(65 + oIdx) : ''}
+                      {isSelected ? '✓' : ''}
                     </span>
                     {opt}
                   </button>
@@ -156,7 +164,7 @@ export default function QuizPlayer({ lesson, courseId, onPassed }: QuizPlayerPro
           <Button
             onClick={handleSubmit}
             disabled={!allAnswered || submitting}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
           >
             {submitting ? 'Se verifică...' : 'Trimite răspunsurile'}
           </Button>

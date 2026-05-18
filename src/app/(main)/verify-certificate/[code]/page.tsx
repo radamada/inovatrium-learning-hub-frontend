@@ -18,7 +18,7 @@ export default function VerifyCertificatePage({ params }: { params: Promise<{ co
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -37,7 +37,7 @@ export default function VerifyCertificatePage({ params }: { params: Promise<{ co
             <p className="text-gray-500 dark:text-gray-400 mb-6">
               Certificatul nu a putut fi verificat. Codul poate fi incorect sau expirat.
             </p>
-            <Link href="/" className="text-indigo-600 dark:text-indigo-400 hover:underline text-sm">
+            <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-sm">
               Înapoi la platformă
             </Link>
           </>
@@ -51,20 +51,20 @@ export default function VerifyCertificatePage({ params }: { params: Promise<{ co
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Certificat autentic</h1>
             <p className="text-gray-500 dark:text-gray-400 mb-8">Acest certificat a fost emis de platforma EduInovatrium și este valid.</p>
 
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-700 rounded-2xl p-6 text-left space-y-4 mb-8">
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-700 rounded-2xl p-6 text-left space-y-4 mb-8">
               <div className="flex items-center gap-3">
-                <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+                <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                 <div>
                   <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide">Student</p>
                   <p className="font-semibold text-gray-900 dark:text-white">{data.studentName}</p>
                 </div>
               </div>
-              <div className="border-t border-indigo-100 dark:border-indigo-800" />
+              <div className="border-t border-blue-100 dark:border-blue-800" />
               <div>
                 <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Curs absolvit</p>
                 <p className="font-semibold text-gray-900 dark:text-white">{data.courseTitle}</p>
               </div>
-              <div className="border-t border-indigo-100 dark:border-indigo-800" />
+              <div className="border-t border-blue-100 dark:border-blue-800" />
               <div>
                 <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Data finalizării</p>
                 <p className="font-medium text-gray-700 dark:text-gray-300">
@@ -77,7 +77,7 @@ export default function VerifyCertificatePage({ params }: { params: Promise<{ co
 
             <Link
               href={`/courses/${data.courseSlug}`}
-              className="inline-flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
+              className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
               <GraduationCap className="w-4 h-4" />
               Vezi cursul pe platformă

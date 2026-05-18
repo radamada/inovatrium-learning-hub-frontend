@@ -93,7 +93,7 @@ export default function PoliticaCookiesPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Contact</h2>
           <p>
             Pentru orice întrebări legate de utilizarea cookie-urilor, ne puteți contacta la:{' '}
-            <a href="mailto:privacy@eduinovatrium.ro" className="text-indigo-600 hover:underline">
+            <a href="mailto:privacy@eduinovatrium.ro" className="text-blue-600 hover:underline">
               privacy@eduinovatrium.ro
             </a>
           </p>

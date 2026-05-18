@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { User, Lock, Save, Camera } from 'lucide-react';
+import { User, Lock, Save, Camera, Mail } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,12 @@ interface ProfileForm {
   name: string;
   bio: string;
 }
+
+const emailSchema = z.object({
+  newEmail: z.string().email('Adresa de email nu este validă'),
+  currentPassword: z.string().optional(),
+});
+type EmailForm = z.infer<typeof emailSchema>;
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, 'Parola curentă este obligatorie'),
@@ -47,6 +53,9 @@ export default function ProfilePage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [savingEmail, setSavingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -69,6 +78,11 @@ export default function ProfilePage() {
   const passwordForm = useForm<PasswordForm>({
     resolver: zodResolver(passwordSchema),
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+  });
+
+  const emailForm = useForm<EmailForm>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: { newEmail: '', currentPassword: '' },
   });
 
   useEffect(() => {
@@ -169,6 +183,25 @@ export default function ProfilePage() {
     }
   }
 
+  async function onChangeEmail(data: EmailForm) {
+    setSavingEmail(true);
+    try {
+      await api.post('/users/me/email', {
+        newEmail: data.newEmail,
+        currentPassword: data.currentPassword || undefined,
+      });
+      setEmailSent(true);
+      setShowEmailForm(false);
+      emailForm.reset();
+      toast.success('Email de confirmare trimis la adresa ta curentă');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message ?? 'Eroare la schimbarea email-ului';
+      toast.error(Array.isArray(msg) ? msg[0] : msg);
+    } finally {
+      setSavingEmail(false);
+    }
+  }
+
   if (!user) return null;
 
   const displayAvatar = avatarPreview ?? user.avatar ?? '';
@@ -188,7 +221,7 @@ export default function ProfilePage() {
         {/* Profile info */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6">
           <div className="flex items-center gap-2 mb-5">
-            <User className="w-4 h-4 text-indigo-600" />
+            <User className="w-4 h-4 text-blue-600" />
             <h2 className="font-semibold text-gray-800">Informații personale</h2>
           </div>
 
@@ -197,7 +230,7 @@ export default function ProfilePage() {
             <div className="relative group">
               <Avatar className="h-16 w-16">
                 <AvatarImage src={displayAvatar} />
-                <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xl font-bold">
+                <AvatarFallback className="bg-blue-100 text-blue-700 text-xl font-bold">
                   {user.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -228,7 +261,7 @@ export default function ProfilePage() {
             <div className="text-sm text-gray-500">
               <p className="font-medium text-gray-700">{user.name}</p>
               <p>{user.email}</p>
-              <p className="text-indigo-600">
+              <p className="text-blue-600">
                 {user.role === 'student' ? 'Student' : user.role === 'instructor' ? 'Formator' : user.role === 'admin' ? 'Admin' : user.role}
               </p>
               <p className="text-xs text-gray-400 mt-0.5">Click pe poză pentru a o schimba · max 5 MB</p>
@@ -283,7 +316,7 @@ export default function ProfilePage() {
         {/* Change password */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6">
           <div className="flex items-center gap-2 mb-5">
-            <Lock className="w-4 h-4 text-indigo-600" />
+            <Lock className="w-4 h-4 text-blue-600" />
             <h2 className="font-semibold text-gray-800">Schimbă parola</h2>
           </div>
 
@@ -332,6 +365,85 @@ export default function ProfilePage() {
               {savingPassword ? 'Se schimbă...' : 'Schimbă parola'}
             </Button>
           </form>
+        </div>
+
+        {/* Change email */}
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mt-6">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-blue-600" />
+              <h2 className="font-semibold text-gray-800">Schimbă adresa de email</h2>
+            </div>
+            {!showEmailForm && !emailSent && (
+              <button
+                type="button"
+                onClick={() => setShowEmailForm(true)}
+                className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Modifică
+              </button>
+            )}
+          </div>
+
+          {emailSent ? (
+            <div className="rounded-lg bg-green-50 border border-green-200 p-4 text-sm text-green-800">
+              Un email de confirmare a fost trimis la <strong>{user.email}</strong>. Urmează instrucțiunile din email pentru a finaliza schimbarea.
+            </div>
+          ) : showEmailForm ? (
+            <form onSubmit={emailForm.handleSubmit(onChangeEmail)} className="space-y-4">
+              <div>
+                <Label htmlFor="newEmail">Adresa nouă de email</Label>
+                <Input
+                  id="newEmail"
+                  type="email"
+                  placeholder="adresa@noua.com"
+                  {...emailForm.register('newEmail')}
+                  className="mt-1"
+                />
+                {emailForm.formState.errors.newEmail && (
+                  <p className="text-xs text-red-500 mt-1">{emailForm.formState.errors.newEmail.message}</p>
+                )}
+              </div>
+
+              {user.role !== 'google' && (
+                <div>
+                  <Label htmlFor="emailCurrentPassword">Parola curentă</Label>
+                  <Input
+                    id="emailCurrentPassword"
+                    type="password"
+                    placeholder="Confirmă identitatea cu parola ta"
+                    {...emailForm.register('currentPassword')}
+                    className="mt-1"
+                  />
+                  {emailForm.formState.errors.currentPassword && (
+                    <p className="text-xs text-red-500 mt-1">{emailForm.formState.errors.currentPassword.message}</p>
+                  )}
+                </div>
+              )}
+
+              <p className="text-xs text-gray-500">
+                Vei primi un email de confirmare la adresa curentă (<strong>{user.email}</strong>), iar apoi un al doilea email la noua adresă.
+              </p>
+
+              <div className="flex gap-2">
+                <Button type="submit" disabled={savingEmail} className="gap-1.5">
+                  <Mail className="w-4 h-4" />
+                  {savingEmail ? 'Se trimite...' : 'Trimite confirmarea'}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => { setShowEmailForm(false); emailForm.reset(); }}
+                >
+                  Anulează
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <p className="text-sm text-gray-500">
+              Adresa curentă: <strong className="text-gray-700">{user.email}</strong>
+            </p>
+          )}
         </div>
       </div>
     </>

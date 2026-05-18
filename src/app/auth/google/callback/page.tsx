@@ -36,8 +36,13 @@ function GoogleCallbackHandler() {
     // Fetch full user object (confirms token is valid and account is active)
     api
       .get('/auth/me')
-      .then((res) => {
+      .then(async (res) => {
         setAuth(res.data, token);
+        // Wait for Zustand persist microtask to flush user → localStorage
+        // and the role cookie to be observable by middleware. Without this,
+        // router.replace can navigate before the destination page can read
+        // the persisted auth state, causing a flash of unauthenticated UI.
+        await new Promise((r) => setTimeout(r, 0));
         toast.success(`Bine ai venit, ${res.data.name}!`);
         router.replace(from);
       })
@@ -50,9 +55,9 @@ function GoogleCallbackHandler() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950">
       <div className="text-center">
-        <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-gray-600 text-sm">Se autentifică cu Google...</p>
       </div>
     </div>

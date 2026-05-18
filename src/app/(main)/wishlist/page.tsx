@@ -37,7 +37,7 @@ export default function WishlistPage() {
     : [];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-6xl 3xl:max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <Heart className="text-red-500 fill-red-500 w-6 h-6" />
@@ -47,7 +47,7 @@ export default function WishlistPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-6">
           {[1, 2, 3].map((i) => (
             <div key={i} className="bg-white rounded-2xl border overflow-hidden">
               <Skeleton className="h-44 w-full" />
@@ -62,12 +62,12 @@ export default function WishlistPage() {
         <div className="text-center py-20 text-gray-400">
           <Heart className="w-16 h-16 mx-auto mb-4 opacity-20" />
           <p className="text-lg mb-4">Nu ai salvat niciun curs încă.</p>
-          <Button render={<Link href="/" />} className="bg-indigo-600 hover:bg-indigo-700">
+          <Button render={<Link href="/" />} className="bg-blue-600 hover:bg-blue-700">
             Explorează cursuri
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-6">
           {courses.map((course: any) => (
             <CourseCard key={course._id} course={course} />
           ))}

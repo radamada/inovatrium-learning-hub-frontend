@@ -71,9 +71,9 @@ function LoginForm() {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
     >
-      <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-6 py-5">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-5">
         <h1 className="text-2xl font-bold text-white">Autentificare</h1>
-        <p className="text-indigo-200 text-sm mt-1">Intră în contul tău EduInovatrium</p>
+        <p className="text-blue-200 text-sm mt-1">Intră în contul tău EduInovatrium</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
@@ -107,7 +107,7 @@ function LoginForm() {
             <Label htmlFor="password">Parolă</Label>
             <Link
               href="/forgot-password"
-              className="text-xs text-indigo-600 hover:underline"
+              className="text-xs text-blue-600 hover:underline"
             >
               Ai uitat parola?
             </Link>
@@ -139,7 +139,7 @@ function LoginForm() {
 
         <Button
           type="submit"
-          className="w-full bg-indigo-600 hover:bg-indigo-700"
+          className="w-full bg-blue-600 hover:bg-blue-700"
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Se autentifică...' : 'Intră în cont'}
@@ -176,7 +176,7 @@ function LoginForm() {
 
         <p className="text-center text-sm text-gray-600">
           Nu ai cont?{' '}
-          <Link href="/register" className="text-indigo-600 font-medium hover:underline">
+          <Link href="/register" className="text-blue-600 font-medium hover:underline">
             Înregistrează-te
           </Link>
         </p>

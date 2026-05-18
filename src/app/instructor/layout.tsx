@@ -16,12 +16,12 @@ const navItems = [
 function SidebarContent({ user, pathname, onNavClick }: { user: any; pathname: string; onNavClick?: () => void }) {
   return (
     <>
-      <div className="p-4 border-b border-gray-700">
+      <div className="p-4 border-b border-slate-700/60">
         <div className="flex items-center gap-2">
-          <GraduationCap className="text-indigo-400 w-6 h-6" />
-          <span className="font-bold">Panou Formator</span>
+          <GraduationCap className="text-blue-400 w-6 h-6" />
+          <span className="font-bold text-slate-100">Panou Formator</span>
         </div>
-        <p className="text-xs text-gray-400 mt-1 truncate">{user.name}</p>
+        <p className="text-xs text-slate-400 mt-1 truncate">{user.name}</p>
       </div>
 
       <nav className="flex-1 p-4 space-y-1">
@@ -36,8 +36,8 @@ function SidebarContent({ user, pathname, onNavClick }: { user: any; pathname: s
               onClick={onNavClick}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition ${
                 isActive
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-400 hover:bg-slate-700/50 hover:text-white'
               }`}
             >
               <item.icon className="w-4 h-4" />
@@ -47,11 +47,11 @@ function SidebarContent({ user, pathname, onNavClick }: { user: any; pathname: s
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-700">
+      <div className="p-4 border-t border-slate-700/60">
         <Link
           href="/"
           onClick={onNavClick}
-          className="flex items-center gap-2 text-gray-400 hover:text-white text-sm transition"
+          className="flex items-center gap-2 text-slate-400 hover:text-white text-sm transition"
         >
           <ArrowLeft className="w-4 h-4" /> Înapoi la site
         </Link>
@@ -80,7 +80,7 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
   return (
     <div className="min-h-screen flex">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-64 bg-gray-900 text-white flex-col flex-shrink-0">
+      <aside className="hidden lg:flex w-64 bg-slate-950 text-white flex-col flex-shrink-0">
         <SidebarContent user={user} pathname={pathname} />
       </aside>
 
@@ -93,7 +93,7 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
       )}
 
       {/* Mobile drawer */}
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-gray-900 text-white flex flex-col z-50 transition-transform duration-300 lg:hidden ${
+      <aside className={`fixed top-0 left-0 h-full w-64 bg-slate-950 text-white flex flex-col z-50 transition-transform duration-300 lg:hidden ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <SidebarContent user={user} pathname={pathname} onNavClick={() => setSidebarOpen(false)} />
@@ -102,16 +102,16 @@ export default function InstructorLayout({ children }: { children: React.ReactNo
       {/* Main content */}
       <main className="flex-1 bg-gray-50 overflow-y-auto min-w-0">
         {/* Mobile top bar */}
-        <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-gray-900 text-white">
-          <button onClick={() => setSidebarOpen(true)} className="p-1 rounded hover:bg-gray-700 transition">
+        <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-slate-950 text-white">
+          <button onClick={() => setSidebarOpen(true)} className="p-1 rounded hover:bg-slate-700 transition">
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <GraduationCap className="text-indigo-400 w-5 h-5" />
+            <GraduationCap className="text-blue-400 w-5 h-5" />
             <span className="font-bold text-sm">Panou Formator</span>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto p-4 lg:p-6">{children}</div>
+        <div className="max-w-6xl 3xl:max-w-[1600px] mx-auto p-4 lg:p-6">{children}</div>
       </main>
     </div>
   );

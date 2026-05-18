@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 
 const uuid = (): string =>
   typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-    ? uuid()
+    ? crypto.randomUUID()
     : (`${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`).replace(/[018]/g, (c: string) =>
         (Number(c) ^ (Math.random() * 16 >> (Number(c) / 4))).toString(16),
       );
@@ -42,7 +42,7 @@ type FormData = z.infer<typeof schema>;
 interface QuizQuestionItem {
   question: string;
   options: string[];
-  correctIndex: number;
+  correctIndexes: number[];
 }
 
 interface LessonItem {
@@ -88,14 +88,14 @@ const newQuizLesson = (): LessonItem => ({
   duration: 0,
   isFree: false,
   uploading: false,
-  questions: [{ question: '', options: ['', '', '', ''], correctIndex: 0 }],
+  questions: [{ question: '', options: ['', '', '', ''], correctIndexes: [0] }],
   quizExpanded: true,
 });
 
 const newQuestion = (): QuizQuestionItem => ({
   question: '',
   options: ['', '', '', ''],
-  correctIndex: 0,
+  correctIndexes: [0],
 });
 
 export default function InstructorNewCoursePage() {
@@ -114,7 +114,8 @@ export default function InstructorNewCoursePage() {
   const [whatYouLearn, setWhatYouLearn] = useState<string[]>([]);
   const [wylError, setWylError] = useState('');
   const pollingVideos = useRef<Set<string>>(new Set());
-  const pollingInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollingDelay = useRef<number>(5_000);
   const isMounted = useRef(true);
 
   const { data: categories } = useQuery<Category[]>({
@@ -130,9 +131,10 @@ export default function InstructorNewCoursePage() {
   const watchedCategoryId = watch('categoryId');
 
   useEffect(() => {
+    isMounted.current = true;
     return () => {
       isMounted.current = false;
-      if (pollingInterval.current) clearInterval(pollingInterval.current);
+      if (pollingTimeout.current) clearTimeout(pollingTimeout.current);
     };
   }, []);
 
@@ -147,10 +149,8 @@ export default function InstructorNewCoursePage() {
     return () => window.removeEventListener('beforeunload', handler);
   }, [courseId]);
 
-  const startPolling = (videoId: string) => {
-    pollingVideos.current.add(videoId);
-    if (pollingInterval.current) return;
-    pollingInterval.current = setInterval(async () => {
+  const scheduleNextPoll = () => {
+    pollingTimeout.current = setTimeout(async () => {
       if (!isMounted.current) return;
       const ids = [...pollingVideos.current];
       for (const vid of ids) {
@@ -171,14 +171,44 @@ export default function InstructorNewCoursePage() {
             })));
             toast.error('Eroare la procesarea videoclipului pe CDN');
           }
-        } catch { /* keep polling on network error */ }
+        } catch { /* ignore network errors, retry at next interval */ }
       }
-      if (pollingVideos.current.size === 0 && pollingInterval.current) {
-        clearInterval(pollingInterval.current);
-        pollingInterval.current = null;
+      if (pollingVideos.current.size > 0) {
+        // Exponential backoff: 5s → 10s → 20s → 30s (max)
+        pollingDelay.current = Math.min(pollingDelay.current * 2, 30_000);
+        scheduleNextPoll();
+      } else {
+        pollingTimeout.current = null;
       }
-    }, 5000);
+    }, pollingDelay.current);
   };
+
+  const startPolling = (videoId: string) => {
+    pollingVideos.current.add(videoId);
+    if (pollingTimeout.current) {
+      // New video added while already polling — reset delay and restart sooner
+      clearTimeout(pollingTimeout.current);
+      pollingTimeout.current = null;
+      pollingDelay.current = 5_000;
+      scheduleNextPoll();
+      return;
+    }
+    pollingDelay.current = 5_000;
+    scheduleNextPoll();
+  };
+
+  // Adopt any processing lessons that aren't already being polled.
+  // Covers: page reload/HMR after save, state restored without polling running,
+  // and curriculum loaded from the server on edit pages.
+  useEffect(() => {
+    for (const s of sections) {
+      for (const l of s.lessons) {
+        if (l.processingStatus === 'processing' && l.cdnVideoId && !pollingVideos.current.has(l.cdnVideoId)) {
+          startPolling(l.cdnVideoId);
+        }
+      }
+    }
+  }, [sections]);
 
   const uploadThumbnail = async (file: File) => {
     setUploadingThumb(true);
@@ -460,10 +490,15 @@ export default function InstructorNewCoursePage() {
           ...s,
           lessons: s.lessons.map((l) => {
             const videoId = uploadedMap.get(l.tempId);
-            if (videoId) { startPolling(videoId); return { ...l, cdnVideoId: videoId, pendingFile: undefined, processingStatus: 'processing' }; }
+            if (videoId) { return { ...l, cdnVideoId: videoId, pendingFile: undefined, processingStatus: 'processing' as const }; }
             return l;
           }),
         })));
+
+        // Start polling OUTSIDE the state updater (side effects in updaters are unreliable in React 19)
+        for (const videoId of uploadedMap.values()) {
+          startPolling(videoId);
+        }
       }
 
       const resolvedSections = sections.map((s) => ({
@@ -555,7 +590,7 @@ export default function InstructorNewCoursePage() {
   const canPublishAfterSave = totalLessons > 0 && !hasVideoWithoutCdn && !hasPendingFiles && !hasProcessingVideo && !publishingCourse;
 
   return (
-    <div>
+    <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Curs nou</h1>
 
       {/* Step indicator */}
@@ -563,11 +598,11 @@ export default function InstructorNewCoursePage() {
         {(['info', 'curriculum'] as const).map((s, i) => (
           <div key={s} className="flex items-center gap-2">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-              step === s ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'
+              step === s ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
             }`}>
               {i + 1}
             </div>
-            <span className={`text-sm font-medium ${step === s ? 'text-indigo-600' : 'text-gray-500'}`}>
+            <span className={`text-sm font-medium ${step === s ? 'text-blue-600' : 'text-gray-500'}`}>
               {s === 'info' ? 'Informații' : 'Curriculum'}
             </span>
             {i === 0 && <ChevronRight className="w-4 h-4 text-gray-400" />}
@@ -631,9 +666,9 @@ export default function InstructorNewCoursePage() {
                   </button>
                 </div>
               ) : (
-                <label className={`cursor-pointer w-32 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 hover:border-indigo-400 hover:bg-indigo-50 transition ${uploadingThumb ? 'opacity-50 pointer-events-none' : ''}`}>
+                <label className={`cursor-pointer w-32 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 hover:border-blue-400 hover:bg-blue-50 transition ${uploadingThumb ? 'opacity-50 pointer-events-none' : ''}`}>
                   {uploadingThumb ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-indigo-500" />
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                   ) : (
                     <>
                       <ImageIcon className="w-5 h-5 text-gray-400" />
@@ -659,7 +694,24 @@ export default function InstructorNewCoursePage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Preț (lei) *</Label>
-              <Input type="number" step="0.01" min="30" max="2000" placeholder="ex: 99 (30–2000 lei)" {...register('price')} className="mt-1" />
+              <Input
+                type="text"
+                inputMode="decimal"
+                placeholder="ex: 99.00 (30–2000 lei)"
+                {...register('price', {
+                  onBlur: (e) => {
+                    const raw = String(e.target.value).replace(',', '.').trim();
+                    if (!raw) return;
+                    const n = parseFloat(raw);
+                    if (Number.isFinite(n)) {
+                      const rounded = Math.round(n * 100) / 100;
+                      setValue('price', rounded as never, { shouldValidate: true });
+                      e.target.value = rounded.toFixed(2);
+                    }
+                  },
+                })}
+                className="mt-1"
+              />
               {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
             </div>
             <div>
@@ -700,7 +752,7 @@ export default function InstructorNewCoursePage() {
             {errors.categoryId && <p className="text-red-500 text-xs mt-1">{errors.categoryId.message}</p>}
           </div>
 
-          <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 w-full" disabled={isSubmitting}>
+          <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 w-full" disabled={isSubmitting}>
             {isSubmitting ? 'Se creează...' : 'Continuă → Curriculum'}
           </Button>
         </form>
@@ -716,7 +768,7 @@ export default function InstructorNewCoursePage() {
                 <input
                   value={section.title}
                   onChange={(e) => updateSectionTitle(section.tempId, e.target.value)}
-                  className="flex-1 bg-transparent font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-400 rounded px-1"
+                  className="flex-1 bg-transparent font-semibold focus:outline-none focus:ring-1 focus:ring-blue-400 rounded px-1"
                 />
                 <button onClick={() => toggleSection(section.tempId)} className="text-gray-400 hover:text-gray-600">
                   {section.expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -734,14 +786,14 @@ export default function InstructorNewCoursePage() {
                         /* ── Quiz item ── */
                         <div className="flex flex-col gap-3">
                           <div className="flex items-center gap-3">
-                            <ClipboardList className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                            <ClipboardList className="w-4 h-4 text-blue-500 flex-shrink-0" />
                             <input
                               value={lesson.title}
                               onChange={(e) => updateLesson(section.tempId, lesson.tempId, { title: e.target.value })}
-                              className="flex-1 text-sm border-b border-dashed border-gray-300 focus:outline-none focus:border-indigo-400 bg-transparent"
+                              className="flex-1 text-sm border-b border-dashed border-gray-300 focus:outline-none focus:border-blue-400 bg-transparent"
                               placeholder="Titlu quiz"
                             />
-                            <Badge variant="outline" className="text-indigo-600 border-indigo-300 text-xs">Quiz</Badge>
+                            <Badge variant="outline" className="text-blue-600 border-blue-300 text-xs">Quiz</Badge>
                             <button
                               onClick={() => updateLesson(section.tempId, lesson.tempId, { quizExpanded: !lesson.quizExpanded })}
                               className="text-gray-400 hover:text-gray-600"
@@ -758,11 +810,11 @@ export default function InstructorNewCoursePage() {
                               {lesson.questions.map((q, qIdx) => (
                                 <div key={qIdx} className="bg-gray-50 rounded-lg border p-3 space-y-2">
                                   <div className="flex items-start gap-2">
-                                    <span className="text-xs font-bold text-indigo-600 mt-1 w-5 flex-shrink-0">{qIdx + 1}.</span>
+                                    <span className="text-xs font-bold text-blue-600 mt-1 w-5 flex-shrink-0">{qIdx + 1}.</span>
                                     <input
                                       value={q.question}
                                       onChange={(e) => updateQuestion(section.tempId, lesson.tempId, qIdx, { question: e.target.value })}
-                                      className="flex-1 text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-indigo-400 bg-white"
+                                      className="flex-1 text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-400 bg-white"
                                       placeholder="Scrie întrebarea..."
                                     />
                                     <button
@@ -776,18 +828,24 @@ export default function InstructorNewCoursePage() {
                                     {q.options.map((opt, oIdx) => (
                                       <div key={oIdx} className="flex items-center gap-2">
                                         <input
-                                          type="radio"
-                                          name={`correct-${lesson.tempId}-${qIdx}`}
-                                          checked={q.correctIndex === oIdx}
-                                          onChange={() => updateQuestion(section.tempId, lesson.tempId, qIdx, { correctIndex: oIdx })}
-                                          className="accent-indigo-600"
+                                          type="checkbox"
+                                          checked={q.correctIndexes.includes(oIdx)}
+                                          onChange={() => {
+                                            const has = q.correctIndexes.includes(oIdx);
+                                            const next = has
+                                              ? q.correctIndexes.filter((i) => i !== oIdx)
+                                              : [...q.correctIndexes, oIdx];
+                                            if (next.length === 0) return; // must have at least one correct
+                                            updateQuestion(section.tempId, lesson.tempId, qIdx, { correctIndexes: next });
+                                          }}
+                                          className="accent-blue-600"
                                           title="Răspuns corect"
                                         />
                                         <span className="text-xs text-gray-500 w-4 flex-shrink-0">{String.fromCharCode(65 + oIdx)}.</span>
                                         <input
                                           value={opt}
                                           onChange={(e) => updateOption(section.tempId, lesson.tempId, qIdx, oIdx, e.target.value)}
-                                          className="flex-1 text-sm border border-gray-200 rounded px-2 py-1 focus:outline-none focus:border-indigo-400 bg-white"
+                                          className="flex-1 text-sm border border-gray-200 rounded px-2 py-1 focus:outline-none focus:border-blue-400 bg-white"
                                           placeholder={`Opțiunea ${String.fromCharCode(65 + oIdx)}`}
                                         />
                                       </div>
@@ -800,7 +858,7 @@ export default function InstructorNewCoursePage() {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => addQuestion(section.tempId, lesson.tempId)}
-                                className="text-indigo-600 hover:text-indigo-800 text-xs"
+                                className="text-blue-600 hover:text-blue-800 text-xs"
                               >
                                 <Plus className="w-3 h-3 mr-1" /> Adaugă întrebare
                               </Button>
@@ -811,11 +869,11 @@ export default function InstructorNewCoursePage() {
                         /* ── Video lesson item ── */
                         <div className="flex flex-col gap-3">
                           <div className="flex items-center gap-3">
-                            <Video className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                            <Video className="w-4 h-4 text-blue-500 flex-shrink-0" />
                             <input
                               value={lesson.title}
                               onChange={(e) => updateLesson(section.tempId, lesson.tempId, { title: e.target.value })}
-                              className="flex-1 text-sm border-b border-dashed border-gray-300 focus:outline-none focus:border-indigo-400 bg-transparent"
+                              className="flex-1 text-sm border-b border-dashed border-gray-300 focus:outline-none focus:border-blue-400 bg-transparent"
                               placeholder="Titlu lecție"
                             />
                             {sectionIdx === 0 && lessonIdx === 0 && (
@@ -849,15 +907,15 @@ export default function InstructorNewCoursePage() {
                                 </Badge>
                               )
                             ) : lesson.pendingFile ? (
-                              <span className="flex items-center gap-2 text-xs text-indigo-600">
+                              <span className="flex items-center gap-2 text-xs text-blue-600">
                                 📎 {lesson.pendingFile.name} — va fi încărcat la salvare
                               </span>
                             ) : lesson.uploading ? (
-                              <span className="flex items-center gap-2 text-xs text-indigo-600">
+                              <span className="flex items-center gap-2 text-xs text-blue-600">
                                 <Loader2 className="w-3 h-3 animate-spin" /> Se încarcă...
                               </span>
                             ) : (
-                              <label className="cursor-pointer flex items-center gap-2 text-xs text-indigo-600 hover:text-indigo-800 border border-dashed border-indigo-300 px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition">
+                              <label className="cursor-pointer flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 border border-dashed border-blue-300 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition">
                                 <Upload className="w-3.5 h-3.5" />
                                 Încarcă video
                                 <input
@@ -888,7 +946,7 @@ export default function InstructorNewCoursePage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => addLesson(section.tempId)}
-                      className="text-indigo-600 hover:text-indigo-800"
+                      className="text-blue-600 hover:text-blue-800"
                     >
                       <Plus className="w-3.5 h-3.5 mr-1" /> Adaugă lecție
                     </Button>
@@ -920,7 +978,7 @@ export default function InstructorNewCoursePage() {
                 <Button
                   onClick={() => saveCurriculum(true)}
                   disabled={!canPublish}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                   title={hasPendingFiles ? 'Încarcă toate videoclipurile înainte de publicare' : hasProcessingVideo ? 'Așteptați finalizarea procesării videoclipurilor' : undefined}
                 >
                   {savingCurriculum ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
@@ -931,7 +989,7 @@ export default function InstructorNewCoursePage() {
               <Button
                 onClick={publishCourse}
                 disabled={!canPublishAfterSave}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700"
                 title={hasProcessingVideo ? 'Așteptați finalizarea procesării videoclipurilor' : totalLessons === 0 ? 'Adaugă cel puțin o lecție' : undefined}
               >
                 {(hasProcessingVideo || publishingCourse) ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}

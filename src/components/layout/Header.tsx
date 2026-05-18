@@ -50,12 +50,12 @@ export default function Header() {
 
   return (
     <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-40 border-b border-gray-200/60 dark:border-gray-700/60">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
+      <div className="w-full px-4 sm:px-6 lg:px-8 3xl:px-12 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2">
-          <GraduationCap className="text-indigo-600 w-7 h-7" />
+          <GraduationCap className="text-blue-600 w-7 h-7" />
           <span className="text-xl font-bold text-gray-900">
-            Edu<span className="text-indigo-600">Inovatrium</span>
+            Edu<span className="text-blue-600">Inovatrium</span>
           </span>
         </Link>
 
@@ -65,7 +65,7 @@ export default function Header() {
             href="/courses"
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
               pathname === '/courses'
-                ? 'text-indigo-600 bg-indigo-50'
+                ? 'text-blue-600 bg-blue-50'
                 : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
@@ -77,7 +77,7 @@ export default function Header() {
               href="/dashboard"
               className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-colors ${
                 pathname === '/dashboard'
-                  ? 'text-indigo-600 bg-indigo-50'
+                  ? 'text-blue-600 bg-blue-50'
                   : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
@@ -96,7 +96,7 @@ export default function Header() {
           {user && (
             <button
               onClick={() => setCartOpen(true)}
-              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
               aria-label="Deschide coșul de cumpărături"
             >
               <ShoppingCart className="w-5 h-5 text-gray-600" />
@@ -125,7 +125,7 @@ export default function Header() {
               <DropdownMenuTrigger className="flex items-center gap-2 rounded-full focus:outline-none">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user.avatar} />
-                  <AvatarFallback className="bg-indigo-100 text-indigo-700 font-semibold">
+                  <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
                     {user.name.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
@@ -185,7 +185,7 @@ export default function Header() {
                 Conectează-te
               </Link>
               <Link href="/register"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors">
+                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors">
                 Înscrie-te
               </Link>
             </div>
@@ -200,7 +200,7 @@ export default function Header() {
             href="/courses"
             onClick={closeMobile}
             className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-              pathname === '/courses' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:bg-gray-100'
+              pathname === '/courses' ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <Library className="w-4 h-4" /> Cursuri
@@ -210,7 +210,7 @@ export default function Header() {
               href="/dashboard"
               onClick={closeMobile}
               className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                pathname === '/dashboard' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:bg-gray-100'
+                pathname === '/dashboard' ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               <BookMarked className="w-4 h-4" /> Cursurile mele
@@ -232,7 +232,7 @@ export default function Header() {
               href="/profile"
               onClick={closeMobile}
               className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                pathname === '/profile' ? 'text-indigo-600 bg-indigo-50' : 'text-gray-600 hover:bg-gray-100'
+                pathname === '/profile' ? 'text-blue-600 bg-blue-50' : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
               <UserCircle className="w-4 h-4" /> Profilul meu
@@ -268,7 +268,7 @@ export default function Header() {
               <Link
                 href="/register"
                 onClick={closeMobile}
-                className="text-center px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                className="text-center px-4 py-2 rounded-lg text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors"
               >
                 Înscrie-te
               </Link>

@@ -41,7 +41,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
 
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
+      <div className="max-w-5xl 3xl:max-w-[1400px] mx-auto px-4 py-10 space-y-6">
         <div className="flex items-center gap-5">
           <Skeleton className="w-24 h-24 rounded-full" />
           <div className="space-y-2">
@@ -49,7 +49,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
             <Skeleton className="h-4 w-72" />
           </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-6">
           {[1, 2, 3].map((i) => <Skeleton key={i} className="h-64 rounded-xl" />)}
         </div>
       </div>
@@ -74,7 +74,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
   });
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-5xl 3xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Instructor header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-10">
         <div className="relative w-24 h-24 flex-shrink-0">
@@ -87,7 +87,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
               className="rounded-full object-cover"
             />
           ) : (
-            <div className="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-3xl font-bold text-indigo-600">
+            <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600">
               {instructor.name.charAt(0).toUpperCase()}
             </div>
           )}
@@ -120,7 +120,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
       {courses.length === 0 ? (
         <p className="text-gray-400">Niciun curs publicat încă.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-6">
           {courses.map((course) => (
             <CourseCard key={course._id} course={course as any} />
           ))}

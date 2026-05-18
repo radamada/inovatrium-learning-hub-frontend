@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['madalins-macbook-air.local'],
+  allowedDevOrigins: ['madalinr.local'],
   images: {
     remotePatterns: [
       {

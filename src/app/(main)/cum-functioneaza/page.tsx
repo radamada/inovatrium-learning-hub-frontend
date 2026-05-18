@@ -7,11 +7,11 @@ import { motion } from 'framer-motion';
 const steps = [
   {
     icon: Search,
-    color: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400',
+    color: 'bg-blue-100 text-blue-600 dark:bg-blue-900/40 dark:text-blue-400',
     step: '01',
     title: 'Descoperă cursul potrivit',
     description:
-      'Explorează catalogul nostru de cursuri din domenii precum programare, design, business și multe altele. Filtrează după categorie, nivel sau preț și găsește exact ce cauți.',
+      'Descoperă cursuri din domenii variate, create de profesioniști. Filtrează după categorie, nivel sau preț și găsește exact ce cauți.',
   },
   {
     icon: ShoppingCart,
@@ -27,7 +27,7 @@ const steps = [
     step: '03',
     title: 'Învață în ritmul tău',
     description:
-      'Accesează toate lecțiile video oricând, de pe orice dispozitiv. Nu există termene limită — cursul îți aparține pe viață și poți reveni oricând.',
+      'Accesează toate lecțiile video oricând, de pe orice dispozitiv. Nu există termene limită, înveți când vrei și în ritmul tău.',
   },
   {
     icon: TrendingUp,
@@ -35,14 +35,14 @@ const steps = [
     step: '04',
     title: 'Urmărește-ți progresul',
     description:
-      'Bifează lecțiile completate și urmărește procentul de finalizare al cursului. Dashboardul tău personal îți arată tot ce ai accesat și ce a mai rămas.',
+      'Monitorizează-ți progresul de învățare, vezi cât ai parcurs și continuă exact de unde ai rămas.',
   },
 ];
 
 const features = [
-  { icon: Clock, text: 'Acces pe viață la cursurile cumpărate' },
-  { icon: Users, text: 'Formatori verificați și cu experiență reală' },
-  { icon: Star, text: 'Recenzii reale de la studenți înrolați' },
+  { icon: Clock, text: 'Acces nelimitat la cursurile cumpărate' },
+  { icon: Users, text: 'Formatori cu experiență verificată' },
+  { icon: Star, text: 'Recenzii de la studenți înrolați' },
   { icon: CheckCircle, text: 'Conținut actualizat constant de formatori' },
 ];
 
@@ -60,7 +60,7 @@ export default function CumFunctioneazaPage() {
   return (
     <div className="bg-white dark:bg-slate-900">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-20 px-4 text-center">
+      <section className="bg-gradient-to-br from-blue-50 via-white to-violet-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 py-20 px-4 text-center">
         <motion.div
           className="max-w-3xl mx-auto"
           variants={heroStagger}
@@ -69,7 +69,7 @@ export default function CumFunctioneazaPage() {
         >
           <motion.span
             variants={fadeUp}
-            className="inline-block bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide"
+            className="inline-block bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 text-xs font-semibold px-3 py-1 rounded-full mb-4 uppercase tracking-wide"
           >
             Ghid rapid
           </motion.span>
@@ -77,7 +77,7 @@ export default function CumFunctioneazaPage() {
             variants={fadeUp}
             className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-5"
           >
-            Cum funcționează <span className="text-indigo-600 dark:text-indigo-400">EduInovatrium</span>?
+            Cum funcționează <span className="text-blue-600 dark:text-blue-400">EduInovatrium</span>?
           </motion.h1>
           <motion.p variants={fadeUp} className="text-lg text-gray-500 dark:text-slate-400 max-w-xl mx-auto">
             De la descoperirea unui curs până la finalizarea lui — totul e simplu, rapid și la îndemâna ta.
@@ -86,7 +86,7 @@ export default function CumFunctioneazaPage() {
       </section>
 
       {/* Steps */}
-      <section className="max-w-5xl mx-auto px-4 py-20">
+      <section className="max-w-5xl 3xl:max-w-[1400px] mx-auto px-4 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {steps.map((s, i) => (
             <motion.div
@@ -119,7 +119,7 @@ export default function CumFunctioneazaPage() {
 
       {/* Features strip */}
       <section className="bg-gray-50 dark:bg-slate-800/60 border-y border-gray-200 dark:border-slate-700 py-12 px-4">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="max-w-4xl 3xl:max-w-[1100px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-5 gap-6">
           {features.map((f, i) => (
             <motion.div
               key={f.text}
@@ -129,7 +129,7 @@ export default function CumFunctioneazaPage() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.4 }}
             >
-              <f.icon className="w-5 h-5 text-indigo-500 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+              <f.icon className="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-gray-600 dark:text-slate-300">{f.text}</p>
             </motion.div>
           ))}
@@ -147,12 +147,12 @@ export default function CumFunctioneazaPage() {
         >
           <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Gata să începi?</h2>
           <p className="text-gray-500 dark:text-slate-400 mb-8">
-            Alătură-te miilor de studenți care învață zilnic pe EduInovatrium și dă-ți cariera un nou impuls.
+            Alătură-te miilor de studenți care învață zilnic pe EduInovatrium și dă-i un nou impuls carierei tale.
           </p>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
             <Link
               href="/"
-              className="inline-block bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-semibold px-10 py-4 rounded-xl transition-colors text-base"
+              className="inline-block bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white font-semibold px-10 py-4 rounded-xl transition-colors text-base"
             >
               Explorează cursurile →
             </Link>

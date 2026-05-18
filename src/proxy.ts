@@ -4,18 +4,17 @@ const AUTH_ROUTES = ['/dashboard', '/checkout', '/wishlist'];
 const LEARN_ROUTE = /^\/courses\/[^/]+\/learn/;
 const ADMIN_ROUTE = /^\/admin/;
 const INSTRUCTOR_ROUTE = /^\/instructor/;
-const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'];
-
 const VALID_ROLES = new Set(['student', 'instructor', 'admin']);
 
 /**
- * Cookie name mirrors backend cookie-names.const.ts logic.
- * Production uses the __Host- prefix (set by backend when NODE_ENV=production).
+ * Cookie name written by the frontend auth store (auth.store.ts → setRoleCookie).
+ * Using samesite=strict so it is always sent to the Next.js server on localhost:3000.
+ * Production uses the __Host- prefix for added security.
  */
 const USER_ROLE_COOKIE =
   process.env.NODE_ENV === 'production' ? '__Host-user_role' : 'user_role';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const rawRole = request.cookies.get(USER_ROLE_COOKIE)?.value;
   // Only trust roles that are in the known-valid set — prevents spoofing with arbitrary values

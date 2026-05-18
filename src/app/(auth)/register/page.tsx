@@ -46,7 +46,7 @@ export default function RegisterPage() {
       });
       setAuth(res.data.user, res.data.accessToken);
       toast.success('Cont creat cu succes! Bine ai venit!');
-      router.push('/');
+      router.push('/dashboard');
     } catch (err: any) {
       toast.error(err?.response?.data?.message ?? 'Eroare la înregistrare');
     }
@@ -59,9 +59,9 @@ export default function RegisterPage() {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
     >
-      <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 px-6 py-5">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-5">
         <h1 className="text-2xl font-bold text-white">Înregistrare</h1>
-        <p className="text-indigo-200 text-sm mt-1">Creează-ți contul EduInovatrium gratuit</p>
+        <p className="text-blue-200 text-sm mt-1">Creează-ți contul gratuit</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
@@ -101,15 +101,15 @@ export default function RegisterPage() {
             <input
               type="checkbox"
               {...register('termsAccepted')}
-              className="mt-0.5 h-4 w-4 rounded border-gray-300 text-indigo-600 accent-indigo-600"
+              className="mt-0.5 h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600"
             />
             <span className="text-sm text-gray-600">
               Am citit și accept{' '}
-              <Link href="/termeni" target="_blank" className="text-indigo-600 hover:underline font-medium">
+              <Link href="/termeni" target="_blank" className="text-blue-600 hover:underline font-medium">
                 Termenii și Condițiile
               </Link>
               {' '}și{' '}
-              <Link href="/confidentialitate" target="_blank" className="text-indigo-600 hover:underline font-medium">
+              <Link href="/confidentialitate" target="_blank" className="text-blue-600 hover:underline font-medium">
                 Politica de Confidențialitate
               </Link>
             </span>
@@ -119,7 +119,7 @@ export default function RegisterPage() {
           )}
         </div>
 
-        <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={isSubmitting}>
+        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isSubmitting}>
           {isSubmitting ? 'Se creează contul...' : 'Creează contul'}
         </Button>
 
@@ -153,7 +153,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-gray-600">
           Ai deja cont?{' '}
-          <Link href="/login" className="text-indigo-600 font-medium hover:underline">
+          <Link href="/login" className="text-blue-600 font-medium hover:underline">
             Autentifică-te
           </Link>
         </p>

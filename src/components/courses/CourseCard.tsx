@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, BookOpen, ArrowRight, Heart } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { BookOpen, ArrowRight, Heart, Users } from 'lucide-react';
 import type { Course } from '@/types';
 import { useAuthStore } from '@/stores/auth.store';
 import { useCartStore } from '@/stores/cart.store';
@@ -18,6 +17,18 @@ interface CourseCardProps {
   isEnrolled?: boolean;
   priority?: boolean;
 }
+
+const levelLabels: Record<string, string> = {
+  beginner: 'Începător',
+  intermediate: 'Intermediar',
+  advanced: 'Avansat',
+};
+
+const levelColors: Record<string, string> = {
+  beginner: 'bg-emerald-600 text-white',
+  intermediate: 'bg-blue-600 text-white',
+  advanced: 'bg-purple-600 text-white',
+};
 
 export default function CourseCard({ course, isEnrolled = false, priority = false }: CourseCardProps) {
   const { user } = useAuthStore();
@@ -52,57 +63,58 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
     try {
       if (inWishlist) {
         await remove(course._id);
-        // Optimistic update al cache-ului React Query
         queryClient.setQueryData(['wishlist'], (old: any[]) =>
           old ? old.filter((item: any) => item.courseId?._id !== course._id) : old,
         );
       } else {
         await add(course._id);
-        // Optimistic update al cache-ului React Query cu obiectul complet al cursului
         queryClient.setQueryData(['wishlist'], (old: any[]) =>
           old ? [...old, { courseId: course }] : [{ courseId: course }],
         );
         toast.success('Adăugat la salvate');
       }
     } catch {
-      // La eroare, invalidăm cache-ul pentru a obține date fresh de la server
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       toast.error('A apărut o eroare');
     }
   };
 
+  const description = course.description?.replace(/<[^>]*>/g, '') ?? '';
+
   return (
     <Link href={`/courses/${course.slug}`} className="group block">
-      <div className="bg-white rounded-2xl border border-gray-200/60 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col h-full">
+      <div
+        className="bg-white rounded-xl shadow-sm ring-1 ring-gray-200/60 dark:ring-slate-600/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full transform-gpu"
+      >
         {/* Thumbnail */}
-        <div className="relative h-44 bg-indigo-50/60 overflow-hidden">
+        <div className="relative h-48 sm:h-52 bg-blue-50/60 overflow-hidden">
           {course.thumbnail ? (
             <Image
               src={course.thumbnail}
               alt={course.title}
               fill
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className="object-cover object-left-top group-hover:scale-105 transition-transform duration-300"
+              className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
               priority={priority}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-indigo-50 to-violet-100 flex items-center justify-center">
-              <BookOpen className="w-12 h-12 text-indigo-200" />
+            <div className="w-full h-full bg-gradient-to-br from-blue-50 to-sky-100 flex items-center justify-center">
+              <BookOpen className="w-14 h-14 text-blue-200" />
             </div>
           )}
 
-          {/* Category badge */}
-          {course.categoryId && (
+          {/* Level badge overlaid on image */}
+          {course.level && (
             <div className="absolute top-3 left-3">
-              <span className="bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-semibold px-3 py-1 rounded-full border border-gray-200/50 shadow-sm">
-                {course.categoryId.name}
+              <span className={`text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md shadow-sm ${levelColors[course.level] ?? 'bg-gray-700 text-white'}`}>
+                {levelLabels[course.level] ?? course.level}
               </span>
             </div>
           )}
 
           {/* Enrolled badge */}
           {isEnrolled && (
-            <div className="absolute top-3 right-3 bg-green-500 text-white text-xs px-2.5 py-1 rounded-full font-medium shadow">
+            <div className="absolute top-3 right-3 bg-green-500 text-white text-xs px-2.5 py-1 rounded-md font-bold shadow">
               ✓ Deținut
             </div>
           )}
@@ -111,7 +123,7 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
           {!isEnrolled && (
             <button
               onClick={handleWishlist}
-              className="absolute top-3 right-3 p-1.5 rounded-full bg-white/90 hover:bg-white shadow transition-colors"
+              className="absolute top-3 right-3 p-2 rounded-full bg-white/90 hover:bg-white shadow-md transition-colors"
               aria-label={inWishlist ? 'Elimină din salvate' : 'Salvează cursul'}
             >
               <Heart
@@ -124,58 +136,80 @@ export default function CourseCard({ course, isEnrolled = false, priority = fals
         </div>
 
         {/* Content */}
-        <div className="p-5 flex flex-col flex-1">
-          <h3 className="font-bold text-base text-gray-900 line-clamp-2 mb-1 group-hover:text-indigo-600 transition-colors">
-            {course.title}
-          </h3>
-          <p className="text-sm text-gray-500 mb-3">
-            {course.instructorId?.name ?? 'Formator'}
-          </p>
+        <div className="px-5 pt-5 pb-5 flex flex-col flex-1">
+          {/* Category */}
+          {course.categoryId && (
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-600 mb-2">
+              {course.categoryId.name}
+            </p>
+          )}
 
-          {/* Metadata row */}
-          <div className="flex items-center gap-3 text-xs text-gray-400 mb-4 flex-wrap">
-            <span className="flex items-center gap-1">
-              <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-              <span className="font-semibold text-gray-600">{course.rating.toFixed(1)}</span>
-              {course.reviewCount > 0 && <span className="text-gray-400">({course.reviewCount})</span>}
+          {/* Title + Price row */}
+          <div className="flex items-start justify-between gap-4 mb-3 min-h-[3rem]">
+            {/* break-words guards against unbroken 200-char strings (URLs,
+                long IDs) that line-clamp alone would let overflow on mobile. */}
+            <h3 className="font-bold text-[17px] leading-snug text-gray-900 line-clamp-2 break-words min-w-0 group-hover:text-blue-600 transition-colors">
+              {course.title}
+            </h3>
+            <span className="text-lg font-extrabold text-gray-900 whitespace-nowrap shrink-0">
+              {course.price.toFixed(2)}<span className="text-sm font-semibold text-gray-400 ml-0.5">lei</span>
             </span>
-            {course.level && (
-              <Badge variant="outline" className="text-xs border-gray-200">
-                {{ beginner: 'Începător', intermediate: 'Intermediar', advanced: 'Avansat' }[course.level] ?? course.level}
-              </Badge>
-            )}
           </div>
 
-          {/* Price + action */}
-          <div className="mt-auto flex justify-between items-center">
-            <span className="text-xl font-extrabold text-indigo-600">
-              {course.price.toFixed(2)}{' '}
-              <span className="text-sm font-normal text-gray-400">lei</span>
-            </span>
+          {/* Description */}
+          <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed min-h-[2.625rem]">
+            {description}
+          </p>
 
-            {isEnrolled ? (
-              <button
-                className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:gap-2 transition-all"
-                onClick={(e) => { e.preventDefault(); router.push(`/courses/${course.slug}/learn`); }}
-              >
-                Continuă <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            ) : inCart ? (
-              <button
-                className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:gap-2 transition-all"
-                onClick={(e) => { e.preventDefault(); router.push('/checkout'); }}
-              >
-                În coș <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            ) : (
-              <button
-                className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:gap-2 transition-all disabled:opacity-50"
-                onClick={handleAddToCart}
-                disabled={isAddingToCart}
-              >
-                Adaugă în coș <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            )}
+          {/* Divider */}
+          <div className="border-t border-gray-100 mt-auto pt-5">
+            {/* Bottom row: Instructor + Action */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5 min-w-0">
+                {course.instructorId?.avatar ? (
+                  <Image
+                    src={course.instructorId.avatar}
+                    alt={course.instructorId.name}
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs shrink-0">
+                    {course.instructorId?.name?.charAt(0)?.toUpperCase() ?? 'F'}
+                  </div>
+                )}
+                <span className="text-sm font-medium text-gray-700 truncate">
+                  {course.instructorId?.name ?? 'Formator'}
+                </span>
+              </div>
+
+              <div className="shrink-0">
+                {isEnrolled ? (
+                  <button
+                    className="flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:gap-1.5 transition-all"
+                    onClick={(e) => { e.preventDefault(); router.push(`/courses/${course.slug}/learn`); }}
+                  >
+                    Continuă <ArrowRight className="w-3 h-3" />
+                  </button>
+                ) : inCart ? (
+                  <button
+                    className="flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:gap-1.5 transition-all"
+                    onClick={(e) => { e.preventDefault(); router.push('/checkout'); }}
+                  >
+                    În coș <ArrowRight className="w-3 h-3" />
+                  </button>
+                ) : (
+                  <button
+                    className="flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:gap-1.5 transition-all disabled:opacity-50"
+                    onClick={handleAddToCart}
+                    disabled={isAddingToCart}
+                  >
+                    Adaugă <ArrowRight className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

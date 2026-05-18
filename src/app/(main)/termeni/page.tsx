@@ -123,11 +123,11 @@ export default function TermeniPage() {
           </p>
           <p className="mt-2">
             Cererile de rambursare se transmit la{' '}
-            <a href="mailto:contact@eduinovatrium.ro" className="text-indigo-600 hover:underline">
+            <a href="mailto:contact@eduinovatrium.ro" className="text-blue-600 hover:underline">
               contact@eduinovatrium.ro
             </a>{' '}
             sau prin{' '}
-            <Link href="/contact" className="text-indigo-600 hover:underline">
+            <Link href="/contact" className="text-blue-600 hover:underline">
               formularul de contact
             </Link>
             , cu menționarea numărului Comenzii.
@@ -213,7 +213,7 @@ export default function TermeniPage() {
               href="https://ec.europa.eu/consumers/odr"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-indigo-600 hover:underline"
+              className="text-blue-600 hover:underline"
             >
               ec.europa.eu/consumers/odr
             </a>.
@@ -224,11 +224,11 @@ export default function TermeniPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">12. Contact</h2>
           <p>
             Pentru orice întrebări legate de acești termeni, ne poți contacta la{' '}
-            <a href="mailto:legal@eduinovatrium.ro" className="text-indigo-600 hover:underline">
+            <a href="mailto:legal@eduinovatrium.ro" className="text-blue-600 hover:underline">
               legal@eduinovatrium.ro
             </a>{' '}
             sau prin{' '}
-            <Link href="/contact" className="text-indigo-600 hover:underline">
+            <Link href="/contact" className="text-blue-600 hover:underline">
               formularul de contact
             </Link>.
           </p>

@@ -138,7 +138,7 @@ function CoursesContent() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-7xl 3xl:max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-1">Toate cursurile</h1>
@@ -171,7 +171,7 @@ function CoursesContent() {
           {hasFilters && (
             <button
               onClick={resetFilters}
-              className="ml-3 text-indigo-600 hover:underline"
+              className="ml-3 text-blue-600 hover:underline"
             >
               Resetează filtrele
             </button>
@@ -180,7 +180,7 @@ function CoursesContent() {
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-6">
           {Array.from({ length: 12 }).map((_, i) => <CourseCardSkeleton key={i} />)}
         </div>
       ) : courses.length === 0 ? (
@@ -198,7 +198,7 @@ function CoursesContent() {
         </motion.div>
       ) : (
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 gap-6"
           variants={cardStagger}
           initial="hidden"
           animate="show"

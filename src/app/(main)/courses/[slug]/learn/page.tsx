@@ -229,8 +229,8 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
                   <button
                     key={lesson._id}
                     onClick={() => selectLesson(lesson)}
-                    className={`w-full text-left flex items-center gap-3 p-3 pl-4 text-sm transition hover:bg-indigo-50 ${
-                      isSelected ? 'bg-indigo-50 border-l-2 border-indigo-600' : ''
+                    className={`w-full text-left flex items-center gap-3 p-3 pl-4 text-sm transition hover:bg-blue-50 ${
+                      isSelected ? 'bg-blue-50 border-l-2 border-blue-600' : ''
                     } ${isGated ? 'opacity-60' : ''}`}
                   >
                     {isDone ? (
@@ -238,7 +238,7 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
                     ) : isGated ? (
                       <Lock className="w-4 h-4 text-gray-300 flex-shrink-0" />
                     ) : isQuizLesson ? (
-                      <ClipboardList className="w-4 h-4 text-indigo-400 flex-shrink-0" />
+                      <ClipboardList className="w-4 h-4 text-blue-400 flex-shrink-0" />
                     ) : (
                       <Circle className="w-4 h-4 text-gray-300 flex-shrink-0" />
                     )}
@@ -246,7 +246,7 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
                       {lesson.title}
                     </span>
                     {isQuizLesson && !isDone && (
-                      <span className="ml-auto text-xs text-indigo-400 flex-shrink-0 font-medium">Quiz</span>
+                      <span className="ml-auto text-xs text-blue-400 flex-shrink-0 font-medium">Quiz</span>
                     )}
                     {!isQuizLesson && lesson.duration > 0 && (
                       <span className="ml-auto text-xs text-gray-400 flex-shrink-0">
@@ -373,7 +373,7 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
                     {/* Notes */}
                     <div className="mt-8 border-t pt-6">
                       <div className="flex items-center gap-2 mb-3">
-                        <NotebookPen className="w-4 h-4 text-indigo-600" />
+                        <NotebookPen className="w-4 h-4 text-blue-600" />
                         <h3 className="font-semibold text-gray-800">Notițele mele</h3>
                         <span className={`ml-auto text-xs flex items-center gap-1 ${noteSaved ? 'text-green-500' : 'text-gray-400'}`}>
                           <Save className="w-3 h-3" />

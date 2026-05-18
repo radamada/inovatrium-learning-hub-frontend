@@ -147,12 +147,12 @@ export default function CourseFilters({
             variant="outline"
             size="sm"
             onClick={() => setAdvancedOpen((o) => !o)}
-            className={`gap-1.5 ${hasAdvancedFilters ? 'border-indigo-400 text-indigo-600' : ''}`}
+            className={`gap-1.5 ${hasAdvancedFilters ? 'border-blue-400 text-blue-600' : ''}`}
           >
             <SlidersHorizontal className="w-4 h-4" />
             Filtre avansate
             {hasAdvancedFilters && (
-              <span className="bg-indigo-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">
+              <span className="bg-blue-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center leading-none">
                 !
               </span>
             )}

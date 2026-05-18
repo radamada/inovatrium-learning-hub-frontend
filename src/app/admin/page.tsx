@@ -38,7 +38,7 @@ export default function AdminDashboardPage() {
 
   const { data: instructors } = useQuery<{ _id: string; name: string; email: string }[]>({
     queryKey: ['admin-instructors'],
-    queryFn: () => api.get('/admin/instructors').then((r) => r.data),
+    queryFn: () => api.get('/admin/instructors').then((r) => r.data.instructors),
   });
 
   const { data: instrStats, isLoading: instrStatsLoading } = useQuery({
@@ -78,8 +78,8 @@ export default function AdminDashboardPage() {
       label: 'Cursuri',
       value: stats?.totalCourses,
       icon: BookOpen,
-      color: 'text-indigo-600',
-      bg: 'bg-indigo-50',
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
       tooltip: 'Numărul total de cursuri existente pe platformă, inclusiv cele în draft (nepublicate).',
     },
     {
@@ -115,8 +115,8 @@ export default function AdminDashboardPage() {
       value: instrStats.totalCourses,
       sub: `${instrStats.publishedCourses} publicate`,
       icon: BookMarked,
-      color: 'text-indigo-600',
-      bg: 'bg-indigo-50',
+      color: 'text-blue-600',
+      bg: 'bg-blue-50',
       tooltip: 'Numărul total de cursuri create de acest formator, inclusiv draft-urile. Subtextul arată câte sunt publicate și vizibile studenților.',
     },
     {
@@ -151,7 +151,7 @@ export default function AdminDashboardPage() {
 
       {/* Stat cards */}
       <motion.div
-        className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mb-5"
+        className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 3xl:grid-cols-6 gap-3 mb-5"
         initial="hidden"
         animate="show"
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
             <XAxis dataKey="luna" tick={{ fontSize: 9 }} interval={0} />
             <YAxis tick={{ fontSize: 10 }} />
             <RechartsTooltip formatter={(v: any) => `${typeof v === 'number' ? v.toFixed(2) : v} lei`} />
-            <Bar dataKey="venituri" fill="#6366f1" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="venituri" fill="#427AA1" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </motion.div>
@@ -227,7 +227,7 @@ export default function AdminDashboardPage() {
           <select
             value={selectedInstructorId}
             onChange={(e) => setSelectedInstructorId(e.target.value)}
-            className="w-full border rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full border rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option value="">— Selectează formator —</option>
             {(instructors ?? []).map((i) => (
@@ -247,7 +247,7 @@ export default function AdminDashboardPage() {
           </div>
         ) : (
           <>
-            <p className="text-sm font-medium text-indigo-700 mb-4">
+            <p className="text-sm font-medium text-blue-700 mb-4">
               {selectedInstructor?.name}
               <span className="text-gray-400 font-normal ml-2">{selectedInstructor?.email}</span>
             </p>
@@ -288,7 +288,7 @@ export default function AdminDashboardPage() {
                 <XAxis dataKey="luna" tick={{ fontSize: 9 }} interval={0} />
                 <YAxis tick={{ fontSize: 10 }} />
                 <RechartsTooltip formatter={(v: any) => `${typeof v === 'number' ? v.toFixed(2) : v} lei`} />
-                <Bar dataKey="venituri" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="venituri" fill="#427AA1" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </>

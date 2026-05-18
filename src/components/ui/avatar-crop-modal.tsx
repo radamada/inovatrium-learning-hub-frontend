@@ -109,7 +109,7 @@ export function AvatarCropModal({ open, imageSrc, onConfirm, onCancel }: Props) 
             step={0.01}
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
-            className="flex-1 h-1.5 appearance-none rounded-full bg-gray-200 accent-indigo-600 cursor-pointer"
+            className="flex-1 h-1.5 appearance-none rounded-full bg-gray-200 accent-blue-600 cursor-pointer"
             aria-label="Zoom"
           />
 

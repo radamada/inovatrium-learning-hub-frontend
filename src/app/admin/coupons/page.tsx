@@ -204,7 +204,7 @@ export default function AdminCouponsPage() {
                   onClick={() => setForm({ ...form, mode: 'custom' })}
                   className={`flex-1 py-2 text-sm font-medium transition ${
                     form.mode === 'custom'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-blue-600 text-white'
                       : 'bg-white text-gray-600 hover:bg-gray-50'
                   }`}
                 >
@@ -215,7 +215,7 @@ export default function AdminCouponsPage() {
                   onClick={() => setForm({ ...form, mode: 'random', code: '' })}
                   className={`flex-1 py-2 text-sm font-medium transition flex items-center justify-center gap-1.5 ${
                     form.mode === 'random'
-                      ? 'bg-indigo-600 text-white'
+                      ? 'bg-blue-600 text-white'
                       : 'bg-white text-gray-600 hover:bg-gray-50'
                   }`}
                 >
@@ -246,7 +246,7 @@ export default function AdminCouponsPage() {
                 onChange={(e) =>
                   setForm({ ...form, discountType: e.target.value as 'percent' | 'fixed' })
                 }
-                className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="percent">Procentual (%)</option>
                 <option value="fixed">Sumă fixă (lei)</option>
@@ -330,7 +330,7 @@ export default function AdminCouponsPage() {
                 id="instructor-id"
                 value={form.instructorId}
                 onChange={(e) => setForm({ ...form, instructorId: e.target.value, courseId: '' })}
-                className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">— Global (toți formatorii) —</option>
                 {instructors.map((u) => (
@@ -348,7 +348,7 @@ export default function AdminCouponsPage() {
                 id="course-id"
                 value={form.courseId}
                 onChange={(e) => setForm({ ...form, courseId: e.target.value })}
-                className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="mt-1 w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">— Toate cursurile —</option>
                 {filteredCourses.map((c) => (
@@ -366,7 +366,7 @@ export default function AdminCouponsPage() {
 
             <Button
               type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              className="w-full bg-emerald-600 hover:bg-emerald-700"
               disabled={
                 createMutation.isPending ||
                 !form.discountValue ||
@@ -416,7 +416,7 @@ export default function AdminCouponsPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-mono font-bold text-sm text-gray-900">{coupon.code}</span>
-                            <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                            <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full font-medium">
                               -{formatDiscount(coupon)}
                             </span>
                             {!coupon.isActive && (
@@ -446,7 +446,7 @@ export default function AdminCouponsPage() {
                               </span>
                             )}
                             {!coupon.courseId && coupon.instructorId && (
-                              <span className="flex items-center gap-1 text-indigo-500">
+                              <span className="flex items-center gap-1 text-blue-500">
                                 <User className="w-3 h-3" />
                                 {coupon.instructorId.name}
                               </span>
@@ -461,12 +461,12 @@ export default function AdminCouponsPage() {
                             onClick={() => handleToggle(coupon)}
                             disabled={togglingId === coupon._id}
                             title={coupon.isActive ? 'Dezactivează' : 'Activează'}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition disabled:opacity-50"
+                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition disabled:opacity-50"
                           >
                             {togglingId === coupon._id ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : coupon.isActive ? (
-                              <ToggleRight className="w-5 h-5 text-indigo-500" />
+                              <ToggleRight className="w-5 h-5 text-blue-500" />
                             ) : (
                               <ToggleLeft className="w-5 h-5" />
                             )}

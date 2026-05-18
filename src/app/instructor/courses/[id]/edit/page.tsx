@@ -4,7 +4,7 @@ import { use, useState, useEffect, useRef } from 'react';
 
 const uuid = (): string =>
   typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-    ? uuid()
+    ? crypto.randomUUID()
     : (`${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`).replace(/[018]/g, (c: string) =>
         (Number(c) ^ (Math.random() * 16 >> (Number(c) / 4))).toString(16),
       );
@@ -42,7 +42,7 @@ type FormData = z.infer<typeof schema>;
 interface QuizQuestionItem {
   question: string;
   options: string[]; // 4 options
-  correctIndex: number;
+  correctIndexes: number[];
 }
 
 interface LessonItem {
@@ -90,14 +90,14 @@ const newQuizLesson = (): LessonItem => ({
   duration: 0,
   isFree: false,
   uploading: false,
-  questions: [{ question: '', options: ['', '', '', ''], correctIndex: 0 }],
+  questions: [{ question: '', options: ['', '', '', ''], correctIndexes: [0] }],
   quizExpanded: true,
 });
 
 const newQuestion = (): QuizQuestionItem => ({
   question: '',
   options: ['', '', '', ''],
-  correctIndex: 0,
+  correctIndexes: [0],
 });
 
 function sectionsKey(sects: SectionItem[]): string {
@@ -131,7 +131,8 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
   const [curriculumInitialized, setCurriculumInitialized] = useState(false);
   const [whatYouLearn, setWhatYouLearn] = useState<string[]>([]);
   const pollingVideos = useRef<Set<string>>(new Set());
-  const pollingInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pollingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollingDelay = useRef<number>(5_000);
   const isMounted = useRef(true);
   const [wylError, setWylError] = useState('');
 
@@ -169,7 +170,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
     reset({
       title: p.title ?? course.title,
       description: p.description ?? course.description,
-      price: p.price ?? course.price,
+      price: ((p.price ?? course.price) as number)?.toFixed(2) as never,
       categoryId,
       level,
       language: p.language ?? course.language ?? 'ro',
@@ -191,8 +192,8 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
     uploading: false,
     questions: (l.questions ?? []).map((q: any) => ({
       question: q.question ?? '',
-      options: q.options?.length === 4 ? q.options : ['', '', '', ''],
-      correctIndex: q.correctIndex ?? 0,
+      options: q.options?.length >= 2 ? q.options : ['', '', '', ''],
+      correctIndexes: q.correctIndexes ?? (q.correctIndex != null ? [q.correctIndex] : [0]),
     })),
     quizExpanded: false,
   });
@@ -231,16 +232,17 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
   }, [course, curriculum]);
 
   useEffect(() => {
+    // Reset on (re)mount — StrictMode dev mount/unmount/remount otherwise
+    // leaves this false and kills polling.
+    isMounted.current = true;
     return () => {
       isMounted.current = false;
-      if (pollingInterval.current) clearInterval(pollingInterval.current);
+      if (pollingTimeout.current) clearTimeout(pollingTimeout.current);
     };
   }, []);
 
-  const startPolling = (videoId: string) => {
-    pollingVideos.current.add(videoId);
-    if (pollingInterval.current) return;
-    pollingInterval.current = setInterval(async () => {
+  const scheduleNextPoll = () => {
+    pollingTimeout.current = setTimeout(async () => {
       if (!isMounted.current) return;
       const ids = [...pollingVideos.current];
       for (const vid of ids) {
@@ -261,14 +263,104 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
             })));
             toast.error('Eroare la procesarea videoclipului pe CDN');
           }
-        } catch { /* keep polling on network error */ }
+        } catch { /* ignore network errors, retry at next interval */ }
       }
-      if (pollingVideos.current.size === 0 && pollingInterval.current) {
-        clearInterval(pollingInterval.current);
-        pollingInterval.current = null;
+      if (pollingVideos.current.size > 0) {
+        pollingDelay.current = Math.min(pollingDelay.current * 2, 30_000);
+        scheduleNextPoll();
+      } else {
+        pollingTimeout.current = null;
       }
-    }, 5000);
+    }, pollingDelay.current);
   };
+
+  const startPolling = (videoId: string) => {
+    pollingVideos.current.add(videoId);
+    // Immediate first check — don't wait 5s. Handles the case where a video is
+    // already finished on Bunny but the UI state has stale `processing`.
+    (async () => {
+      try {
+        const { data } = await api.get<{ status: number }>(`/media/video-status/${videoId}`);
+        if (!isMounted.current) return;
+        if (data.status === 4) {
+          pollingVideos.current.delete(videoId);
+          setSections((prev) => prev.map((s) => ({
+            ...s,
+            lessons: s.lessons.map((l) => l.cdnVideoId === videoId ? { ...l, processingStatus: 'ready' } : l),
+          })));
+          return;
+        }
+        if (data.status === 5 || data.status === 6) {
+          pollingVideos.current.delete(videoId);
+          setSections((prev) => prev.map((s) => ({
+            ...s,
+            lessons: s.lessons.map((l) => l.cdnVideoId === videoId ? { ...l, processingStatus: 'error' } : l),
+          })));
+          return;
+        }
+      } catch { /* fall through to scheduled polling */ }
+      if (pollingTimeout.current) return;
+      pollingDelay.current = 5_000;
+      scheduleNextPoll();
+    })();
+    if (pollingTimeout.current) {
+      clearTimeout(pollingTimeout.current);
+      pollingTimeout.current = null;
+      pollingDelay.current = 5_000;
+      scheduleNextPoll();
+    }
+  };
+
+  // Adopt any processing lessons that aren't already being polled.
+  // Covers: curriculum loaded from server with videos still encoding, and page
+  // reload/HMR that preserved `sections` but cleared the polling ref.
+  useEffect(() => {
+    for (const s of sections) {
+      for (const l of s.lessons) {
+        if (l.processingStatus === 'processing' && l.cdnVideoId && !pollingVideos.current.has(l.cdnVideoId)) {
+          startPolling(l.cdnVideoId);
+        }
+      }
+    }
+  }, [sections]);
+
+  // On initial load, reconcile each lesson's CDN status from Bunny so the UI
+  // never shows a stale "processing" state (or a fake "ready" when encoding is
+  // still running).
+  const cdnSyncDone = useRef(false);
+  useEffect(() => {
+    if (!curriculumInitialized || cdnSyncDone.current) return;
+    cdnSyncDone.current = true;
+    const videoIds = sections
+      .flatMap((s) => s.lessons)
+      .filter((l) => !!l.cdnVideoId)
+      .map((l) => l.cdnVideoId);
+    if (videoIds.length === 0) return;
+    (async () => {
+      const entries = await Promise.all(
+        videoIds.map(async (vid) => {
+          try {
+            const { data } = await api.get<{ status: number }>(`/media/video-status/${vid}`);
+            return [vid, data.status] as const;
+          } catch {
+            return [vid, null] as const;
+          }
+        }),
+      );
+      const statusMap = new Map(entries);
+      setSections((prev) => prev.map((s) => ({
+        ...s,
+        lessons: s.lessons.map((l) => {
+          if (!l.cdnVideoId) return l;
+          const st = statusMap.get(l.cdnVideoId);
+          if (st == null) return l;
+          if (st === 4) return { ...l, processingStatus: undefined };
+          if (st === 5 || st === 6) return { ...l, processingStatus: 'error' };
+          return { ...l, processingStatus: 'processing' };
+        }),
+      })));
+    })();
+  }, [curriculumInitialized, sections]);
 
   const uploadThumbnail = async (file: File) => {
     setUploadingThumb(true);
@@ -612,15 +704,20 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
           if (r.status === 'fulfilled') uploadedMap.set(r.value.tempId, r.value.videoId);
         }
 
-        // Update state and start CDN processing poll
+        // Update state
         setSections((prev) => prev.map((s) => ({
           ...s,
           lessons: s.lessons.map((l) => {
             const videoId = uploadedMap.get(l.tempId);
-            if (videoId) { startPolling(videoId); return { ...l, cdnVideoId: videoId, pendingFile: undefined, processingStatus: 'processing' }; }
+            if (videoId) { return { ...l, cdnVideoId: videoId, pendingFile: undefined, processingStatus: 'processing' as const }; }
             return l;
           }),
         })));
+
+        // Start polling OUTSIDE the state updater (side effects in updaters are unreliable in React 19)
+        for (const videoId of uploadedMap.values()) {
+          startPolling(videoId);
+        }
       }
 
       // Build sections with resolved cdnVideoIds for API calls
@@ -715,7 +812,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
   }
 
   return (
-    <div>
+    <div className="max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Editare curs</h1>
 
       {/* Pending changes banner */}
@@ -760,12 +857,12 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
             <button
               onClick={() => setStep(s)}
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition ${
-                step === s ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
+                step === s ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500 hover:bg-gray-300'
               }`}
             >
               {i + 1}
             </button>
-            <span className={`text-sm font-medium ${step === s ? 'text-indigo-600' : 'text-gray-500'}`}>
+            <span className={`text-sm font-medium ${step === s ? 'text-blue-600' : 'text-gray-500'}`}>
               {s === 'info' ? 'Informații' : 'Curriculum'}
             </span>
             {i === 0 && <ChevronRight className="w-4 h-4 text-gray-400" />}
@@ -829,9 +926,9 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                   </button>
                 </div>
               ) : (
-                <label className={`cursor-pointer w-32 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 hover:border-indigo-400 hover:bg-indigo-50 transition ${uploadingThumb ? 'opacity-50 pointer-events-none' : ''}`}>
+                <label className={`cursor-pointer w-32 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 hover:border-blue-400 hover:bg-blue-50 transition ${uploadingThumb ? 'opacity-50 pointer-events-none' : ''}`}>
                   {uploadingThumb ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-indigo-500" />
+                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
                   ) : (
                     <>
                       <ImageIcon className="w-5 h-5 text-gray-400" />
@@ -857,7 +954,24 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Preț (lei) *</Label>
-              <Input type="number" step="0.01" min="30" max="2000" placeholder="ex: 99 (30–2000 lei)" {...register('price')} className="mt-1" />
+              <Input
+                type="text"
+                inputMode="decimal"
+                placeholder="ex: 99.00 (30–2000 lei)"
+                {...register('price', {
+                  onBlur: (e) => {
+                    const raw = String(e.target.value).replace(',', '.').trim();
+                    if (!raw) return;
+                    const n = parseFloat(raw);
+                    if (Number.isFinite(n)) {
+                      const rounded = Math.round(n * 100) / 100;
+                      setValue('price', rounded as never, { shouldValidate: true, shouldDirty: true });
+                      e.target.value = rounded.toFixed(2);
+                    }
+                  },
+                })}
+                className="mt-1"
+              />
               {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
             </div>
             <div>
@@ -900,7 +1014,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
 
           <div className="flex flex-col gap-2">
             <div className="flex gap-3">
-              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 flex-1" disabled={isSubmitting}>
+              <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700 flex-1" disabled={isSubmitting}>
                 {isSubmitting ? 'Se salvează...' : 'Salvează și continuă →'}
               </Button>
               <Button type="button" variant="outline" onClick={() => setStep('curriculum')}>
@@ -924,7 +1038,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                 <input
                   value={section.title}
                   onChange={(e) => updateSectionTitle(section.tempId, e.target.value)}
-                  className="flex-1 bg-transparent font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-400 rounded px-1"
+                  className="flex-1 bg-transparent font-semibold focus:outline-none focus:ring-1 focus:ring-blue-400 rounded px-1"
                 />
                 <button onClick={() => toggleSection(section.tempId)} className="text-gray-400 hover:text-gray-600">
                   {section.expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
@@ -942,14 +1056,14 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                         /* ── Quiz item ── */
                         <div className="flex flex-col gap-3">
                           <div className="flex items-center gap-3">
-                            <ClipboardList className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                            <ClipboardList className="w-4 h-4 text-blue-500 flex-shrink-0" />
                             <input
                               value={lesson.title}
                               onChange={(e) => updateLesson(section.tempId, lesson.tempId, { title: e.target.value })}
-                              className="flex-1 text-sm border-b border-dashed border-gray-300 focus:outline-none focus:border-indigo-400 bg-transparent"
+                              className="flex-1 text-sm border-b border-dashed border-gray-300 focus:outline-none focus:border-blue-400 bg-transparent"
                               placeholder="Titlu quiz"
                             />
-                            <Badge variant="outline" className="text-indigo-600 border-indigo-300 text-xs">Quiz</Badge>
+                            <Badge variant="outline" className="text-blue-600 border-blue-300 text-xs">Quiz</Badge>
                             <button
                               onClick={() => updateLesson(section.tempId, lesson.tempId, { quizExpanded: !lesson.quizExpanded })}
                               className="text-gray-400 hover:text-gray-600"
@@ -966,11 +1080,11 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                               {lesson.questions.map((q, qIdx) => (
                                 <div key={qIdx} className="bg-gray-50 rounded-lg border p-3 space-y-2">
                                   <div className="flex items-start gap-2">
-                                    <span className="text-xs font-bold text-indigo-600 mt-1 w-5 flex-shrink-0">{qIdx + 1}.</span>
+                                    <span className="text-xs font-bold text-blue-600 mt-1 w-5 flex-shrink-0">{qIdx + 1}.</span>
                                     <input
                                       value={q.question}
                                       onChange={(e) => updateQuestion(section.tempId, lesson.tempId, qIdx, { question: e.target.value })}
-                                      className="flex-1 text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-indigo-400 bg-white"
+                                      className="flex-1 text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:border-blue-400 bg-white"
                                       placeholder="Scrie întrebarea..."
                                     />
                                     <button
@@ -984,18 +1098,24 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                                     {q.options.map((opt, oIdx) => (
                                       <div key={oIdx} className="flex items-center gap-2">
                                         <input
-                                          type="radio"
-                                          name={`correct-${lesson.tempId}-${qIdx}`}
-                                          checked={q.correctIndex === oIdx}
-                                          onChange={() => updateQuestion(section.tempId, lesson.tempId, qIdx, { correctIndex: oIdx })}
-                                          className="accent-indigo-600"
+                                          type="checkbox"
+                                          checked={q.correctIndexes.includes(oIdx)}
+                                          onChange={() => {
+                                            const has = q.correctIndexes.includes(oIdx);
+                                            const next = has
+                                              ? q.correctIndexes.filter((i) => i !== oIdx)
+                                              : [...q.correctIndexes, oIdx];
+                                            if (next.length === 0) return; // must have at least one correct
+                                            updateQuestion(section.tempId, lesson.tempId, qIdx, { correctIndexes: next });
+                                          }}
+                                          className="accent-blue-600"
                                           title="Răspuns corect"
                                         />
                                         <span className="text-xs text-gray-500 w-4 flex-shrink-0">{String.fromCharCode(65 + oIdx)}.</span>
                                         <input
                                           value={opt}
                                           onChange={(e) => updateOption(section.tempId, lesson.tempId, qIdx, oIdx, e.target.value)}
-                                          className="flex-1 text-sm border border-gray-200 rounded px-2 py-1 focus:outline-none focus:border-indigo-400 bg-white"
+                                          className="flex-1 text-sm border border-gray-200 rounded px-2 py-1 focus:outline-none focus:border-blue-400 bg-white"
                                           placeholder={`Opțiunea ${String.fromCharCode(65 + oIdx)}`}
                                         />
                                       </div>
@@ -1008,7 +1128,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => addQuestion(section.tempId, lesson.tempId)}
-                                className="text-indigo-600 hover:text-indigo-800 text-xs"
+                                className="text-blue-600 hover:text-blue-800 text-xs"
                               >
                                 <Plus className="w-3 h-3 mr-1" /> Adaugă întrebare
                               </Button>
@@ -1019,11 +1139,11 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                         /* ── Video lesson item ── */
                         <div className="flex flex-col gap-3">
                           <div className="flex items-center gap-3">
-                            <Video className="w-4 h-4 text-indigo-500 flex-shrink-0" />
+                            <Video className="w-4 h-4 text-blue-500 flex-shrink-0" />
                             <input
                               value={lesson.title}
                               onChange={(e) => updateLesson(section.tempId, lesson.tempId, { title: e.target.value })}
-                              className="flex-1 text-sm border-b border-dashed border-gray-300 focus:outline-none focus:border-indigo-400 bg-transparent"
+                              className="flex-1 text-sm border-b border-dashed border-gray-300 focus:outline-none focus:border-blue-400 bg-transparent"
                               placeholder="Titlu lecție"
                             />
                             {sectionIdx === 0 && lessonIdx === 0 && (
@@ -1057,15 +1177,15 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                                 </Badge>
                               )
                             ) : lesson.pendingFile ? (
-                              <span className="flex items-center gap-2 text-xs text-indigo-600">
+                              <span className="flex items-center gap-2 text-xs text-blue-600">
                                 📎 {lesson.pendingFile.name} — va fi încărcat la salvare
                               </span>
                             ) : lesson.uploading ? (
-                              <span className="flex items-center gap-2 text-xs text-indigo-600">
+                              <span className="flex items-center gap-2 text-xs text-blue-600">
                                 <Loader2 className="w-3 h-3 animate-spin" /> Se încarcă...
                               </span>
                             ) : (
-                              <label className="cursor-pointer flex items-center gap-2 text-xs text-indigo-600 hover:text-indigo-800 border border-dashed border-indigo-300 px-3 py-1.5 rounded-lg hover:bg-indigo-50 transition">
+                              <label className="cursor-pointer flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 border border-dashed border-blue-300 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition">
                                 <Upload className="w-3.5 h-3.5" />
                                 Încarcă video
                                 <input
@@ -1096,7 +1216,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                       variant="ghost"
                       size="sm"
                       onClick={() => addLesson(section.tempId)}
-                      className="text-indigo-600 hover:text-indigo-800"
+                      className="text-blue-600 hover:text-blue-800"
                     >
                       <Plus className="w-3.5 h-3.5 mr-1" /> Adaugă lecție
                     </Button>
@@ -1127,7 +1247,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                 <Button
                   onClick={() => saveCurriculum(false)}
                   disabled={!canSaveCurriculum}
-                  className="flex-[2] bg-indigo-600 hover:bg-indigo-700"
+                  className="flex-[2] bg-emerald-600 hover:bg-emerald-700"
                 >
                   {savingCurriculum ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
                   {savingCurriculum ? 'Se salvează...' : 'Salvează modificările'}
@@ -1138,7 +1258,7 @@ export default function InstructorEditCoursePage({ params }: { params: Promise<{
                     {savingCurriculum ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
                     {savingCurriculum ? 'Se salvează...' : 'Salvează draft'}
                   </Button>
-                  <Button onClick={() => saveCurriculum(true)} disabled={!canSaveCurriculum} className="flex-1 bg-indigo-600 hover:bg-indigo-700">
+                  <Button onClick={() => saveCurriculum(true)} disabled={!canSaveCurriculum} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
                     {savingCurriculum ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
                     {savingCurriculum ? 'Se salvează...' : 'Publică cursul'}
                   </Button>

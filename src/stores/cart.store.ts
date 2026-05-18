@@ -12,6 +12,7 @@ interface CartState {
   addItem: (courseId: string) => Promise<void>;
   removeItem: (courseId: string) => Promise<void>;
   clearCart: () => Promise<void>;
+  resetItems: () => void;
   totalPrice: () => number;
   itemCount: () => number;
 }
@@ -57,6 +58,10 @@ export const useCartStore = create<CartState>()((set, get) => ({
       set({ items: [] });
     } catch {}
   },
+
+  // Clears items locally without API call — used on logout so the next
+  // user doesn't briefly see the previous user's cart.
+  resetItems: () => set({ items: [] }),
 
   totalPrice: () => get().items.reduce((sum, i) => sum + i.price, 0),
   itemCount: () => get().items.length,
