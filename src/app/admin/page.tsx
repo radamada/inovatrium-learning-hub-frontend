@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
             <XAxis dataKey="luna" tick={{ fontSize: 9 }} interval={0} />
             <YAxis tick={{ fontSize: 10 }} />
             <RechartsTooltip formatter={(v: any) => `${typeof v === 'number' ? v.toFixed(2) : v} lei`} />
-            <Bar dataKey="venituri" fill="#427AA1" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="venituri" fill="#3853A3" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </motion.div>
@@ -288,7 +288,7 @@ export default function AdminDashboardPage() {
                 <XAxis dataKey="luna" tick={{ fontSize: 9 }} interval={0} />
                 <YAxis tick={{ fontSize: 10 }} />
                 <RechartsTooltip formatter={(v: any) => `${typeof v === 'number' ? v.toFixed(2) : v} lei`} />
-                <Bar dataKey="venituri" fill="#427AA1" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="venituri" fill="#3853A3" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </>

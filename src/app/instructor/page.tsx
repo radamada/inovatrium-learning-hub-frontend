@@ -189,7 +189,7 @@ export default function InstructorDashboard() {
                 contentStyle={{ borderRadius: 8, border: '1px solid #e5e7eb', fontSize: 12 }}
                 cursor={{ fill: '#f5f3ff' }}
               />
-              <Bar dataKey="revenue" fill="#427AA1" radius={[4, 4, 0, 0]} maxBarSize={48} />
+              <Bar dataKey="revenue" fill="#3853A3" radius={[4, 4, 0, 0]} maxBarSize={48} />
             </BarChart>
           </ResponsiveContainer>
         )}
