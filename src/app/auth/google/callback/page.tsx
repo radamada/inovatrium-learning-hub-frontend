@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth.store';
 import { tokenStore } from '@/lib/api';
 import api from '@/lib/api';
+import { resolvePostLoginDestination } from '@/lib/auth-redirect';
 import { toast } from 'sonner';
 
 function GoogleCallbackHandler() {
@@ -44,7 +45,8 @@ function GoogleCallbackHandler() {
         // the persisted auth state, causing a flash of unauthenticated UI.
         await new Promise((r) => setTimeout(r, 0));
         toast.success(`Bine ai venit, ${res.data.name}!`);
-        router.replace(from);
+        const destination = await resolvePostLoginDestination(from);
+        router.replace(destination);
       })
       .catch(() => {
         tokenStore.clear();

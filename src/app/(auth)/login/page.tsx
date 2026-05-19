@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ShieldAlert, Eye, EyeOff } from 'lucide-react';
 import api from '@/lib/api';
+import { resolvePostLoginDestination } from '@/lib/auth-redirect';
 import { useAuthStore } from '@/stores/auth.store';
 import { motion } from 'framer-motion';
 
@@ -53,7 +54,10 @@ function LoginForm() {
       const res = await api.post('/auth/login', data);
       setAuth(res.data.user, res.data.accessToken);
       toast.success(`Bine ai venit, ${res.data.user.name}!`);
-      router.push(from);
+      // Dacă destinația implicită era dashboard-ul și user-ul nu are cursuri
+      // active (excludem cele rambursate), îl trimitem pe homepage să exploreze.
+      const destination = await resolvePostLoginDestination(from);
+      router.push(destination);
     } catch (err: any) {
       const msg = err?.response?.data?.message;
       if (msg === 'Contul este dezactivat' || msg === 'ACCOUNT_BLOCKED') {
