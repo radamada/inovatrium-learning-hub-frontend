@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Inoversity Frontend
 
-## Getting Started
+Aplicație Next.js 16 pentru platforma de cursuri online Inoversity.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Next.js 16, React 19, Tailwind CSS v4, shadcn (`@base-ui/react`), Framer Motion, Zustand 5, React Query 5, Axios, React Hook Form + Zod, Stripe.js, Video.js + HLS.js, Recharts, Sonner, date-fns.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Setup local
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone și instalare:**
+   ```bash
+   git clone https://github.com/radamada/inoversity-frontend.git
+   cd inoversity-frontend
+   npm install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Configurare environment:**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Editează `.env.local` și completează valorile. `NEXT_PUBLIC_API_URL` trebuie să indice spre backend-ul Inoversity (default `http://localhost:3001`).
 
-## Learn More
+3. **Pornire dev server:**
+   ```bash
+   npm run dev
+   ```
+   Aplicația rulează la `http://localhost:3000`.
 
-To learn more about Next.js, take a look at the following resources:
+## Backend
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Codul backend e separat în [inoversity-backend](https://github.com/radamada/inoversity-backend). Pentru dev local complet, clonează și rulează ambele.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentație
 
-## Deploy on Vercel
+`docs/superpowers/specs/` și `docs/superpowers/plans/` conțin design docs istorice — rebrand-ul EduInovatrium → Inoversity și color redesign-ul. Referințele textuale la `frontend/...` din ele sunt din monorepo-ul original; în repo-ul curent path-urile încep direct de la `src/`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Comenzi utile
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Comandă | Descriere |
+|---|---|
+| `npm run dev` | Dev server cu hot reload |
+| `npm run build` | Build production |
+| `npm run start` | Pornește production build local |
+| `npx tsc --noEmit` | Type-check fără emit |
