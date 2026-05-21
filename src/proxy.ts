@@ -1,18 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { USER_ROLE_COOKIE } from '@/lib/constants/cookies';
 
 const AUTH_ROUTES = ['/dashboard', '/checkout', '/wishlist'];
 const LEARN_ROUTE = /^\/courses\/[^/]+\/learn/;
 const ADMIN_ROUTE = /^\/admin/;
 const INSTRUCTOR_ROUTE = /^\/instructor/;
 const VALID_ROLES = new Set(['student', 'instructor', 'admin']);
-
-/**
- * Cookie name written by the frontend auth store (auth.store.ts → setRoleCookie).
- * Using samesite=strict so it is always sent to the Next.js server on localhost:3000.
- * Production uses the __Host- prefix for added security.
- */
-const USER_ROLE_COOKIE =
-  process.env.NODE_ENV === 'production' ? '__Host-user_role' : 'user_role';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

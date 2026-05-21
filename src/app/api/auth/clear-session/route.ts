@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
-
-const IS_PROD = process.env.NODE_ENV === 'production';
+import { IS_PROD, USER_ROLE_COOKIE } from '@/lib/constants/cookies';
 
 // Must mirror backend cookie-names.const.ts
 const REFRESH_TOKEN_COOKIE = IS_PROD ? '__Host-refresh_token' : 'refresh_token';
-const USER_ROLE_COOKIE     = IS_PROD ? '__Host-user_role'     : 'user_role';
 
 export async function GET() {
   const response = NextResponse.redirect(

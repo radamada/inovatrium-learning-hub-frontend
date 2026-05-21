@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 import type { User } from '@/types';
 import api, { tokenStore } from '@/lib/api';
 import { COOKIE_MAX_AGE_S } from '@/lib/constants/timings';
+import { IS_PROD, USER_ROLE_COOKIE } from '@/lib/constants/cookies';
 
 // ── Cookie helpers (client-side, same origin as middleware) ───────────────────
 // The backend sets its own httpOnly cookies on localhost:3001, which the browser
@@ -12,15 +13,18 @@ import { COOKIE_MAX_AGE_S } from '@/lib/constants/timings';
 // strict implementations). By writing user_role via document.cookie we guarantee
 // the middleware always has access to the role on every request to localhost:3000.
 const ROLE_COOKIE_MAX_AGE = COOKIE_MAX_AGE_S.USER_ROLE;
+// Prefixul `__Host-` cere atributul Secure; setarea Secure pe dev (HTTP) e ignorată
+// silent de browser, dar pe prod e obligatorie pentru ca cookie-ul să fie acceptat.
+const SECURE_ATTR = IS_PROD ? '; Secure' : '';
 
 export function setRoleCookie(role: string) {
   if (typeof document === 'undefined') return;
-  document.cookie = `user_role=${role}; path=/; max-age=${ROLE_COOKIE_MAX_AGE}; samesite=strict`;
+  document.cookie = `${USER_ROLE_COOKIE}=${role}; path=/; max-age=${ROLE_COOKIE_MAX_AGE}; samesite=strict${SECURE_ATTR}`;
 }
 
 export function clearRoleCookie() {
   if (typeof document === 'undefined') return;
-  document.cookie = 'user_role=; path=/; max-age=0; samesite=strict';
+  document.cookie = `${USER_ROLE_COOKIE}=; path=/; max-age=0; samesite=strict${SECURE_ATTR}`;
 }
 
 interface AuthState {
