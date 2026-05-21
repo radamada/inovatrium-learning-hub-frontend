@@ -14,19 +14,17 @@ function GoogleCallbackHandler() {
   const { setAuth } = useAuthStore();
 
   useEffect(() => {
-    const token = searchParams.get('token');
+    const code = searchParams.get('code');
     const error = searchParams.get('error');
 
-    if (error || !token) {
+    if (error || !code) {
       toast.error('Autentificarea cu Google a eșuat. Încearcă din nou.');
       router.replace('/login');
       return;
     }
 
-    // Store token in memory so the /auth/me request can be authorized
-    tokenStore.set(token);
-
-    // Remove token from URL immediately — it should never sit in browser history
+    // Curățăm imediat URL-ul. Codul e single-use și e consumat la exchange,
+    // dar îl scoatem oricum din history ca să nu pară activ.
     window.history.replaceState({}, '', '/auth/google/callback');
 
     // Retrieve the "from" path saved in sessionStorage before the OAuth redirect
@@ -34,17 +32,14 @@ function GoogleCallbackHandler() {
     sessionStorage.removeItem('google_auth_from');
     const from = rawFrom.startsWith('/') && !rawFrom.startsWith('//') ? rawFrom : '/dashboard';
 
-    // Fetch full user object (confirms token is valid and account is active)
+    // Schimbăm codul one-time pe tokens. BE setează refresh_token + user_role
+    // cookies și returnează accessToken + user în body.
     api
-      .get('/auth/me')
+      .post('/auth/google/exchange', { code })
       .then(async (res) => {
-        setAuth(res.data, token);
-        // Wait for Zustand persist microtask to flush user → localStorage
-        // and the role cookie to be observable by middleware. Without this,
-        // router.replace can navigate before the destination page can read
-        // the persisted auth state, causing a flash of unauthenticated UI.
+        setAuth(res.data.user, res.data.accessToken);
         await new Promise((r) => setTimeout(r, 0));
-        toast.success(`Bine ai venit, ${res.data.name}!`);
+        toast.success(`Bine ai venit, ${res.data.user.name}!`);
         const destination = await resolvePostLoginDestination(from);
         router.replace(destination);
       })
