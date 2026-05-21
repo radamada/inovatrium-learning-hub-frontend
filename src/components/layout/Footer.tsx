@@ -24,11 +24,11 @@ export default function Footer() {
             <div className="flex flex-row flex-wrap gap-3 mt-2">
               <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://pieseautofab-cdn.fra1.digitaloceanspaces.com/misc/anpc-sal.webp" alt="ANPC - Soluționarea Alternativă a Litigiilor" style={{ height: 40 }} />
+                <img src="/anpc-sal.webp" alt="ANPC - Soluționarea Alternativă a Litigiilor" style={{ height: 40 }} />
               </a>
               <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="https://pieseautofab-cdn.fra1.digitaloceanspaces.com/misc/anpc-sol.png" alt="SOL - Soluționarea Online a Litigiilor" style={{ height: 40 }} />
+                <img src="/anpc-sol.png" alt="SOL - Soluționarea Online a Litigiilor" style={{ height: 40 }} />
               </a>
             </div>
           </div>
