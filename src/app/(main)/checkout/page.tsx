@@ -251,31 +251,39 @@ export default function CheckoutPage() {
 
           {!orderReady ? (
             <div className="space-y-4">
-              {/* DEV: Fake pay button */}
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                <p className="text-xs text-amber-700 font-semibold mb-2 flex items-center gap-1">
-                  <FlaskConical className="w-3.5 h-3.5" /> MOD TESTARE
-                </p>
-                <Button
-                  className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-                  onClick={handleFakePay}
-                  disabled={isFakePaying}
-                >
-                  {isFakePaying ? 'Se procesează...' : 'Plătește (Test) — fără card'}
-                </Button>
-                <p className="text-xs text-amber-600 mt-2">
-                  Simulează o plată reușită instant, fără Stripe.
-                </p>
-              </div>
+              {/* MOD TESTARE — disponibil doar local (NODE_ENV=development).
+                  Next.js inline-uiește condiția la build, deci în bundle-ul
+                  de production blocul JSX e eliminat complet (dead-code
+                  elimination). Backend-ul respinge oricum /orders/fake-pay
+                  în non-development (defense-in-depth). */}
+              {process.env.NODE_ENV === 'development' && (
+                <>
+                  <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                    <p className="text-xs text-amber-700 font-semibold mb-2 flex items-center gap-1">
+                      <FlaskConical className="w-3.5 h-3.5" /> MOD TESTARE
+                    </p>
+                    <Button
+                      className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+                      onClick={handleFakePay}
+                      disabled={isFakePaying}
+                    >
+                      {isFakePaying ? 'Se procesează...' : 'Plătește (Test) — fără card'}
+                    </Button>
+                    <p className="text-xs text-amber-600 mt-2">
+                      Simulează o plată reușită instant, fără Stripe.
+                    </p>
+                  </div>
 
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200" />
-                </div>
-                <div className="relative flex justify-center text-xs text-gray-400">
-                  <span className="bg-white px-2">sau plătește cu cardul</span>
-                </div>
-              </div>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-200" />
+                    </div>
+                    <div className="relative flex justify-center text-xs text-gray-400">
+                      <span className="bg-white px-2">sau plătește cu cardul</span>
+                    </div>
+                  </div>
+                </>
+              )}
 
               <Button
                 className="w-full bg-emerald-600 hover:bg-emerald-700 py-6 text-base font-semibold"
