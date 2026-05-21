@@ -23,7 +23,7 @@ export default function ConfirmOldEmailPage() {
     }
 
     axios
-      .get(`${API_URL}/api/users/email/confirm-old`, { params: { token } })
+      .post(`${API_URL}/api/users/email/confirm-old`, { token })
       .then(({ data }) => {
         setStatus('success');
         setMessage(data.message ?? 'Adresa curentă a fost confirmată. Verifică inbox-ul noii adrese de email.');

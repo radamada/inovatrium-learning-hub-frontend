@@ -25,7 +25,7 @@ export default function ConfirmNewEmailPage() {
     }
 
     axios
-      .get(`${API_URL}/api/users/email/confirm-new`, { params: { token } })
+      .post(`${API_URL}/api/users/email/confirm-new`, { token })
       .then(({ data }) => {
         setStatus('success');
         setMessage(data.message ?? 'Adresa de email a fost schimbată cu succes.');
