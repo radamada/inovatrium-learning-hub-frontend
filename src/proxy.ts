@@ -43,7 +43,8 @@ export function proxy(request: NextRequest) {
       loginUrl.searchParams.set('from', pathname);
       return NextResponse.redirect(loginUrl);
     }
-    if (userRole !== 'instructor') {
+    // Adminul are acces și la zona de instructor (gestionează cursurile tuturor).
+    if (userRole !== 'instructor' && userRole !== 'admin') {
       return NextResponse.redirect(new URL('/', request.url));
     }
   }
