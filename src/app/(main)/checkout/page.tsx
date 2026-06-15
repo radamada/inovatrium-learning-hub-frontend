@@ -16,9 +16,10 @@ import { useCartStore } from '@/stores/cart.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { useWishlistStore } from '@/stores/wishlist.store';
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '',
-);
+const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
+// Avoid calling loadStripe('') — it silently yields a blank PaymentElement.
+// When the key is missing we keep the promise null and surface an error in the UI.
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
 
 function CheckoutForm({ orderId, onSuccess }: { orderId: string; onSuccess: () => void }) {
   const stripe = useStripe();
@@ -91,6 +92,10 @@ export default function CheckoutPage() {
   // Refs for true in-flight guards — state updates are async, refs are sync.
   const creatingOrderRef = useRef(false);
   const fakePayingRef = useRef(false);
+  // Guards the one-shot cart fetch so it runs once per mount regardless of how
+  // many times `user`/`isHydrated` toggle — lets us keep an exhaustive dep array
+  // without re-fetching on every render-triggering store update.
+  const cartFetchStartedRef = useRef(false);
 
   // Coupon state
   const [couponInput, setCouponInput] = useState('');
@@ -100,14 +105,21 @@ export default function CheckoutPage() {
   useEffect(() => {
     if (!isHydrated) return;
     if (!user) { router.push('/login?from=/checkout'); return; }
+    // Fetch the cart exactly once per mount. The ref guard means we can list all
+    // referenced values in the dep array without triggering repeated fetches.
+    if (cartFetchStartedRef.current) return;
+    cartFetchStartedRef.current = true;
     fetchCart().then(() => setIsLoadingCart(false));
-  }, [user, isHydrated]);
+  }, [user, isHydrated, fetchCart, router]);
 
   useEffect(() => {
     if (isLoadingCart) return;
     const currentItems = useCartStore.getState().items;
-    if (currentItems.length === 0) { router.push('/'); }
-  }, [isLoadingCart]);
+    if (currentItems.length === 0) {
+      toast.info('Coșul tău este gol.');
+      router.push('/');
+    }
+  }, [isLoadingCart, router]);
 
   const subtotal = totalPrice();
   const finalTotal = appliedCoupon ? appliedCoupon.finalTotal : subtotal;
@@ -296,7 +308,12 @@ export default function CheckoutPage() {
             </div>
           ) : (
             <>
-              {clientSecret ? (
+              {!stripePromise ? (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+                  Plata cu cardul nu este disponibilă momentan (configurare Stripe lipsă).
+                  Te rugăm să încerci din nou mai târziu sau să contactezi suportul.
+                </div>
+              ) : clientSecret ? (
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
                   <CheckoutForm orderId={orderId} onSuccess={handleSuccess} />
                 </Elements>

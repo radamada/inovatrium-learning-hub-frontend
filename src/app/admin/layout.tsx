@@ -140,7 +140,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="lg:pl-64">
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-slate-950 text-white sticky top-0 z-20">
-          <button onClick={() => setSidebarOpen(true)} className="p-1 rounded hover:bg-slate-700 transition">
+          <button onClick={() => setSidebarOpen(true)} aria-label="Deschide meniul" aria-expanded={sidebarOpen} className="p-1 rounded hover:bg-slate-700 transition">
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">

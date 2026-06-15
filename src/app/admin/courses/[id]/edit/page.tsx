@@ -9,6 +9,7 @@ const uuid = (): string =>
         (Number(c) ^ (Math.random() * 16 >> (Number(c) / 4))).toString(16),
       );
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -887,8 +888,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ id: strin
             <div className="mt-1 flex items-start gap-4">
               {thumbnailUrl ? (
                 <div className="relative w-32 h-20 rounded-lg overflow-hidden border border-gray-200">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={thumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                  <Image src={thumbnailUrl} alt="Thumbnail" fill sizes="128px" className="object-cover" />
                   <button
                     type="button"
                     disabled={deletingThumb}

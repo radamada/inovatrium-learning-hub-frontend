@@ -11,10 +11,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import api from '@/lib/api';
+import { passwordSchema } from '@/lib/auth-schemas';
 
 const schema = z
   .object({
-    password: z.string().min(8, 'Minim 8 caractere').max(72, 'Maxim 72 caractere').regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Parola trebuie să conțină cel puțin o literă mare, o literă mică și o cifră'),
+    password: passwordSchema,
     confirm: z.string(),
   })
   .refine((d) => d.password === d.confirm, {

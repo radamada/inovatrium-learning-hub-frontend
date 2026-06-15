@@ -18,11 +18,12 @@ import { useCartStore } from '@/stores/cart.store';
 import { useThemeStore } from '@/stores/theme.store';
 import CartSheet from '@/components/cart/CartSheet';
 import NotificationBell from '@/components/layout/NotificationBell';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 
 export default function Header() {
   const { user, logout, isHydrated } = useAuthStore();
-  const { itemCount } = useCartStore();
+  const cartItems = useCartStore((s) => s.items);
+  const itemCount = useMemo(() => cartItems.length, [cartItems]);
   const { dark, toggle: toggleTheme } = useThemeStore();
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -100,9 +101,9 @@ export default function Header() {
               aria-label="Deschide coșul de cumpărături"
             >
               <ShoppingCart className="w-5 h-5 text-gray-600" />
-              {itemCount() > 0 && (
+              {itemCount > 0 && (
                 <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
-                  {itemCount()}
+                  {itemCount}
                 </Badge>
               )}
             </button>
@@ -122,7 +123,10 @@ export default function Header() {
             <div className="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
           ) : user ? (
             <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-2 rounded-full focus:outline-none">
+              <DropdownMenuTrigger
+                aria-label={`Contul lui ${user.name}`}
+                className="flex items-center gap-2 rounded-full focus:outline-none"
+              >
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={user.avatar} />
                   <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">

@@ -17,6 +17,9 @@ const ROLE_COOKIE_MAX_AGE = COOKIE_MAX_AGE_S.USER_ROLE;
 // silent de browser, dar pe prod e obligatorie pentru ca cookie-ul să fie acceptat.
 const SECURE_ATTR = IS_PROD ? '; Secure' : '';
 
+// localStorage key used to broadcast a logout to other open tabs (storage event).
+const AUTH_LOGOUT_BROADCAST_KEY = 'auth-logout-broadcast';
+
 export function setRoleCookie(role: string) {
   if (typeof document === 'undefined') return;
   document.cookie = `${USER_ROLE_COOKIE}=${role}; path=/; max-age=${ROLE_COOKIE_MAX_AGE}; samesite=strict${SECURE_ATTR}`;
@@ -66,7 +69,7 @@ export const useAuthStore = create<AuthState>()(
         // each time (timestamp) to ensure the storage event fires even if
         // another logout happened recently.
         try {
-          localStorage.setItem('auth-logout-broadcast', String(Date.now()));
+          localStorage.setItem(AUTH_LOGOUT_BROADCAST_KEY, String(Date.now()));
         } catch {}
         // Clear cart immediately so the next user doesn't briefly see stale items
         const { useCartStore } = await import('./cart.store');
@@ -120,7 +123,7 @@ export const useAuthStore = create<AuthState>()(
 // and other tabs hard-reload so their in-memory token + cart are wiped too.
 if (typeof window !== 'undefined') {
   window.addEventListener('storage', (e) => {
-    if (e.key === 'auth-logout-broadcast' && e.newValue) {
+    if (e.key === AUTH_LOGOUT_BROADCAST_KEY && e.newValue) {
       tokenStore.clear();
       clearRoleCookie();
       useAuthStore.setState({ user: null, accessToken: null });

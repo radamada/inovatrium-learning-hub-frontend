@@ -47,6 +47,7 @@ function DashboardContent() {
     queryKey: ['enrollments', user?._id],
     enabled: !!user,
     queryFn: () => api.get('/enrollments').then((r) => r.data),
+    staleTime: 60_000,
   });
 
   // Fetch total lesson counts for each enrolled course
@@ -58,6 +59,7 @@ function DashboardContent() {
     queryKey: ['curricula-totals', courseIds.join(',')],
     enabled: courseIds.length > 0,
     queryFn: () => api.post('/courses/lesson-counts', { courseIds }).then((r) => r.data),
+    staleTime: 60_000,
   });
 
   if (!user) return null;

@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { AvatarCropModal } from '@/components/ui/avatar-crop-modal';
 import { toast } from 'sonner';
 import api from '@/lib/api';
+import { passwordSchema } from '@/lib/auth-schemas';
 import { useAuthStore } from '@/stores/auth.store';
 
 interface ProfileForm {
@@ -27,22 +28,15 @@ const emailSchema = z.object({
 });
 type EmailForm = z.infer<typeof emailSchema>;
 
-const passwordSchema = z.object({
+const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Parola curentă este obligatorie'),
-  newPassword: z
-    .string()
-    .min(8, 'Minim 8 caractere')
-    .max(72, 'Maxim 72 caractere')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Parola trebuie să conțină cel puțin o literă mare, o literă mică și o cifră',
-    ),
+  newPassword: passwordSchema,
   confirmPassword: z.string(),
 }).refine((d) => d.newPassword === d.confirmPassword, {
   message: 'Parolele nu coincid',
   path: ['confirmPassword'],
 });
-type PasswordForm = z.infer<typeof passwordSchema>;
+type PasswordForm = z.infer<typeof changePasswordSchema>;
 
 export default function ProfilePage() {
   const { user, fetchMe, isHydrated } = useAuthStore();
@@ -76,7 +70,7 @@ export default function ProfilePage() {
   });
 
   const passwordForm = useForm<PasswordForm>({
-    resolver: zodResolver(passwordSchema),
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
   });
 

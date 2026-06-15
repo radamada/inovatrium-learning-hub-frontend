@@ -1,5 +1,6 @@
 import { GraduationCap } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   return (
@@ -23,12 +24,10 @@ export default function Footer() {
             </p>
             <div className="flex flex-row flex-wrap gap-3 mt-2">
               <a href="https://anpc.ro/ce-este-sal/" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/anpc-sal.webp" alt="ANPC - Soluționarea Alternativă a Litigiilor" style={{ height: 40 }} />
+                <Image src="/anpc-sal.webp" alt="ANPC - Soluționarea Alternativă a Litigiilor" width={161} height={40} style={{ height: 40, width: 'auto' }} />
               </a>
               <a href="https://ec.europa.eu/consumers/odr" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/anpc-sol.png" alt="SOL - Soluționarea Online a Litigiilor" style={{ height: 40 }} />
+                <Image src="/anpc-sol.png" alt="SOL - Soluționarea Online a Litigiilor" width={161} height={40} style={{ height: 40, width: 'auto' }} />
               </a>
             </div>
           </div>
