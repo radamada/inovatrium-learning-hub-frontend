@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { GraduationCap, Sparkles, HelpCircle, ArrowRight, Check } from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import api from '@/lib/api';
 import type { Course } from '@/types';
 import CourseCard from '@/components/courses/CourseCard';
@@ -39,12 +39,12 @@ const heroItem = {
   show: { opacity: 1, y: 0 },
 };
 
-const cardStagger = {
+const cardStagger: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.08 } },
 };
 
-const cardItem = {
+const cardItem: Variants = {
   hidden: { opacity: 0, y: 24 },
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } },
 };

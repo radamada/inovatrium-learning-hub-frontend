@@ -405,7 +405,7 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              {user.role !== 'google' && (
+              {user.hasPassword !== false && (
                 <div>
                   <Label htmlFor="emailCurrentPassword">Parola curentă</Label>
                   <Input

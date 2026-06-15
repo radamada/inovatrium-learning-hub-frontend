@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
-export default function ConfirmOldEmailPage() {
+function ConfirmOldEmailInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get('token');
@@ -65,5 +65,21 @@ export default function ConfirmOldEmailPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// useSearchParams() necesită un Suspense boundary la build (altfel next build
+// eșuează cu „missing-suspense-with-csr-bailout" și pagina nu se prerenderează).
+export default function ConfirmOldEmailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+        </div>
+      }
+    >
+      <ConfirmOldEmailInner />
+    </Suspense>
   );
 }

@@ -187,7 +187,7 @@ export default function CourseFilters({
           )}
 
           {onMinRatingChange && (
-            <Select value={minRating || 'any'} onValueChange={(v) => onMinRatingChange(v === 'any' ? '' : v)}>
+            <Select value={minRating || 'any'} onValueChange={(v) => onMinRatingChange(v && v !== 'any' ? v : '')}>
               <SelectTrigger className="w-44">
                 <span className="truncate text-sm">
                   {!minRating || minRating === 'any' ? 'Orice rating'
@@ -205,7 +205,7 @@ export default function CourseFilters({
           )}
 
           {onInstructorChange && (
-            <Select value={instructorId || 'any'} onValueChange={(v) => onInstructorChange(v === 'any' ? '' : v)}>
+            <Select value={instructorId || 'any'} onValueChange={(v) => onInstructorChange(v && v !== 'any' ? v : '')}>
               <SelectTrigger className="w-48">
                 <span className="truncate text-sm">
                   {!instructorId ? 'Toți formatorii'

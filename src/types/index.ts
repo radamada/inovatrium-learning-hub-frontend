@@ -8,6 +8,8 @@ export interface User {
   isActive: boolean;
   createdAt: string;
   darkMode?: boolean;
+  /** false pentru conturile Google-only (fără parolă). Setat de /auth/me & login. */
+  hasPassword?: boolean;
 }
 
 export interface Category {

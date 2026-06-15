@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { GraduationCap } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import api from '@/lib/api';
 import type { Course } from '@/types';
 import CourseCard from '@/components/courses/CourseCard';
@@ -29,12 +29,12 @@ function CourseCardSkeleton() {
   );
 }
 
-const cardStagger = {
+const cardStagger: Variants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06 } },
 };
 
-const cardItem = {
+const cardItem: Variants = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
 };
