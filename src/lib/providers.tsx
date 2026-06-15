@@ -5,7 +5,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from '@/components/ui/sonner';
 import { makeQueryClient } from './query-client';
-import { useAuthStore, setRoleCookie, clearRoleCookie } from '@/stores/auth.store';
+import { useAuthStore, clearRoleCookie } from '@/stores/auth.store';
 import { useWishlistStore } from '@/stores/wishlist.store';
 import { useCartStore } from '@/stores/cart.store';
 import { useThemeStore } from '@/stores/theme.store';
@@ -34,15 +34,10 @@ function AuthHydrator() {
       // Set synchronously — React re-renders before the browser paints,
       // so isHydrated=false is never visible to the user.
       useAuthStore.setState({ user, isHydrated: true });
-      // Re-set the user_role cookie on the frontend origin so the Next.js
-      // middleware can see it on the next page navigation. The cookie may have
-      // expired (TTL = 7 days) or been cleared by another tab, while the user
-      // object is still in localStorage.
-      if (user?.role) {
-        setRoleCookie(user.role);
-      } else {
-        clearRoleCookie();
-      }
+      // NOTĂ: nu mai derivăm cookie-ul user_role din localStorage — rolul nu mai
+      // e persistat (vezi auth.store partialize). Cookie-ul rămâne cel setat la
+      // login (TTL 7 zile) și e re-sincronizat server-autoritar de fetchMe() în
+      // pasul 2; pe sesiune invalidă, catch-ul din pasul 2 îl curăță.
     } catch {
       // localStorage unavailable (e.g. private browsing, storage full)
       useAuthStore.setState({ isHydrated: true });
@@ -58,12 +53,20 @@ function AuthHydrator() {
     const { user } = useAuthStore.getState();
     if (!user) return;
 
-    refreshAccessToken().catch(() => {
-      tokenStore.clear();
-      clearRoleCookie();
-      try { localStorage.removeItem('auth-store'); } catch {}
-      useAuthStore.setState({ user: null, isHydrated: true });
-    });
+    refreshAccessToken()
+      .then(() => {
+        // Repopulează userul complet (inclusiv `role`, care nu mai e persistat)
+        // din server și re-sincronizează cookie-ul user_role. Fără asta, UI-ul
+        // role-gated (meniuri instructor/admin) ar lipsi după un hard reload pe
+        // paginile care nu au layout cu fetchMe().
+        useAuthStore.getState().fetchMe().catch(() => {});
+      })
+      .catch(() => {
+        tokenStore.clear();
+        clearRoleCookie();
+        try { localStorage.removeItem('auth-store'); } catch {}
+        useAuthStore.setState({ user: null, isHydrated: true });
+      });
   }, []);
 
   return null;
