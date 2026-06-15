@@ -1,15 +1,18 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import api from '@/lib/api';
+import { resolvePostLoginDestination } from '@/lib/auth-redirect';
 import { useAuthStore } from '@/stores/auth.store';
 import { motion } from 'framer-motion';
 
@@ -29,6 +32,8 @@ type FormData = z.infer<typeof schema>;
 export default function RegisterPage() {
   const { setAuth } = useAuthStore();
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const {
     register,
@@ -46,7 +51,10 @@ export default function RegisterPage() {
       });
       setAuth(res.data.user, res.data.accessToken);
       toast.success('Cont creat cu succes! Bine ai venit!');
-      router.push('/dashboard');
+      // Userii noi (fără înscrieri) ajung pe homepage să exploreze catalogul,
+      // nu pe un dashboard gol — prin același helper ca login-ul.
+      const destination = await resolvePostLoginDestination('/dashboard');
+      router.push(destination);
     } catch (err: any) {
       toast.error(err?.response?.data?.message ?? 'Eroare la înregistrare');
     }
@@ -86,13 +94,47 @@ export default function RegisterPage() {
 
         <div>
           <Label htmlFor="password">Parolă</Label>
-          <Input id="password" type="password" placeholder="••••••" {...register('password')} className="mt-1" />
+          <div className="relative mt-1">
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••"
+              {...register('password')}
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              tabIndex={-1}
+              aria-label={showPassword ? 'Ascunde parola' : 'Afișează parola'}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
           {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
         </div>
 
         <div>
           <Label htmlFor="confirmPassword">Confirmă parola</Label>
-          <Input id="confirmPassword" type="password" placeholder="••••••" {...register('confirmPassword')} className="mt-1" />
+          <div className="relative mt-1">
+            <Input
+              id="confirmPassword"
+              type={showConfirm ? 'text' : 'password'}
+              placeholder="••••••"
+              {...register('confirmPassword')}
+              className="pr-10"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirm((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              tabIndex={-1}
+              aria-label={showConfirm ? 'Ascunde parola' : 'Afișează parola'}
+            >
+              {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
           {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword.message}</p>}
         </div>
 
