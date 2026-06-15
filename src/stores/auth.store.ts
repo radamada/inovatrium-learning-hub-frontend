@@ -79,6 +79,10 @@ export const useAuthStore = create<AuthState>()(
         try {
           const { data } = await api.get('/auth/me');
           set({ user: data });
+          // Re-sincronizează cookie-ul user_role (citit de middleware) cu rolul
+          // autoritar de la server — nu doar la login. Dacă rolul s-a schimbat
+          // server-side (ex. demotare), middleware-ul vede valoarea corectă.
+          setRoleCookie(data.role);
           // Sync dark mode preference from server
           if (typeof data.darkMode === 'boolean') {
             const { useThemeStore } = await import('./theme.store');
@@ -97,7 +101,14 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-store',
-      partialize: (state) => ({ user: state.user }),
+      // Nu persistăm `role` în localStorage: e folosit doar pentru UI, iar o
+      // valoare alterată (XSS / extensie de browser) ar afișa meniuri
+      // privilegiate înșelătoare. Rolul autoritar e re-citit din fetchMe()
+      // (server) la fiecare încărcare. JSON.stringify omite `undefined`, deci
+      // role nu ajunge în storage; live state-ul păstrează userul complet.
+      partialize: (state) => ({
+        user: state.user ? ({ ...state.user, role: undefined } as unknown as User) : null,
+      }),
       onRehydrateStorage: () => (state) => {
         if (state) state.isHydrated = true;
       },
