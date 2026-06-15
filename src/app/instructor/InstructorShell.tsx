@@ -67,21 +67,41 @@ function SidebarContent({ user, pathname, onNavClick }: { user: any; pathname: s
  * stări inconsistente între cookie și auth-store.
  */
 export default function InstructorShell({ children }: { children: React.ReactNode }) {
-  const { user, isHydrated } = useAuthStore();
+  const { user, isHydrated, fetchMe } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // `role` nu mai e persistat în localStorage (vezi auth.store) => imediat după
+  // hidratare poate fi nedefinit. NU redirecta pe rol nedefinit (ar arunca afară
+  // instructorul la fiecare hard-load); re-verifică server-side cu fetchMe și
+  // decide pe rolul proaspăt. Adminul are și el acces (paritate cu middleware-ul).
+  const [serverVerified, setServerVerified] = useState(false);
 
   useEffect(() => {
     if (!isHydrated) return;
-    if (!user) router.push('/login');
-    if (user && user.role !== 'instructor') router.push('/');
-  }, [user, isHydrated]);
+    if (!user) {
+      router.push('/login');
+      return;
+    }
+    let cancelled = false;
+    fetchMe()
+      .then(() => {
+        if (cancelled) return;
+        const fresh = useAuthStore.getState().user;
+        if (!fresh) router.push('/login');
+        else if (fresh.role !== 'instructor' && fresh.role !== 'admin') router.push('/');
+        else setServerVerified(true);
+      })
+      .catch(() => { if (!cancelled) router.push('/login'); });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHydrated, pathname]);
 
   useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
   if (!isHydrated) return null;
-  if (!user || user.role !== 'instructor') return null;
+  if (!user) return null;
+  if (!serverVerified) return null;
 
   return (
     <div className="min-h-screen flex">

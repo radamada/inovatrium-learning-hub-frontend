@@ -79,7 +79,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       router.push('/login');
       return;
     }
-    if (user.role !== 'admin') {
+    // role poate fi nedefinit imediat după hidratare (nu mai e persistat în
+    // localStorage). Redirectăm doar dacă rolul e CUNOSCUT și greșit; altfel
+    // lăsăm fetchMe să confirme rolul proaspăt mai jos.
+    if (user.role && user.role !== 'admin') {
       router.push('/');
       return;
     }
