@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Politică de Confidențialitate — Inoversity',
-  description: 'Politica de confidențialitate și protecție a datelor personale pe platforma Inoversity.',
+  title: 'Politică de Confidențialitate — Inovatrium Learning Hub',
+  description: 'Politica de confidențialitate și protecție a datelor personale pe platforma Inovatrium Learning Hub.',
 };
 
 export default function ConfidentialitatePage() {
@@ -14,22 +14,22 @@ export default function ConfidentialitatePage() {
       <div className="prose prose-gray max-w-none space-y-8 text-gray-700 leading-relaxed">
 
         <p>
-          Confidențialitatea ta este importantă pentru noi. <strong>Inoversity</strong> se angajează
+          Confidențialitatea ta este importantă pentru noi. <strong>Inovatrium Learning Hub</strong> se angajează
           să îți respecte datele cu caracter personal și să respecte orice lege și reglementare
           aplicabilă privind datele pe care le colectăm prin intermediul platformei{' '}
-          <strong>inoversity.ro</strong>, inclusiv Regulamentul General privind Protecția Datelor
+          <strong>learning.inovatrium.ro</strong>, inclusiv Regulamentul General privind Protecția Datelor
           (GDPR — Regulamentul UE 2016/679).
         </p>
 
         <section>
           <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Cine suntem</h2>
           <p>
-            Inoversity (<strong>inoversity.ro</strong>) este operatorul datelor tale cu caracter
+            Inovatrium Learning Hub (<strong>learning.inovatrium.ro</strong>) este operatorul datelor tale cu caracter
             personal. Ne poți contacta la:
           </p>
           <ul className="list-disc pl-5 mt-2 space-y-1">
-            <li>Email: <a href="mailto:privacy@inoversity.ro" className="text-blue-600 hover:underline">privacy@inoversity.ro</a></li>
-            <li>Formular de contact: <Link href="/contact" className="text-blue-600 hover:underline">inoversity.ro/contact</Link></li>
+            <li>Email: <a href="mailto:privacy@inovatrium.ro" className="text-blue-600 hover:underline">privacy@inovatrium.ro</a></li>
+            <li>Formular de contact: <Link href="/contact" className="text-blue-600 hover:underline">learning.inovatrium.ro/contact</Link></li>
           </ul>
         </section>
 
@@ -43,7 +43,7 @@ export default function ConfidentialitatePage() {
           <p className="mt-2">Colectăm de asemenea informații personale pe care ni le furnizezi direct:</p>
           <ul className="list-disc pl-5 mt-2 space-y-2">
             <li><strong>Date de cont:</strong> nume, adresă de email, parolă (stocată criptat cu bcrypt — noi nu avem acces la parola ta)</li>
-            <li><strong>Date de plată:</strong> procesate integral de Stripe — Inoversity nu stochează datele de card</li>
+            <li><strong>Date de plată:</strong> procesate integral de Stripe — Inovatrium Learning Hub nu stochează datele de card</li>
             <li><strong>Date de utilizare:</strong> cursuri achiziționate, progres lecții, ultima accesare, recenzii lăsate</li>
             <li><strong>Date tehnice:</strong> adresă IP, tip browser, sistem de operare (colectate automat la fiecare vizită)</li>
             <li><strong>Consimțăminte:</strong> data, ora și versiunea termenilor acceptați la înregistrare</li>
@@ -176,8 +176,8 @@ export default function ConfidentialitatePage() {
           </ul>
           <p className="mt-2">
             Pentru exercitarea oricărui drept, contactează-ne la{' '}
-            <a href="mailto:privacy@inoversity.ro" className="text-blue-600 hover:underline">
-              privacy@inoversity.ro
+            <a href="mailto:privacy@inovatrium.ro" className="text-blue-600 hover:underline">
+              privacy@inovatrium.ro
             </a>. Răspundem în maxim <strong>30 de zile</strong> calendaristice.
           </p>
         </section>
@@ -229,8 +229,8 @@ export default function ConfidentialitatePage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-3">12. Contact și reclamații</h2>
           <p>
             Pentru orice întrebări sau solicitări privind datele tale personale:{' '}
-            <a href="mailto:privacy@inoversity.ro" className="text-blue-600 hover:underline">
-              privacy@inoversity.ro
+            <a href="mailto:privacy@inovatrium.ro" className="text-blue-600 hover:underline">
+              privacy@inovatrium.ro
             </a>
           </p>
           <p className="mt-2">

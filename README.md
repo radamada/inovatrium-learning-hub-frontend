@@ -1,6 +1,6 @@
-# Inoversity Frontend
+# Inovatrium Learning Hub Frontend
 
-Aplicație Next.js 16 pentru platforma de cursuri online Inoversity.
+Aplicație Next.js 16 pentru platforma de cursuri online Inovatrium Learning Hub.
 
 ## Stack
 
@@ -10,8 +10,8 @@ Next.js 16, React 19, Tailwind CSS v4, shadcn (`@base-ui/react`), Framer Motion,
 
 1. **Clone și instalare:**
    ```bash
-   git clone https://github.com/radamada/inoversity-frontend.git
-   cd inoversity-frontend
+   git clone https://github.com/radamada/inovatrium-learning-hub-frontend.git
+   cd inovatrium-learning-hub-frontend
    npm install
    ```
 
@@ -19,7 +19,7 @@ Next.js 16, React 19, Tailwind CSS v4, shadcn (`@base-ui/react`), Framer Motion,
    ```bash
    cp .env.example .env.local
    ```
-   Editează `.env.local` și completează valorile. `NEXT_PUBLIC_API_URL` trebuie să indice spre backend-ul Inoversity (default `http://localhost:3001`).
+   Editează `.env.local` și completează valorile. `NEXT_PUBLIC_API_URL` trebuie să indice spre backend-ul Inovatrium Learning Hub (default `http://localhost:3001`).
 
 3. **Pornire dev server:**
    ```bash
@@ -29,11 +29,11 @@ Next.js 16, React 19, Tailwind CSS v4, shadcn (`@base-ui/react`), Framer Motion,
 
 ## Backend
 
-Codul backend e separat în [inoversity-backend](https://github.com/radamada/inoversity-backend). Pentru dev local complet, clonează și rulează ambele.
+Codul backend e separat în [inovatrium-learning-hub-backend](https://github.com/radamada/inovatrium-learning-hub-backend). Pentru dev local complet, clonează și rulează ambele.
 
 ## Documentație
 
-`docs/superpowers/specs/` și `docs/superpowers/plans/` conțin design docs istorice — rebrand-ul EduInovatrium → Inoversity și color redesign-ul. Referințele textuale la `frontend/...` din ele sunt din monorepo-ul original; în repo-ul curent path-urile încep direct de la `src/`.
+`docs/superpowers/specs/` și `docs/superpowers/plans/` conțin design docs istorice — rebrand-ul EduInovatrium → Inovatrium Learning Hub și color redesign-ul. Referințele textuale la `frontend/...` din ele sunt din monorepo-ul original; în repo-ul curent path-urile încep direct de la `src/`.
 
 ## Comenzi utile
 

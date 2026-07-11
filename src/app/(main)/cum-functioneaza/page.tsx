@@ -77,7 +77,7 @@ export default function CumFunctioneazaPage() {
             variants={fadeUp}
             className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-5"
           >
-            Cum funcționează <span className="text-blue-600 dark:text-blue-400">Inoversity</span>?
+            Cum funcționează <span className="text-blue-600 dark:text-blue-400">Inovatrium Learning Hub</span>?
           </motion.h1>
           <motion.p variants={fadeUp} className="text-lg text-gray-500 dark:text-slate-400 max-w-xl mx-auto">
             De la descoperirea unui curs până la finalizarea lui — totul e simplu, rapid și la îndemâna ta.
@@ -147,7 +147,7 @@ export default function CumFunctioneazaPage() {
         >
           <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">Gata să începi?</h2>
           <p className="text-gray-500 dark:text-slate-400 mb-8">
-            Alătură-te miilor de studenți care învață zilnic pe Inoversity și dă-i un nou impuls carierei tale.
+            Alătură-te miilor de studenți care învață zilnic pe Inovatrium Learning Hub și dă-i un nou impuls carierei tale.
           </p>
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
             <Link

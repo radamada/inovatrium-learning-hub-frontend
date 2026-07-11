@@ -7,7 +7,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <Link href="/" className="flex items-center gap-2 mb-8">
         <GraduationCap className="text-blue-600 w-8 h-8" />
         <span className="text-2xl font-bold text-gray-800">
-          Ino<span className="text-indigo-600">versity</span>
+          Inovatrium<span className="text-indigo-600"> Learning Hub</span>
         </span>
       </Link>
       {children}
