@@ -13,9 +13,11 @@ const cspDev = [
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.b-cdn.net https://*.bunnycdn.com https://res.cloudinary.com https://images.unsplash.com http://localhost:*",
+  // Media: blob: pentru MSE (hls.js) + Bunny Stream CDN pentru fallback-ul HLS nativ (Safari)
+  "media-src 'self' blob: https://*.b-cdn.net",
   "font-src 'self' data:",
-  // Connect: API, Stripe, HMR websocket
-  `connect-src 'self' ${API_URL} https://api.stripe.com ws://localhost:* http://localhost:*`,
+  // Connect: API, Stripe, HMR websocket, Bunny Stream CDN (hls.js descarcă .m3u8 + segmente)
+  `connect-src 'self' ${API_URL} https://api.stripe.com https://*.b-cdn.net ws://localhost:* http://localhost:*`,
   "frame-src https://js.stripe.com https://hooks.stripe.com",
   "object-src 'none'",
   "base-uri 'self'",
@@ -27,8 +29,10 @@ const cspProd = [
   "script-src 'self' 'unsafe-inline' https://js.stripe.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://*.b-cdn.net https://*.bunnycdn.com https://res.cloudinary.com https://images.unsplash.com",
+  // Media: blob: pentru MSE (hls.js) + Bunny Stream CDN pentru fallback-ul HLS nativ (Safari)
+  "media-src 'self' blob: https://*.b-cdn.net",
   "font-src 'self' data:",
-  `connect-src 'self' ${API_URL} https://api.stripe.com`,
+  `connect-src 'self' ${API_URL} https://api.stripe.com https://*.b-cdn.net`,
   "frame-src https://js.stripe.com https://hooks.stripe.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
