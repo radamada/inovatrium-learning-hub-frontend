@@ -332,9 +332,14 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
   const removeSection = (tempId: string) => {
     const section = sections.find((s) => s.tempId === tempId);
     section?.lessons.forEach((l) => {
-      if (l.cdnVideoId) {
-        pollingVideos.current.delete(l.cdnVideoId);
-        api.delete(`/media/video/${l.cdnVideoId}`).catch(() => null);
+      // Clip videos live on l.clips[].cdnVideoId — collect the lesson video plus
+      // every clip video (mirrors removeLesson) so none are orphaned on Bunny.
+      const vids = new Set<string>();
+      if (l.cdnVideoId) vids.add(l.cdnVideoId);
+      for (const c of l.clips) if (c.cdnVideoId) vids.add(c.cdnVideoId);
+      for (const vid of vids) {
+        pollingVideos.current.delete(vid);
+        api.delete(`/media/video/${vid}`).catch(() => null);
       }
     });
     if (section?.dbId) {
@@ -633,27 +638,46 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
         }
 
         for (const lesson of section.lessons) {
-          if (lesson.dbId) continue; // Already created in a previous partial save
-
+          // Already-saved lessons are PATCHed (not re-POSTed) so edits to a saved
+          // lesson's clips/interactions persist and freshly-uploaded clips get
+          // attached instead of orphaned. `lesson` comes from `resolvedSections`,
+          // so clip cdnVideoIds are already the post-upload ids.
           if (lesson.type === 'quiz') {
-            const res = await api.post(
-              `${apiBase}/courses/${courseId}/sections/${sectionDbId}/quizzes`,
-              { title: lesson.title, questions: lesson.questions },
-            );
-            lessonDbIdMap.set(lesson.tempId, res.data._id);
+            if (lesson.dbId) {
+              await api.patch(
+                `${apiBase}/courses/${courseId}/quizzes/${lesson.dbId}`,
+                { title: lesson.title, questions: lesson.questions },
+              );
+            } else {
+              const res = await api.post(
+                `${apiBase}/courses/${courseId}/sections/${sectionDbId}/quizzes`,
+                { title: lesson.title, questions: lesson.questions },
+              );
+              lessonDbIdMap.set(lesson.tempId, res.data._id);
+            }
           } else {
-            const res = await api.post(
-              `${apiBase}/sections/${sectionDbId}/lessons`,
-              {
+            if (lesson.dbId) {
+              await api.patch(`${apiBase}/lessons/${lesson.dbId}`, {
                 title: lesson.title,
+                isFree: lesson.isFree,
                 cdnVideoId: lesson.clips[0]?.cdnVideoId ?? '',
                 duration: lesson.clips[0]?.duration ?? 0,
                 clips: lesson.clips.map(toVideoClip),
-                isFree: lesson.isFree,
-              },
-              { params: { courseId } },
-            );
-            lessonDbIdMap.set(lesson.tempId, res.data._id);
+              });
+            } else {
+              const res = await api.post(
+                `${apiBase}/sections/${sectionDbId}/lessons`,
+                {
+                  title: lesson.title,
+                  cdnVideoId: lesson.clips[0]?.cdnVideoId ?? '',
+                  duration: lesson.clips[0]?.duration ?? 0,
+                  clips: lesson.clips.map(toVideoClip),
+                  isFree: lesson.isFree,
+                },
+                { params: { courseId } },
+              );
+              lessonDbIdMap.set(lesson.tempId, res.data._id);
+            }
           }
         }
       }
@@ -708,10 +732,13 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
   const hasPendingFiles = sections.some((s) => s.lessons.some((l) => l.clips.some((c) => !!c.pendingFile)));
   const hasProcessingVideo = sections.some((s) => s.lessons.some((l) =>
     l.processingStatus === 'processing' || l.clips.some((c) => c.processingStatus === 'processing')));
+  // A clip/lesson that failed CDN transcode is unplayable — block save/publish.
+  const hasErroredVideo = sections.some((s) => s.lessons.some((l) =>
+    l.processingStatus === 'error' || l.clips.some((c) => c.processingStatus === 'error')));
   const totalLessons = sections.reduce((sum, s) => sum + s.lessons.length, 0);
-  const canSaveDraft = !hasVideoWithoutCdn && !savingCurriculum && !curriculumSaved;
-  const canPublish = !hasVideoWithoutCdn && !hasPendingFiles && !hasProcessingVideo && !savingCurriculum;
-  const canPublishAfterSave = totalLessons > 0 && !hasVideoWithoutCdn && !hasPendingFiles && !hasProcessingVideo && !publishingCourse;
+  const canSaveDraft = !hasVideoWithoutCdn && !hasErroredVideo && !savingCurriculum && !curriculumSaved;
+  const canPublish = !hasVideoWithoutCdn && !hasPendingFiles && !hasProcessingVideo && !hasErroredVideo && !savingCurriculum;
+  const canPublishAfterSave = totalLessons > 0 && !hasVideoWithoutCdn && !hasPendingFiles && !hasProcessingVideo && !hasErroredVideo && !publishingCourse;
 
   return (
     <div className="max-w-3xl mx-auto">

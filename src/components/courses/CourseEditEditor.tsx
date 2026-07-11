@@ -939,7 +939,10 @@ export default function CourseEditEditor({ id, config }: { id: string; config: C
     l.type === 'video' && l.clips.some((c) => !c.cdnVideoId && !c.pendingFile)));
   const hasProcessingVideo = sections.some((s) => s.lessons.some((l) =>
     l.processingStatus === 'processing' || l.clips.some((c) => c.processingStatus === 'processing')));
-  const canSaveCurriculum = (curriculumDirty || isDirty) && !hasVideoWithoutCdn && !hasProcessingVideo && !savingCurriculum;
+  // A clip/lesson that failed CDN transcode is unplayable — block save/publish.
+  const hasErroredVideo = sections.some((s) => s.lessons.some((l) =>
+    l.processingStatus === 'error' || l.clips.some((c) => c.processingStatus === 'error')));
+  const canSaveCurriculum = (curriculumDirty || isDirty) && !hasVideoWithoutCdn && !hasProcessingVideo && !hasErroredVideo && !savingCurriculum;
 
   if (courseLoading) {
     return <div className="text-gray-400 p-8">Se încarcă...</div>;
@@ -972,10 +975,10 @@ export default function CourseEditEditor({ id, config }: { id: string; config: C
             </Button>
             <Button
               size="sm"
-              disabled={publishingChanges || discardingChanges || hasProcessingVideo}
+              disabled={publishingChanges || discardingChanges || hasProcessingVideo || hasErroredVideo}
               onClick={publishPendingChanges}
               className="bg-amber-500 hover:bg-amber-600 text-white"
-              title={hasProcessingVideo ? 'Așteptați finalizarea procesării videoclipurilor' : undefined}
+              title={hasProcessingVideo ? 'Așteptați finalizarea procesării videoclipurilor' : hasErroredVideo ? 'Un videoclip nu a putut fi procesat — remediază înainte de publicare' : undefined}
             >
               {publishingChanges ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <CheckCircle2 className="w-3 h-3 mr-1" />}
               Publică modificările
