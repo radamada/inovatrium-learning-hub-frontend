@@ -315,30 +315,34 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
               ) : (
                 /* Video lesson */
                 <>
-                  {(() => {
-                    const clips: VideoClip[] =
-                      selectedLesson.clips && selectedLesson.clips.length > 0
-                        ? selectedLesson.clips
-                        : selectedLesson.cdnVideoId
-                          ? [{ cdnVideoId: selectedLesson.cdnVideoId, duration: selectedLesson.duration, interactions: [] }]
-                          : [];
-                    return clips.length > 0 ? (
-                      <InteractivePlayer
-                        key={selectedLesson._id}
-                        clips={clips}
-                        courseId={course?._id ?? ''}
-                        isFree={selectedLesson.isFree}
-                        onLessonEnded={() => {
-                          isAutoComplete.current = true;
-                          completeMutation.mutate(selectedLesson._id);
-                        }}
-                      />
-                    ) : (
-                      <div className="aspect-video bg-gray-900 rounded-xl flex items-center justify-center">
-                        <p className="text-gray-400">Selectează o lecție cu conținut video</p>
-                      </div>
-                    );
-                  })()}
+                  {/* Playerul rămâne fix sus (sticky) în timp ce restul conținutului
+                      — titlu, notițe — scrolează sub el. */}
+                  <div className="sticky top-0 z-20 bg-white pb-4">
+                    {(() => {
+                      const clips: VideoClip[] =
+                        selectedLesson.clips && selectedLesson.clips.length > 0
+                          ? selectedLesson.clips
+                          : selectedLesson.cdnVideoId
+                            ? [{ cdnVideoId: selectedLesson.cdnVideoId, duration: selectedLesson.duration, interactions: [] }]
+                            : [];
+                      return clips.length > 0 ? (
+                        <InteractivePlayer
+                          key={selectedLesson._id}
+                          clips={clips}
+                          courseId={course?._id ?? ''}
+                          isFree={selectedLesson.isFree}
+                          onLessonEnded={() => {
+                            isAutoComplete.current = true;
+                            completeMutation.mutate(selectedLesson._id);
+                          }}
+                        />
+                      ) : (
+                        <div className="aspect-video bg-gray-900 rounded-xl flex items-center justify-center">
+                          <p className="text-gray-400">Selectează o lecție cu conținut video</p>
+                        </div>
+                      );
+                    })()}
+                  </div>
 
                   <div className="mt-6">
                     <h1 className="text-2xl font-bold">{selectedLesson.title}</h1>
