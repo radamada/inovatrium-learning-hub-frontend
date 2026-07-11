@@ -6,9 +6,11 @@ interface VideoPlayerProps {
   src: string;
   onEnded?: () => void;
   autoPlay?: boolean;
+  onTimeUpdate?: (t: number) => void;
+  onSeeking?: (t: number) => void;
 }
 
-export default function VideoPlayer({ src, onEnded, autoPlay = false }: VideoPlayerProps) {
+export default function VideoPlayer({ src, onEnded, autoPlay = false, onTimeUpdate, onSeeking }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<any>(null);
 
@@ -56,10 +58,13 @@ export default function VideoPlayer({ src, onEnded, autoPlay = false }: VideoPla
     <div className="relative bg-black rounded-xl overflow-hidden aspect-video">
       <video
         ref={videoRef}
+        data-testid="interactive-video"
         className="w-full h-full"
         controls
         playsInline
         onEnded={onEnded}
+        onTimeUpdate={onTimeUpdate ? (e) => onTimeUpdate(e.currentTarget.currentTime) : undefined}
+        onSeeking={onSeeking ? (e) => onSeeking(e.currentTarget.currentTime) : undefined}
       />
     </div>
   );
