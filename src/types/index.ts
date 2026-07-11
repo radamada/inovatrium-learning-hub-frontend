@@ -53,6 +53,35 @@ export interface QuizQuestion {
   correctIndexes?: number[];
 }
 
+// ── In-video interactive player (Phase 1) ───────────────────────────────────
+export type InteractionType = 'quiz' | 'overlay';
+
+export interface QuizInteraction {
+  id: string;
+  type: 'quiz';
+  atSec: number;
+  question: string;
+  options: string[];
+  correctIndexes?: number[]; // present for in-video quizzes (video lessons; not stripped)
+  explanation?: string;
+}
+export interface OverlayInteraction {
+  id: string;
+  type: 'overlay';
+  atSec: number;
+  untilSec?: number;
+  title: string;
+  text: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+export type VideoInteraction = QuizInteraction | OverlayInteraction;
+export interface VideoClip {
+  cdnVideoId: string;
+  duration: number;
+  interactions: VideoInteraction[];
+}
+
 export interface QuizResult {
   score: number;
   passed: boolean;
@@ -72,6 +101,7 @@ export interface Lesson {
   order: number;
   isFree: boolean;
   questions?: QuizQuestion[];
+  clips?: VideoClip[];
 }
 
 export interface Section {
