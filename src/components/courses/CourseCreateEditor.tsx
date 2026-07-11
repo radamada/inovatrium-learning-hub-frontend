@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  Plus, Trash2, Upload, ChevronDown, ChevronRight, GripVertical, Video, Loader2, ImageIcon, AlertTriangle, ClipboardList,
+  Plus, Trash2, Upload, ChevronDown, ChevronUp, ChevronRight, GripVertical, Video, Loader2, ImageIcon, AlertTriangle, ClipboardList,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +37,8 @@ import api from '@/lib/api';
 import type { Category } from '@/types';
 import { StringListEditor } from '@/components/ui/StringListEditor';
 import { courseSchema, type CourseFormData } from '@/lib/schemas/course.schema';
+import TimelineEditor from '@/components/courses/timeline/TimelineEditor';
+import { type ClipItem, newClip, toVideoClip } from '@/components/courses/timeline/types';
 
 type FormData = CourseFormData;
 const schema = courseSchema;
@@ -75,6 +77,7 @@ interface LessonItem {
   uploading: boolean;
   pendingFile?: File;
   processingStatus?: 'processing' | 'ready' | 'error';
+  clips: ClipItem[];            // multi-clip + timeline interactions
   questions: QuizQuestionItem[];
   quizExpanded: boolean;
 }
@@ -97,6 +100,7 @@ const newVideoLesson = (): LessonItem => ({
   duration: 0,
   isFree: false,
   uploading: false,
+  clips: [newClip()],
   questions: [],
   quizExpanded: true,
 });
@@ -109,6 +113,7 @@ const newQuizLesson = (): LessonItem => ({
   duration: 0,
   isFree: false,
   uploading: false,
+  clips: [],
   questions: [{ question: '', options: ['', '', '', ''], correctIndexes: [0] }],
   quizExpanded: true,
 });
@@ -192,13 +197,19 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
             pollingVideos.current.delete(vid);
             setSections((prev) => prev.map((s) => ({
               ...s,
-              lessons: s.lessons.map((l) => l.cdnVideoId === vid ? { ...l, processingStatus: 'ready' } : l),
+              lessons: s.lessons.map((l) => {
+                const nl = l.cdnVideoId === vid ? { ...l, processingStatus: 'ready' as const } : l;
+                return { ...nl, clips: nl.clips.map((c) => c.cdnVideoId === vid ? { ...c, processingStatus: 'ready' as const } : c) };
+              }),
             })));
           } else if (data.status === 5 || data.status === 6) {
             pollingVideos.current.delete(vid);
             setSections((prev) => prev.map((s) => ({
               ...s,
-              lessons: s.lessons.map((l) => l.cdnVideoId === vid ? { ...l, processingStatus: 'error' } : l),
+              lessons: s.lessons.map((l) => {
+                const nl = l.cdnVideoId === vid ? { ...l, processingStatus: 'error' as const } : l;
+                return { ...nl, clips: nl.clips.map((c) => c.cdnVideoId === vid ? { ...c, processingStatus: 'error' as const } : c) };
+              }),
             })));
             toast.error('Eroare la procesarea videoclipului pe CDN');
           }
@@ -236,6 +247,11 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
       for (const l of s.lessons) {
         if (l.processingStatus === 'processing' && l.cdnVideoId && !pollingVideos.current.has(l.cdnVideoId)) {
           startPolling(l.cdnVideoId);
+        }
+        for (const c of l.clips) {
+          if (c.processingStatus === 'processing' && c.cdnVideoId && !pollingVideos.current.has(c.cdnVideoId)) {
+            startPolling(c.cdnVideoId);
+          }
         }
       }
     }
@@ -364,9 +380,12 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
 
   const removeLesson = (sectionTempId: string, lessonTempId: string) => {
     const lesson = sections.flatMap((s) => s.lessons).find((l) => l.tempId === lessonTempId);
-    if (lesson?.cdnVideoId) {
-      pollingVideos.current.delete(lesson.cdnVideoId);
-      api.delete(`/media/video/${lesson.cdnVideoId}`).catch(() => null);
+    const vids = new Set<string>();
+    if (lesson?.cdnVideoId) vids.add(lesson.cdnVideoId);
+    for (const c of lesson?.clips ?? []) if (c.cdnVideoId) vids.add(c.cdnVideoId);
+    for (const vid of vids) {
+      pollingVideos.current.delete(vid);
+      api.delete(`/media/video/${vid}`).catch(() => null);
     }
     if (lesson?.dbId) {
       // Already saved to backend — delete immediately, keep curriculumSaved intact
@@ -389,7 +408,55 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
     }
   };
 
-  const uploadVideo = async (sectionTempId: string, lessonTempId: string, file: File) => {
+  // ── Clip helpers ──────────────────────────────────────────────────────────
+  // Use `mutateSections` (not raw setSections) so editing a clip / interaction
+  // re-arms the Save button by resetting curriculumSaved.
+
+  const mapLessonClips = (sectionTempId: string, lessonTempId: string, fn: (clips: ClipItem[]) => ClipItem[]) => {
+    mutateSections((prev) =>
+      prev.map((s) =>
+        s.tempId === sectionTempId
+          ? { ...s, lessons: s.lessons.map((l) => (l.tempId === lessonTempId ? { ...l, clips: fn(l.clips) } : l)) }
+          : s,
+      ),
+    );
+  };
+
+  const updateClip = (sectionTempId: string, lessonTempId: string, clip: ClipItem) => {
+    mapLessonClips(sectionTempId, lessonTempId, (clips) =>
+      clips.map((c) => (c.tempId === clip.tempId ? clip : c)),
+    );
+  };
+
+  const addClip = (sectionTempId: string, lessonTempId: string) => {
+    mapLessonClips(sectionTempId, lessonTempId, (clips) => [...clips, newClip()]);
+  };
+
+  const removeClip = (sectionTempId: string, lessonTempId: string, clipTempId: string) => {
+    const clip = sections
+      .flatMap((s) => s.lessons)
+      .flatMap((l) => l.clips)
+      .find((c) => c.tempId === clipTempId);
+    if (clip?.cdnVideoId) {
+      api.delete(`/media/video/${clip.cdnVideoId}`).catch(() => null);
+      pollingVideos.current.delete(clip.cdnVideoId);
+    }
+    mapLessonClips(sectionTempId, lessonTempId, (clips) => clips.filter((c) => c.tempId !== clipTempId));
+  };
+
+  const moveClip = (sectionTempId: string, lessonTempId: string, clipTempId: string, dir: -1 | 1) => {
+    mapLessonClips(sectionTempId, lessonTempId, (clips) => {
+      const idx = clips.findIndex((c) => c.tempId === clipTempId);
+      const target = idx + dir;
+      if (idx < 0 || target < 0 || target >= clips.length) return clips;
+      const next = [...clips];
+      [next[idx], next[target]] = [next[target], next[idx]];
+      return next;
+    });
+  };
+
+  const uploadClipVideo = async (sectionTempId: string, lessonTempId: string, clip: ClipItem, file: File) => {
+    // Extract duration locally — no CDN upload yet, that happens at Save
     const duration = await new Promise<number>((resolve) => {
       const url = URL.createObjectURL(file);
       const video = document.createElement('video');
@@ -398,7 +465,7 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
       video.onerror = () => { URL.revokeObjectURL(url); resolve(0); };
       video.src = url;
     });
-    updateLesson(sectionTempId, lessonTempId, { pendingFile: file, duration, cdnVideoId: '', processingStatus: undefined });
+    updateClip(sectionTempId, lessonTempId, { ...clip, pendingFile: file, duration, cdnVideoId: '', processingStatus: undefined });
   };
 
   // ── Quiz question helpers ────────────────────────────────────────────────
@@ -497,20 +564,23 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
     const lessonDbIdMap = new Map<string, string>();
 
     try {
-      // Step 1: Upload pending video files
-      const pendingLessons = sections.flatMap((s) => s.lessons).filter((l) => l.pendingFile);
-      const uploadedMap = new Map<string, string>(); // tempId → cdnVideoId
+      // Step 1: Upload pending clip video files to CDN
+      const pendingClips = sections
+        .flatMap((s) => s.lessons)
+        .filter((l) => l.type === 'video')
+        .flatMap((l) => l.clips.filter((c) => c.pendingFile).map((c) => ({ lessonTitle: l.title, clip: c })));
+      const uploadedMap = new Map<string, string>(); // clip.tempId → cdnVideoId
 
-      if (pendingLessons.length > 0) {
+      if (pendingClips.length > 0) {
         const results = await Promise.allSettled(
-          pendingLessons.map(async (l) => {
+          pendingClips.map(async ({ lessonTitle, clip }) => {
             const formData = new FormData();
-            formData.append('file', l.pendingFile!);
-            formData.append('title', l.title);
+            formData.append('file', clip.pendingFile!);
+            formData.append('title', lessonTitle);
             const { data } = await api.post('/media/upload-video', formData, {
               headers: { 'Content-Type': 'multipart/form-data' },
             });
-            return { tempId: l.tempId, videoId: data.videoId as string };
+            return { tempId: clip.tempId, videoId: data.videoId as string };
           }),
         );
 
@@ -529,11 +599,13 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
 
         setSections((prev) => prev.map((s) => ({
           ...s,
-          lessons: s.lessons.map((l) => {
-            const videoId = uploadedMap.get(l.tempId);
-            if (videoId) { return { ...l, cdnVideoId: videoId, pendingFile: undefined, processingStatus: 'processing' as const }; }
-            return l;
-          }),
+          lessons: s.lessons.map((l) => ({
+            ...l,
+            clips: l.clips.map((c) => {
+              const videoId = uploadedMap.get(c.tempId);
+              return videoId ? { ...c, cdnVideoId: videoId, pendingFile: undefined, processingStatus: 'processing' as const } : c;
+            }),
+          })),
         })));
 
         // Start polling OUTSIDE the state updater (side effects in updaters are unreliable in React 19)
@@ -544,7 +616,10 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
 
       const resolvedSections = sections.map((s) => ({
         ...s,
-        lessons: s.lessons.map((l) => ({ ...l, cdnVideoId: uploadedMap.get(l.tempId) ?? l.cdnVideoId })),
+        lessons: s.lessons.map((l) => ({
+          ...l,
+          clips: l.clips.map((c) => ({ ...c, cdnVideoId: uploadedMap.get(c.tempId) ?? c.cdnVideoId })),
+        })),
       }));
 
       // Step 2: Create sections and lessons (skip already-created items for idempotent retry)
@@ -569,7 +644,13 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
           } else {
             const res = await api.post(
               `${apiBase}/sections/${sectionDbId}/lessons`,
-              { title: lesson.title, cdnVideoId: lesson.cdnVideoId, duration: lesson.duration, isFree: lesson.isFree },
+              {
+                title: lesson.title,
+                cdnVideoId: lesson.clips[0]?.cdnVideoId ?? '',
+                duration: lesson.clips[0]?.duration ?? 0,
+                clips: lesson.clips.map(toVideoClip),
+                isFree: lesson.isFree,
+              },
               { params: { courseId } },
             );
             lessonDbIdMap.set(lesson.tempId, res.data._id);
@@ -622,9 +703,11 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
     }
   };
 
-  const hasVideoWithoutCdn = sections.some((s) => s.lessons.some((l) => l.type === 'video' && !l.cdnVideoId && !l.pendingFile));
-  const hasPendingFiles = sections.some((s) => s.lessons.some((l) => !!l.pendingFile));
-  const hasProcessingVideo = sections.some((s) => s.lessons.some((l) => l.processingStatus === 'processing'));
+  const hasVideoWithoutCdn = sections.some((s) => s.lessons.some((l) =>
+    l.type === 'video' && l.clips.some((c) => !c.cdnVideoId && !c.pendingFile)));
+  const hasPendingFiles = sections.some((s) => s.lessons.some((l) => l.clips.some((c) => !!c.pendingFile)));
+  const hasProcessingVideo = sections.some((s) => s.lessons.some((l) =>
+    l.processingStatus === 'processing' || l.clips.some((c) => c.processingStatus === 'processing')));
   const totalLessons = sections.reduce((sum, s) => sum + s.lessons.length, 0);
   const canSaveDraft = !hasVideoWithoutCdn && !savingCurriculum && !curriculumSaved;
   const canPublish = !hasVideoWithoutCdn && !hasPendingFiles && !hasProcessingVideo && !savingCurriculum;
@@ -990,50 +1073,91 @@ export default function CourseCreateEditor({ config }: { config: CourseCreateEdi
                             </button>
                           </div>
 
-                          <div className="flex items-center gap-3 pl-7">
-                            {lesson.cdnVideoId ? (
-                              lesson.processingStatus === 'processing' ? (
-                                <span className="flex items-center gap-2 text-xs text-amber-600">
-                                  <Loader2 className="w-3 h-3 animate-spin" /> Se procesează pe CDN...
-                                </span>
-                              ) : lesson.processingStatus === 'error' ? (
-                                <Badge variant="outline" className="text-red-600 border-red-400">
-                                  ✗ Eroare procesare
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-green-600 border-green-400">
-                                  ✓ Video ({lesson.cdnVideoId.slice(0, 8)}...)
-                                </Badge>
-                              )
-                            ) : lesson.pendingFile ? (
-                              <span className="flex items-center gap-2 text-xs text-blue-600">
-                                📎 {lesson.pendingFile.name} — va fi încărcat la salvare
-                              </span>
-                            ) : lesson.uploading ? (
-                              <span className="flex items-center gap-2 text-xs text-blue-600">
-                                <Loader2 className="w-3 h-3 animate-spin" /> Se încarcă...
-                              </span>
-                            ) : (
-                              <label className="cursor-pointer flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 border border-dashed border-blue-300 px-3 py-1.5 rounded-lg hover:bg-blue-50 transition">
-                                <Upload className="w-3.5 h-3.5" />
-                                Încarcă video
-                                <input
-                                  type="file"
-                                  accept="video/*"
-                                  className="hidden"
-                                  onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) uploadVideo(section.tempId, lesson.tempId, file);
-                                  }}
-                                />
-                              </label>
-                            )}
-                            <div className="flex items-center gap-1 text-xs text-gray-500">
-                              <span>Durată:</span>
-                              <span className="text-gray-700 font-medium">
-                                {lesson.duration > 0 ? `${Math.floor(lesson.duration / 60)}m ${lesson.duration % 60}s` : '—'}
-                              </span>
-                            </div>
+                          <div className="pl-7 space-y-3">
+                            {lesson.clips.map((clip, ci) => (
+                              <div key={clip.tempId} className="rounded-lg border bg-gray-50/60 p-3 space-y-2">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="text-xs font-semibold text-gray-600">Clip {ci + 1}</span>
+                                  {clip.cdnVideoId ? (
+                                    clip.processingStatus === 'processing' ? (
+                                      <span className="flex items-center gap-1.5 text-xs text-amber-600">
+                                        <Loader2 className="w-3 h-3 animate-spin" /> Se procesează pe CDN...
+                                      </span>
+                                    ) : clip.processingStatus === 'error' ? (
+                                      <Badge variant="outline" className="text-red-600 border-red-400">✗ Eroare procesare</Badge>
+                                    ) : (
+                                      <Badge variant="outline" className="text-green-600 border-green-400">
+                                        ✓ Video ({clip.cdnVideoId.slice(0, 8)}...)
+                                      </Badge>
+                                    )
+                                  ) : clip.pendingFile ? (
+                                    <span className="flex items-center gap-1.5 text-xs text-blue-600">
+                                      📎 {clip.pendingFile.name} — va fi încărcat la salvare
+                                    </span>
+                                  ) : (
+                                    <label className="cursor-pointer flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800 border border-dashed border-blue-300 px-2.5 py-1 rounded-lg hover:bg-blue-50 transition">
+                                      <Upload className="w-3.5 h-3.5" />
+                                      Încarcă video
+                                      <input
+                                        type="file"
+                                        accept="video/*"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) uploadClipVideo(section.tempId, lesson.tempId, clip, file);
+                                        }}
+                                      />
+                                    </label>
+                                  )}
+                                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                                    <span>Durată:</span>
+                                    <span className="text-gray-700 font-medium">
+                                      {clip.duration > 0 ? `${Math.floor(clip.duration / 60)}m ${clip.duration % 60}s` : '—'}
+                                    </span>
+                                  </div>
+                                  <div className="ml-auto flex items-center gap-1">
+                                    <button
+                                      onClick={() => moveClip(section.tempId, lesson.tempId, clip.tempId, -1)}
+                                      disabled={ci === 0}
+                                      title="Mută sus"
+                                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                      <ChevronUp className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={() => moveClip(section.tempId, lesson.tempId, clip.tempId, 1)}
+                                      disabled={ci === lesson.clips.length - 1}
+                                      title="Mută jos"
+                                      className="text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                      <ChevronDown className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                      onClick={() => removeClip(section.tempId, lesson.tempId, clip.tempId)}
+                                      disabled={lesson.clips.length <= 1}
+                                      title="Șterge clip"
+                                      className="text-red-400 hover:text-red-600 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                                {clip.cdnVideoId && clip.processingStatus !== 'processing' && (
+                                  <TimelineEditor
+                                    clip={clip}
+                                    onChange={(c) => updateClip(section.tempId, lesson.tempId, c)}
+                                  />
+                                )}
+                              </div>
+                            ))}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => addClip(section.tempId, lesson.tempId)}
+                              className="text-blue-600 hover:text-blue-800 text-xs"
+                            >
+                              <Plus className="w-3 h-3 mr-1" /> Adaugă clip
+                            </Button>
                           </div>
                         </div>
                       )}
