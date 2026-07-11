@@ -6,10 +6,10 @@ import { CheckCircle, Circle, ChevronRight, Lock, Trophy, Download, NotebookPen,
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import VideoPlayer from '@/components/player/VideoPlayer';
+import InteractivePlayer from '@/components/player/InteractivePlayer';
 import QuizPlayer from '@/components/QuizPlayer';
 import api from '@/lib/api';
-import type { Section, Lesson, Enrollment } from '@/types';
+import type { Section, Lesson, Enrollment, VideoClip } from '@/types';
 import { useAuthStore } from '@/stores/auth.store';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -21,7 +21,6 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
   const qc = useQueryClient();
 
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
-  const [videoUrl, setVideoUrl] = useState<string>('');
   const isAutoComplete = useRef(false);
 
   // Notes state
@@ -152,20 +151,6 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
     }
 
     setSelectedLesson(lesson);
-
-    // Only fetch video URL for video lessons
-    if (lesson.type === 'quiz' || !lesson.cdnVideoId || !course) {
-      setVideoUrl('');
-      return;
-    }
-    try {
-      const { data } = await api.get(`/media/play-url/${lesson.cdnVideoId}`, {
-        params: { courseId: course._id },
-      });
-      setVideoUrl(data.url);
-    } catch {
-      toast.error('Eroare la încărcarea videoclipului');
-    }
   };
 
   // Mark lesson complete (for video lessons)
@@ -330,19 +315,30 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
               ) : (
                 /* Video lesson */
                 <>
-                  {videoUrl ? (
-                    <VideoPlayer
-                      src={videoUrl}
-                      onEnded={() => {
-                        isAutoComplete.current = true;
-                        completeMutation.mutate(selectedLesson._id);
-                      }}
-                    />
-                  ) : (
-                    <div className="aspect-video bg-gray-900 rounded-xl flex items-center justify-center">
-                      <p className="text-gray-400">Selectează o lecție cu conținut video</p>
-                    </div>
-                  )}
+                  {(() => {
+                    const clips: VideoClip[] =
+                      selectedLesson.clips && selectedLesson.clips.length > 0
+                        ? selectedLesson.clips
+                        : selectedLesson.cdnVideoId
+                          ? [{ cdnVideoId: selectedLesson.cdnVideoId, duration: selectedLesson.duration, interactions: [] }]
+                          : [];
+                    return clips.length > 0 ? (
+                      <InteractivePlayer
+                        key={selectedLesson._id}
+                        clips={clips}
+                        courseId={course?._id ?? ''}
+                        isFree={selectedLesson.isFree}
+                        onLessonEnded={() => {
+                          isAutoComplete.current = true;
+                          completeMutation.mutate(selectedLesson._id);
+                        }}
+                      />
+                    ) : (
+                      <div className="aspect-video bg-gray-900 rounded-xl flex items-center justify-center">
+                        <p className="text-gray-400">Selectează o lecție cu conținut video</p>
+                      </div>
+                    );
+                  })()}
 
                   <div className="mt-6">
                     <h1 className="text-2xl font-bold">{selectedLesson.title}</h1>
