@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import type { OverlayInteraction } from '@/types';
 
@@ -9,9 +10,26 @@ interface OverlayCardProps {
 }
 
 export default function OverlayCard({ interaction, onDismiss }: OverlayCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Se închide DOAR la X sau click în afara cardului — niciodată automat.
+  useEffect(() => {
+    const onDocPointerDown = (e: MouseEvent) => {
+      if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
+        onDismiss();
+      }
+    };
+    // pe tick-ul următor, ca să nu prindă chiar evenimentul care a montat cardul
+    const id = window.setTimeout(() => document.addEventListener('mousedown', onDocPointerDown), 0);
+    return () => {
+      window.clearTimeout(id);
+      document.removeEventListener('mousedown', onDocPointerDown);
+    };
+  }, [onDismiss]);
+
   return (
     <div data-testid="overlay-card" className="absolute bottom-4 left-4 right-4 z-20 sm:left-auto sm:right-4 sm:max-w-sm">
-      <div className="rounded-xl bg-white/95 backdrop-blur shadow-2xl border p-4">
+      <div ref={cardRef} className="rounded-xl bg-white/95 backdrop-blur shadow-2xl border p-4">
         <div className="flex items-start justify-between gap-3">
           <h4 className="font-bold text-gray-800 text-sm">{interaction.title}</h4>
           <button onClick={onDismiss} aria-label="Închide" className="flex-shrink-0 text-gray-400 hover:text-gray-700 transition">

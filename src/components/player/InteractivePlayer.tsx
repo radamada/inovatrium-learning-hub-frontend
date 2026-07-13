@@ -104,7 +104,8 @@ export default function InteractivePlayer({ clips, courseId, isFree = false, onL
     if (v && enforceClamp(v)) { prevTimeRef.current = v.currentTime; return; }
     const prevT = prevTimeRef.current;
     prevTimeRef.current = t;
-    if (activeOverlay?.untilSec != null && t >= activeOverlay.untilSec) handleOverlayDismiss();
+    // Overlay-ul NU se mai închide automat (nici la untilSec, nici la finalul
+    // clipului) — rămâne până la X sau click în afara lui (vezi OverlayCard).
     maybePrefetchNext(t);
     if (!activeQuiz) fireInteractions(prevT, t);
   };
