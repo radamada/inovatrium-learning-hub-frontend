@@ -286,118 +286,116 @@ export default function LearnPage({ params }: { params: Promise<{ slug: string }
             </button>
           </div>
         )}
-        <div className="p-4 md:p-8 max-w-4xl">
-          {selectedLesson ? (
+        {selectedLesson ? (
+          isQuiz ? (
+            /* Quiz lesson */
+            <div className="p-4 md:p-8 max-w-5xl mx-auto w-full">
+              <QuizPlayer
+                key={selectedLesson._id}
+                lesson={selectedLesson}
+                courseId={course?._id ?? ''}
+                onPassed={handleQuizPassed}
+              />
+              {(() => {
+                const flat = curriculum?.flatMap((s) => s.lessons) ?? [];
+                const idx = flat.findIndex((l) => l._id === selectedLesson._id);
+                const next = flat[idx + 1];
+                const currentDone = completedIds.includes(selectedLesson._id);
+                return next && currentDone ? (
+                  <div className="mt-4">
+                    <Button variant="ghost" onClick={() => selectLesson(next)}>
+                      Lecția următoare <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          ) : (
+            /* Video lesson — scenă „theater" full-bleed, fixă sus */
             <>
-              {/* Quiz lesson */}
-              {isQuiz ? (
-                <>
-                  <QuizPlayer
-                    key={selectedLesson._id}
-                    lesson={selectedLesson}
-                    courseId={course?._id ?? ''}
-                    onPassed={handleQuizPassed}
-                  />
+              <div className="bg-black">
+                <div className="mx-auto w-full" style={{ maxWidth: 'calc(62vh * 16 / 9)' }}>
+                  {(() => {
+                    const clips: VideoClip[] =
+                      selectedLesson.clips && selectedLesson.clips.length > 0
+                        ? selectedLesson.clips
+                        : selectedLesson.cdnVideoId
+                          ? [{ cdnVideoId: selectedLesson.cdnVideoId, duration: selectedLesson.duration, interactions: [] }]
+                          : [];
+                    return clips.length > 0 ? (
+                      <InteractivePlayer
+                        key={selectedLesson._id}
+                        clips={clips}
+                        courseId={course?._id ?? ''}
+                        isFree={selectedLesson.isFree}
+                        onLessonEnded={() => {
+                          isAutoComplete.current = true;
+                          completeMutation.mutate(selectedLesson._id);
+                        }}
+                      />
+                    ) : (
+                      <div className="aspect-video bg-black flex items-center justify-center">
+                        <p className="text-gray-400">Selectează o lecție cu conținut video</p>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              <div className="p-4 md:p-8 w-full">
+                <div className="flex items-start gap-3">
+                  <h1 className="text-2xl font-bold flex-1">{selectedLesson.title}</h1>
+                  {/* Next lesson — only accessible after current lesson is completed */}
                   {(() => {
                     const flat = curriculum?.flatMap((s) => s.lessons) ?? [];
                     const idx = flat.findIndex((l) => l._id === selectedLesson._id);
                     const next = flat[idx + 1];
                     const currentDone = completedIds.includes(selectedLesson._id);
-                    return next && currentDone ? (
-                      <div className="mt-4">
-                        <Button variant="ghost" onClick={() => selectLesson(next)}>
-                          Lecția următoare <ChevronRight className="w-4 h-4 ml-1" />
-                        </Button>
-                      </div>
+                    return next ? (
+                      <Button
+                        variant="ghost"
+                        onClick={() => selectLesson(next)}
+                        disabled={!currentDone}
+                        title={!currentDone ? 'Finalizează lecția curentă pentru a continua' : undefined}
+                        className="flex-shrink-0"
+                      >
+                        Lecția următoare <ChevronRight className="w-4 h-4 ml-1" />
+                      </Button>
                     ) : null;
                   })()}
-                </>
-              ) : (
-                /* Video lesson */
-                <>
-                  {/* Playerul rămâne fix sus (sticky) în timp ce restul conținutului
-                      — titlu, notițe — scrolează sub el. */}
-                  <div className="sticky top-0 z-20 bg-white pb-4">
-                    {(() => {
-                      const clips: VideoClip[] =
-                        selectedLesson.clips && selectedLesson.clips.length > 0
-                          ? selectedLesson.clips
-                          : selectedLesson.cdnVideoId
-                            ? [{ cdnVideoId: selectedLesson.cdnVideoId, duration: selectedLesson.duration, interactions: [] }]
-                            : [];
-                      return clips.length > 0 ? (
-                        <InteractivePlayer
-                          key={selectedLesson._id}
-                          clips={clips}
-                          courseId={course?._id ?? ''}
-                          isFree={selectedLesson.isFree}
-                          onLessonEnded={() => {
-                            isAutoComplete.current = true;
-                            completeMutation.mutate(selectedLesson._id);
-                          }}
-                        />
-                      ) : (
-                        <div className="aspect-video bg-gray-900 rounded-xl flex items-center justify-center">
-                          <p className="text-gray-400">Selectează o lecție cu conținut video</p>
-                        </div>
-                      );
-                    })()}
+                </div>
+                {selectedLesson.description && (
+                  <p className="text-muted-foreground mt-2 leading-relaxed max-w-3xl">{selectedLesson.description}</p>
+                )}
+
+                {/* Notes — card */}
+                <div className="mt-8 rounded-xl border border-border bg-card p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <NotebookPen className="w-4 h-4 text-primary" />
+                    <h3 className="font-semibold text-foreground">Notițele mele</h3>
+                    <span className={`ml-auto text-xs flex items-center gap-1 ${noteSaved ? 'text-green-500' : 'text-muted-foreground'}`}>
+                      <Save className="w-3 h-3" />
+                      {noteSaved ? 'Salvat' : 'Se salvează...'}
+                    </span>
                   </div>
-
-                  <div className="mt-6">
-                    <h1 className="text-2xl font-bold">{selectedLesson.title}</h1>
-                    {selectedLesson.description && (
-                      <p className="text-gray-600 mt-2">{selectedLesson.description}</p>
-                    )}
-
-                    <div className="flex gap-3 mt-4">
-                      {/* Next lesson — only accessible after current lesson is completed */}
-                      {(() => {
-                        const flat = curriculum?.flatMap((s) => s.lessons) ?? [];
-                        const idx = flat.findIndex((l) => l._id === selectedLesson._id);
-                        const next = flat[idx + 1];
-                        const currentDone = completedIds.includes(selectedLesson._id);
-                        return next ? (
-                          <Button
-                            variant="ghost"
-                            onClick={() => selectLesson(next)}
-                            disabled={!currentDone}
-                            title={!currentDone ? 'Finalizează lecția curentă pentru a continua' : undefined}
-                          >
-                            Lecția următoare <ChevronRight className="w-4 h-4 ml-1" />
-                          </Button>
-                        ) : null;
-                      })()}
-                    </div>
-
-                    {/* Notes */}
-                    <div className="mt-8 border-t pt-6">
-                      <div className="flex items-center gap-2 mb-3">
-                        <NotebookPen className="w-4 h-4 text-blue-600" />
-                        <h3 className="font-semibold text-gray-800">Notițele mele</h3>
-                        <span className={`ml-auto text-xs flex items-center gap-1 ${noteSaved ? 'text-green-500' : 'text-gray-400'}`}>
-                          <Save className="w-3 h-3" />
-                          {noteSaved ? 'Salvat' : 'Se salvează...'}
-                        </span>
-                      </div>
-                      <Textarea
-                        placeholder="Scrie notițe pentru această lecție..."
-                        value={noteContent}
-                        onChange={(e) => handleNoteChange(e.target.value)}
-                        rows={6}
-                        className="resize-none"
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
+                  <Textarea
+                    placeholder="Scrie notițe pentru această lecție..."
+                    value={noteContent}
+                    onChange={(e) => handleNoteChange(e.target.value)}
+                    rows={8}
+                    className="resize-none bg-background"
+                  />
+                </div>
+              </div>
             </>
-          ) : (
-            <div className="text-center py-20 text-gray-400">
+          )
+        ) : (
+          <div className="p-4 md:p-8 max-w-5xl mx-auto w-full">
+            <div className="text-center py-20 text-muted-foreground">
               Selectează o lecție din stânga pentru a începe.
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
