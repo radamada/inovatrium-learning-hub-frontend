@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Bell, ShoppingBag, RefreshCw, BookOpen, Check } from 'lucide-react';
+import { Bell, ShoppingBag, RefreshCw, BookOpen, Check, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import api from '@/lib/api';
 import { formatDistanceToNow } from 'date-fns';
@@ -71,14 +71,23 @@ export default function NotificationBell() {
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
               <span className="font-semibold text-sm text-gray-800 dark:text-white">Notificări</span>
-              {unreadCount > 0 && (
+              <div className="flex items-center gap-3">
+                {unreadCount > 0 && (
+                  <button
+                    onClick={() => markAllRead.mutate()}
+                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                  >
+                    <Check className="w-3.5 h-3.5" /> Marchează toate ca citite
+                  </button>
+                )}
                 <button
-                  onClick={() => markAllRead.mutate()}
-                  className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                  onClick={() => setOpen(false)}
+                  aria-label="Închide"
+                  className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
                 >
-                  <Check className="w-3.5 h-3.5" /> Marchează toate ca citite
+                  <X className="w-4 h-4" />
                 </button>
-              )}
+              </div>
             </div>
 
             {/* List */}
